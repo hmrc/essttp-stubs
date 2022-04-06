@@ -16,17 +16,19 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import uk.gov.hmrc.essttpstubs.model.TaxId
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.{EligibilityError, FinancialData}
+import uk.gov.hmrc.essttpstubs.model._
+import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
 import uk.gov.hmrc.essttpstubs.services.TTP.asError
 
-case class TTP(items: Map[TaxId, Either[EligibilityError, FinancialData]]){
+import java.time.LocalDate
 
-  def mapError(taxID: TaxId, error: EligibilityError): TTP = TTP(items + (taxID -> asError(error)))
+case class TTP(items: Map[TaxID, Either[EligibilityError, OverduePayments]]){
 
-  def mapFinancialData(taxID: TaxId, data: FinancialData): TTP = TTP(items + (taxID -> Right(data)))
+  def mapError(taxID: TaxID, error: EligibilityError): TTP = TTP(items + (taxID -> asError(error)))
 
-  def eligibilityData(taxID: TaxId): Either[EligibilityError,FinancialData] = items(taxID)
+  def mapFinancialData(taxID: TaxID, data: OverduePayments): TTP = TTP(items + (taxID -> Right(data)))
+
+  def eligibilityData(taxID: TaxID): Either[EligibilityError,OverduePayments] = items.getOrElse(taxID, Right(TTP.Default))
 
 }
 
@@ -34,6 +36,26 @@ object TTP {
 
   val Empty: TTP = TTP(Map.empty)
 
-  def asError(error: EligibilityError): Either[EligibilityError, FinancialData] = Left(error)
+  def asError(error: EligibilityError): Either[EligibilityError, OverduePayments] = Left(error)
+
+  val qualifyingDebt: AmountInPence = AmountInPence(296345)
+
+  val Default = OverduePayments(
+    total = qualifyingDebt,
+    payments = List(
+      OverduePayment(
+        InvoicePeriod(
+          monthNumber = 7,
+          dueDate = LocalDate.of(2022, 1, 22),
+          start = LocalDate.of(2021, 11, 6),
+          end = LocalDate.of(2021, 12, 5)),
+        amount = AmountInPence((qualifyingDebt.value * 0.4).longValue())),
+      OverduePayment(
+        InvoicePeriod(
+          monthNumber = 8,
+          dueDate = LocalDate.of(2021, 12, 22),
+          start = LocalDate.of(2021, 10, 6),
+          end = LocalDate.of(2021, 11, 5)),
+        amount = AmountInPence((qualifyingDebt.value * 0.6).longValue()))))
 
 }

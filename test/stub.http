@@ -1,0 +1,3 @@
+### Send POST request with json body
+GET http://localhost:9000/essttp-stubs//eligibility/epaye/empref/1234/financials
+Accept: application/json

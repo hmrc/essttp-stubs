@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.essttpstubs.model.Taxid.EmpRef
-import uk.gov.hmrc.essttpstubs.model.{IdType, TaxRegime}
+import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
+import uk.gov.hmrc.essttpstubs.model.{IdType, OverduePayments, TaxRegime}
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton()
 class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
@@ -36,17 +36,23 @@ class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityS
   }
 
   def financials(regime: TaxRegime, idType: IdType, id: String) = Action.async(parse.json) { implicit request =>
-    withJsonBody[EligibilityService.FinancialData]{ financials =>
-      val result = es.financials(regime, idType, regime.taxIdOf(idType, id), financials)
-      ???
+    withJsonBody[OverduePayments]{ financials =>
+      val result = es.financials(regime, idType, regime.taxIdOf(idType, id), financials).map(_ => Ok("setup financail data"))
+      result.getOrElse(throw new IllegalArgumentException("should not happen"))
     }
   }
 
   def eligibilityData(regime: TaxRegime, idType: IdType, id: String) = Action.async { implicit request =>
-    val result = es.eligibilityData(regime, idType, regime.taxIdOf(idType, id))
-      ???
+    val result = for{
+      data <- es.eligibilityData(regime, idType, regime.taxIdOf(idType, id))
+    } yield Ok(Json.toJson(data))
+
+    result.getOrElse(throw new Exception("failed to retrieve eligibility data"))
+
+
   }
 }
+
 
 
 

@@ -17,42 +17,14 @@
 package uk.gov.hmrc.essttpstubs.model
 
 import play.api.mvc.PathBindable
-import uk.gov.hmrc.essttpstubs.model.Taxid.EmpRef
+import uk.gov.hmrc.essttpstubs.model.TaxID.EmpRef
 
-sealed trait TaxId
-
-object Taxid {
-  case class EmpRef(value: String) extends TaxId
-}
-
-case class IdType private(ordinal: Int, name: String)
-
-object IdType {
-
-  val EmployeeRef = IdType(0, "EMPREF")
-
-  def idTypeOf(name: String): IdType = name match {
-    case "EMPREF" => IdType.EmployeeRef
-    case n => throw new IllegalArgumentException(s"$n is not the name of an id type")
-  }
-
-  implicit def pathBinder(implicit stringBinder: PathBindable[String]): PathBindable[IdType] = new PathBindable[IdType] {
-    override def bind(key: String, value: String): Either[String, IdType] = {
-      for {
-        idType <- stringBinder.bind(key, value).right
-      } yield idTypeOf(idType)
-    }
-    override def unbind(key: String, regime: IdType): String = {
-      regime.name.toLowerCase()
-    }
-  }
-}
 
 
 sealed trait TaxRegime {
   def name: String
 
-  def taxIdOf(idType: IdType, value: String):  TaxId
+  def taxIdOf(idType: IdType, value: String):  TaxID
 
 }
 
@@ -65,19 +37,19 @@ object TaxRegime {
       } yield regimeOf(regime)
     }
     override def unbind(key: String, regime: TaxRegime): String = {
-      regime.name
+      regime.name.toLowerCase()
     }
   }
 
-  def regimeOf(name: String): TaxRegime = name match {
+  def regimeOf(name: String): TaxRegime = name.toLowerCase() match {
     case "epaye" => EPaye
     case n => throw new IllegalArgumentException(s"$n is not the name of a tax regime")
   }
 
   object EPaye extends TaxRegime{
-    override def name: String = "Paye"
+    override def name: String = "EPaye"
 
-    def taxIdOf(idType: IdType, value: String):  TaxId = idType match{
+    def taxIdOf(idType: IdType, value: String):  TaxID = idType match{
       case IdType.EmployeeRef => EmpRef(value)
       case _  => throw new IllegalArgumentException("not a valid id")
     }
