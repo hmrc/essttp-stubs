@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.config
+import com.google.inject.AbstractModule
+import play.api.libs.concurrent.AkkaGuiceSupport
+import uk.gov.hmrc.essttpstubs.services.TtpEligibilityActor
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+class AppModule  extends AbstractModule with AkkaGuiceSupport{
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+  override def configure(): Unit ={
+    bindTypedActor(TtpEligibilityActor.apply, "repaymentsActor")
+  }
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
 }

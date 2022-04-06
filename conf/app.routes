@@ -1,3 +1,9 @@
 # microservice specific routes
 
 GET        /hello-world             uk.gov.hmrc.essttpstubs.controllers.MicroserviceHelloWorldController.hello
+
+POST       /eligibility/:regime/:idtype/:id/error  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.error(regime: TaxRegime, idtype: IdType, id)
+
+POST       /eligibility/:regime/:idtype/:id/financials  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.financials(regime: TaxRegime, idtype: IdType, id)
+
+GET       /eligibility/:regime/:idtype/:id/financials  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.eligibilityData(regime: TaxRegime, idtype: IdType, id)
