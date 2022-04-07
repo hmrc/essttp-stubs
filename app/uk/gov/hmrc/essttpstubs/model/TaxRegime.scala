@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.config
+package uk.gov.hmrc.essttpstubs.model
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import enumeratum.{EnumEntry, Enum}
+import uk.gov.hmrc.essttpstubs.model.TaxID.EmpRef
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+sealed trait TaxRegime extends EnumEntry {
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
+  def taxIdOf(value: String):  TaxID
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
 }
+
+object TaxRegime extends Enum[TaxRegime]{
+
+  object EPaye extends TaxRegime {
+    override def entryName: String = "EPaye"
+
+    def taxIdOf(value: String): TaxID = EmpRef(value)
+  }
+
+  override val values = findValues
+
+}
+

@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.config
+package uk.gov.hmrc.essttpstubs.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-@Singleton
-class AppConfig @Inject()
-  (
-    config: Configuration
-  , servicesConfig: ServicesConfig
-  ) {
+class TTPSpec extends AnyWordSpec with Matchers {
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
+  "TTP" when {
+    "the service is available" should {
+      "return financial data" in {
+        "Hello" shouldBe "Hello"
+      }
+    }
+  }
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String     = config.get[String]("microservice.metrics.graphite.host")
 }
+
