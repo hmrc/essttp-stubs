@@ -17,7 +17,6 @@
 package uk.gov.hmrc.essttpstubs.model
 
 import enumeratum.{Enum, EnumEntry}
-import play.api.mvc.PathBindable
 
 import scala.collection.immutable
 
@@ -29,23 +28,4 @@ object TaxID extends Enum[TaxID]{
   override val values: immutable.IndexedSeq[TaxID] = findValues
 }
 
-sealed trait IdType extends EnumEntry
-
-object IdType extends Enum[IdType]{
-
-  case object EmpRef extends IdType
-
-  implicit def pathBinder(implicit stringBinder: PathBindable[String]): PathBindable[IdType] = new PathBindable[IdType] {
-    override def bind(key: String, value: String): Either[String, IdType] = {
-      for {
-        idType <- stringBinder.bind(key, value).right
-      } yield IdType.withNameLowercaseOnly(idType)
-    }
-    override def unbind(key: String, idType: IdType): String = {
-      idType.entryName.toLowerCase()
-    }
-  }
-
-  override val values: immutable.IndexedSeq[IdType] = findValues
-}
 

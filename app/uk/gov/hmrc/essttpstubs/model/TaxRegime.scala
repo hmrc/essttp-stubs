@@ -16,46 +16,24 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import enumeratum.{Enum, EnumEntry}
-import play.api.mvc.PathBindable
+import enumeratum.{EnumEntry, Enum}
 import uk.gov.hmrc.essttpstubs.model.TaxID.EmpRef
-
-import scala.collection.immutable
-
-
 
 sealed trait TaxRegime extends EnumEntry {
 
-  def taxIdOf(idType: IdType, value: String):  TaxID
+  def taxIdOf(value: String):  TaxID
 
 }
 
 object TaxRegime extends Enum[TaxRegime]{
 
-  implicit def pathBinder(implicit stringBinder: PathBindable[String]): PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
-    override def bind(key: String, value: String): Either[String, TaxRegime] = {
-      for {
-        regime <- stringBinder.bind(key, value).right
-      } yield regimeOf(regime)
-    }
-    override def unbind(key: String, regime: TaxRegime): String = {
-      regime.entryName.toLowerCase()
-    }
+  object EPaye extends TaxRegime {
+    override def entryName: String = "EPaye"
+
+    def taxIdOf(value: String): TaxID = EmpRef(value)
   }
 
-  def regimeOf(name: String): TaxRegime = name.toLowerCase() match {
-    case "epaye" => EPaye
-    case n => throw new IllegalArgumentException(s"$n is not the name of a tax regime")
-  }
-
-  object EPaye extends TaxRegime{
-    def taxIdOf(idType: IdType, value: String):  TaxID = idType match{
-      case IdType.EmpRef => EmpRef(value)
-      case _  => throw new IllegalArgumentException("not a valid id")
-    }
-  }
-
-  override val values: immutable.IndexedSeq[TaxRegime] = findValues
+  override val values = findValues
 
 }
 

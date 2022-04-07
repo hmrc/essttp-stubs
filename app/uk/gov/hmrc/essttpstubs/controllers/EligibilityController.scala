@@ -18,7 +18,7 @@ package uk.gov.hmrc.essttpstubs.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
-import uk.gov.hmrc.essttpstubs.model.{IdType, OverduePayments, TaxRegime}
+import uk.gov.hmrc.essttpstubs.model.{OverduePayments, TaxRegime}
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -28,23 +28,23 @@ import scala.concurrent.ExecutionContext
 @Singleton()
 class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def error(regime: TaxRegime, idType: IdType, id: String) = Action.async(parse.json) { implicit request =>
-    withJsonBody[EligibilityService.EligibilityError]{ error =>
-      val result = es.error(regime, idType, regime.taxIdOf(idType, id), error)
-      ???
-    }
-  }
+//  def error(regime: TaxRegime,  id: String) = Action.async(parse.json) { implicit request =>
+//    withJsonBody[EligibilityService.EligibilityError]{ error =>
+//      val result = es.error(regime, regime.taxIdOf(id), error).map(_ => Ok("stored financial data"))
+//      result.getOrElse(throw new IllegalArgumentException("should not happen"))
+//    }
+//  }
 
-  def financials(regime: TaxRegime, idType: IdType, id: String) = Action.async(parse.json) { implicit request =>
+  def financials(regime: TaxRegime, id: String) = Action.async(parse.json) { implicit request =>
     withJsonBody[OverduePayments]{ financials =>
-      val result = es.financials(regime, idType, regime.taxIdOf(idType, id), financials).map(_ => Ok("setup financail data"))
+      val result = es.financials(regime, regime.taxIdOf(id), financials).map(_ => Ok("setup financial data"))
       result.getOrElse(throw new IllegalArgumentException("should not happen"))
     }
   }
 
-  def eligibilityData(regime: TaxRegime, idType: IdType, id: String) = Action.async { implicit request =>
+  def eligibilityData(regime: TaxRegime, id: String) = Action.async { implicit request =>
     val result = for{
-      data <- es.eligibilityData(regime, idType, regime.taxIdOf(idType, id))
+      data <- es.eligibilityData(regime, regime.taxIdOf(id))
     } yield Ok(Json.toJson(data))
 
     result.getOrElse(throw new Exception("failed to retrieve eligibility data"))

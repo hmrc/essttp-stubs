@@ -16,16 +16,20 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import play.api.mvc.PathBindable
+import uk.gov.hmrc.essttpstubs.model.{TaxRegime}
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject()(cc: ControllerComponents)
-    extends BackendController(cc) {
+object Implicits {
 
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
+  implicit def taxRegimePB(implicit stringBinder: PathBindable[String]): PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
+    override def bind(key: String, value: String): Either[String, TaxRegime] = {
+      for {
+        regime <- stringBinder.bind(key, value).right
+      } yield TaxRegime.withNameLowercaseOnly(regime.toLowerCase())
+    }
+    override def unbind(key: String, regime: TaxRegime): String = {
+      regime.entryName.toLowerCase()
+    }
   }
+
 }

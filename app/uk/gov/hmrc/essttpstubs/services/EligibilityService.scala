@@ -20,8 +20,8 @@ import akka.actor.typed.scaladsl.AskPattern._
 import akka.actor.typed.{ActorRef, Scheduler}
 import akka.util.Timeout
 import cats.data.EitherT
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.essttpstubs.model.{IdType, OverduePayments, TaxID, TaxRegime}
+import enumeratum.{Enum, EnumEntry}
+import uk.gov.hmrc.essttpstubs.model.{OverduePayments, TaxID, TaxRegime}
 import uk.gov.hmrc.essttpstubs.services.EligibilityService.{EligibilityError, SR}
 import uk.gov.hmrc.essttpstubs.services.TtpEligibilityActor.{Command, FindEligibilityData, MapFinancialData, MapPayeError}
 
@@ -34,15 +34,15 @@ class EligibilityService @Inject()(ttp: ActorRef[Command])(implicit S: Scheduler
 
   implicit val timeout = Timeout(5.seconds)
 
-  def error(regime: TaxRegime, idType: IdType, id: TaxID, error: EligibilityError): SR[Unit] = {
+  def error(regime: TaxRegime, id: TaxID, error: EligibilityError): SR[Unit] = {
     EitherT(ttp.ask(ref => MapPayeError(id, error,ref)))
   }
 
-  def financials(regime: TaxRegime, idType: IdType, id: TaxID, data: OverduePayments): SR[Unit] = {
+  def financials(regime: TaxRegime, id: TaxID, data: OverduePayments): SR[Unit] = {
     EitherT(ttp.ask(ref => MapFinancialData(id, data,ref)))
   }
 
-  def eligibilityData(regime: TaxRegime, idType: IdType, id: TaxID): SR[OverduePayments] = {
+  def eligibilityData(regime: TaxRegime, id: TaxID): SR[OverduePayments] = {
     EitherT(ttp.ask(ref => FindEligibilityData(id,ref)))
   }
 
@@ -57,18 +57,18 @@ object EligibilityService {
 
   case class InternalServiceError(msg: String) extends ServiceError
 
-  case class EligibilityError private(ordinal: Int, name: String) extends ServiceError
+  sealed trait EligibilityError extends EnumEntry with ServiceError
 
-  object EligibilityError {
-    val DebitIsTooLarge = EligibilityError(0, "DebitIsTooLarge")
-    val DebitIsTooOld = EligibilityError(1, "DebitIsTooOld")
-    val ReturnsAreNotUpToDate = EligibilityError(2, "ReturnsAreNotUpToDate")
-    val YouAlreadyHaveAPaymentPlan = EligibilityError(3, "DebitIsTooLarge")
-    val OutstandingPenalty = EligibilityError(4, "Outstanding Penalty")
-    val PayeIsInsolvent = EligibilityError(5, "Paye is Insolvent")
-    val PayeHasDisallowedCharges = EligibilityError(6, "Paye has disallowed charges")
-    val RLSFlagIsSet = EligibilityError(7, "RLS flag is set")
+  object EligibilityError extends Enum[EligibilityError]{
+    object DebitIsTooLarge extends EligibilityError
+    object DebitIsTooOld extends EligibilityError
+    object ReturnsAreNotUpToDate extends EligibilityError
+    object YouAlreadyHaveAPaymentPlan extends EligibilityError
+    object OutstandingPenalty extends EligibilityError
+    object PayeIsInsolvent extends EligibilityError
+    object PayeHasDisallowedCharges extends EligibilityError
+    object RLSFlagIsSet extends EligibilityError
 
-    implicit val fmt: Format[EligibilityError] = Json.format[EligibilityError]
+    override val values = findValues
   }
 }
