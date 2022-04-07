@@ -16,19 +16,21 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
+import enumeratum.{Enum, EnumEntry}
 import play.api.mvc.PathBindable
 import uk.gov.hmrc.essttpstubs.model.TaxID.EmpRef
 
+import scala.collection.immutable
 
 
-sealed trait TaxRegime {
-  def name: String
+
+sealed trait TaxRegime extends EnumEntry {
 
   def taxIdOf(idType: IdType, value: String):  TaxID
 
 }
 
-object TaxRegime {
+object TaxRegime extends Enum[TaxRegime]{
 
   implicit def pathBinder(implicit stringBinder: PathBindable[String]): PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
     override def bind(key: String, value: String): Either[String, TaxRegime] = {
@@ -37,7 +39,7 @@ object TaxRegime {
       } yield regimeOf(regime)
     }
     override def unbind(key: String, regime: TaxRegime): String = {
-      regime.name.toLowerCase()
+      regime.entryName.toLowerCase()
     }
   }
 
@@ -47,13 +49,13 @@ object TaxRegime {
   }
 
   object EPaye extends TaxRegime{
-    override def name: String = "EPaye"
-
     def taxIdOf(idType: IdType, value: String):  TaxID = idType match{
-      case IdType.EmployeeRef => EmpRef(value)
+      case IdType.EmpRef => EmpRef(value)
       case _  => throw new IllegalArgumentException("not a valid id")
     }
   }
+
+  override val values: immutable.IndexedSeq[TaxRegime] = findValues
 
 }
 
