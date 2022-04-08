@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.controllers
+package uk.gov.hmrc.essttpstubs.services
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
+import uk.gov.hmrc.essttpstubs.services.TTP.jsString
+import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
 
 class TTPSpec extends AnyWordSpec with Matchers {
 
   "TTP" when {
     "the service is available" should {
       "return financial data" in {
-        "Hello" shouldBe "Hello"
+        val js = Json.parse(jsString)
+        val result = Json.fromJson[TTPEligibilityData](js)
+        println(result)
+        true
       }
     }
   }

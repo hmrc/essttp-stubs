@@ -18,18 +18,16 @@ package uk.gov.hmrc.essttpstubs.services
 
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
-import uk.gov.hmrc.essttpstubs.model.{OverduePayments, TaxID}
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.{EligibilityError, ServiceError}
+import uk.gov.hmrc.essttpstubs.model.TaxID
+import uk.gov.hmrc.essttpstubs.services.EligibilityService.ServiceError
+import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
 
 object TtpEligibilityActor {
 
   sealed trait Command
 
-  case class MapPayeError(taxId: TaxID, error: EligibilityError, replyTo: ActorRef[Either[ServiceError, Unit]]) extends Command
 
-  case class MapFinancialData(taxId: TaxID, data: OverduePayments, replyTo: ActorRef[Either[ServiceError, Unit]]) extends Command
-
-  case class FindEligibilityData(taxId: TaxID, replyTo: ActorRef[Either[ServiceError, OverduePayments]]) extends Command
+  case class FindEligibilityData(taxId: TaxID, replyTo: ActorRef[Either[ServiceError, TTPEligibilityData]]) extends Command
 
   def apply(): Behavior[Command] = Behaviors.setup[Command] { ctx =>
     ctx.log.info("starting the ttp eligibility actor")
@@ -37,11 +35,6 @@ object TtpEligibilityActor {
   }
 
   def handler(ttp: TTP): Behavior[Command] = Behaviors.receiveMessage[Command] {
-    case MapPayeError(taxId, error, replyTo) => replyTo ! Right(())
-      handler(ttp.mapError(taxId, error))
-
-    case MapFinancialData(taxId, data, replyTo) => replyTo ! Right(())
-      handler(ttp.mapFinancialData(taxId, data))
 
     case FindEligibilityData(taxId, replyTo) => replyTo ! ttp.eligibilityData(taxId)
       Behaviors.same

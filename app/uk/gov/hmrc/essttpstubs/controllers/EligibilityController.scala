@@ -34,8 +34,8 @@ class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityS
     withJsonBody[EligibilityRequest]{ body =>
        val regime = TaxRegime.withNameLowercaseOnly(body.regimeType.toLowerCase())
        val result = for{
-         _ <- es.eligibilityData(regime, regime.taxIdOf(body.idNumber))
-       } yield Ok("done")
+         data <- es.eligibilityData(regime, regime.taxIdOf(body.idNumber))
+       } yield Ok(Json.toJson(data))
 
       result.getOrElse(throw new IllegalArgumentException("should not happen"))
     }
