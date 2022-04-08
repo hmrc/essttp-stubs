@@ -36,81 +36,81 @@ object TTP {
   // language=JSON
   val jsString: String =
     """{
-      |  "idType": "SSTTP",
-      |  "idNumber": "A00000000001",
-      |  "regimeType": "PAYE",
-      |  "processingDate": "2022-03-10",
-      |  "customerDetails": {
-      |    "country": "NI",
-      |    "postCode": "B5 7LN"
-      |  },
-      |  "eligibilityStatus": {
-      |    "overallEligibilityStatus": false,
-      |    "minPlanLengthMonths": 1,
-      |    "maxPlanLengthMonths": 6
-      |  },
-      |  "eligibilityRules": {
-      |    "rlsOnAddress": true,
-      |    "rlsReason": "Receiver is not known",
-      |    "markedAsInsolvent": false,
-      |    "minimumDebtAllowance": false,
-      |    "maxDebtAllowance": false,
-      |    "disallowedChargeLock": false,
-      |    "existingTTP": false,
-      |    "minInstalmentAmount": 300,
-      |    "maxInstalmentAmount": 600,
-      |    "maxDebtAge": false,
-      |    "eligibleChargeType": false,
-      |    "returnsFiled": false
-      |  },
-      |  "financialLimitBreached": {
-      |    "status": true,
-      |    "calculatedAmount": 16000
-      |  },
-      |  "chargeTypeAssessment": [
-      |    {
-      |      "taxPeriodFrom": "2020-08-13",
-      |      "taxPeriodTo": "2020-08-14",
-      |      "debtTotalAmount": 300000,
-      |      "taxPeriodCharges": [
-      |        {
-      |          "chargeId": "T5545454554",
-      |          "mainTrans": "22000",
-      |          "mainTransDesc": "",
-      |          "subTrans": "1000",
-      |          "subTransDesc": "",
-      |          "outstandingDebtAmount": 100000,
-      |          "interestStartDate": "2017-03-07",
-      |          "accruedInterestToDate": 15.97,
-      |          "disallowedCharge": true,
-      |          "chargeLocks": {
-      |            "paymentLock": {
-      |              "status": false,
-      |              "reason": ""
-      |            },
-      |            "clearingLock": {
-      |              "status": false,
-      |              "reason": "there is no reason"
-      |            },
-      |            "interestLock": {
-      |              "status": false,
-      |              "reason": "there is no reason"
-      |            },
-      |            "dunningLock": {
-      |              "status": false,
-      |              "reason": "there is no reason"
-      |            },
-      |            "disallowedLock": {
-      |              "status": false,
-      |              "reason": "there is no reason"
-      |            }
-      |          }
-      |        }
-      |      ]
-      |    }
-      |  ]
-      |}
-      |""".stripMargin
+        "idType": "SSTTP",
+        "idNumber": "A00000000001",
+        "regimeType": "PAYE",
+        "processingDate": "2022-03-10",
+        "customerDetails": {
+          "country": "NI",
+          "postCode": "B5 7LN"
+        },
+        "eligibilityStatus": {
+          "overallEligibilityStatus": false,
+          "minPlanLengthMonths": 1,
+          "maxPlanLengthMonths": 6
+        },
+        "eligibilityRules": {
+          "rlsOnAddress": true,
+          "rlsReason": "Receiver is not known",
+          "markedAsInsolvent": false,
+          "minimumDebtAllowance": false,
+          "maxDebtAllowance": false,
+          "disallowedChargeLock": false,
+          "existingTTP": false,
+          "minInstalmentAmount": 300,
+          "maxInstalmentAmount": 600,
+          "maxDebtAge": false,
+          "eligibleChargeType": false,
+          "returnsFiled": false
+        },
+        "financialLimitBreached": {
+          "status": true,
+          "calculatedAmount": 16000
+        },
+        "chargeTypeAssessment": [
+          {
+            "taxPeriodFrom": "2020-08-13",
+            "taxPeriodTo": "2020-08-14",
+            "debtTotalAmount": 300000,
+            "taxPeriodCharges": [
+              {
+                "chargeId": "T5545454554",
+                "mainTrans": "22000",
+                "mainTransDesc": "",
+                "subTrans": "1000",
+                "subTransDesc": "",
+                "outstandingDebtAmount": 100000,
+                "interestStartDate": "2017-03-07",
+                "accruedInterestToDate": 15.97,
+                "disallowedCharge": true,
+                "chargeLocks": {
+                  "paymentLock": {
+                    "status": false,
+                    "reason": ""
+                  },
+                  "clearingLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  },
+                  "interestLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  },
+                  "dunningLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  },
+                  "disallowedLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+      """
 
   lazy val Default: TtpEligibilityData = Json.parse(jsString).as[TtpEligibilityData]
 
