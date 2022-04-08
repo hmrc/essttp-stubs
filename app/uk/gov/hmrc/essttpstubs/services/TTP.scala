@@ -18,17 +18,12 @@ package uk.gov.hmrc.essttpstubs.services
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.model._
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
-import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
+import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
 
 
-case class TTP(items: Map[TaxID, TTPEligibilityData]){
+case class TTP(items: Map[TaxId, TtpEligibilityData]){
 
-  // def mapError(taxID: TaxID, error: EligibilityError): TTP = TTP(items + (taxID -> asError(error)))
-
-  // def mapFinancialData(taxID: TaxID, data: OverduePayments): TTP = TTP(items + (taxID -> Right(data)))
-
-  def eligibilityData(taxID: TaxID): TTPEligibilityData = items.getOrElse(taxID, TTP.Default)
+  def eligibilityData(taxID: TaxId): TtpEligibilityData = items.getOrElse(taxID, TTP.Default)
 
 }
 
@@ -36,10 +31,9 @@ object TTP {
 
   val Empty: TTP = TTP(Map.empty)
 
-  def asError(error: EligibilityError): Either[EligibilityError, OverduePayments] = Left(error)
-
   val qualifyingDebt: AmountInPence = AmountInPence(296345)
 
+  // language=JSON
   val jsString: String =
     """{
       |  "idType": "SSTTP",
@@ -118,9 +112,6 @@ object TTP {
       |}
       |""".stripMargin
 
-  lazy val Default: TTPEligibilityData = {
-      val js = Json.parse(jsString)
-      Json.fromJson[TTPEligibilityData](js).getOrElse(throw new IllegalArgumentException("invalid json"))
-    }
+  lazy val Default: TtpEligibilityData = Json.parse(jsString).as[TtpEligibilityData]
 
 }

@@ -17,11 +17,11 @@
 package uk.gov.hmrc.essttpstubs.model
 
 import enumeratum.{EnumEntry, Enum}
-import uk.gov.hmrc.essttpstubs.model.TaxID.EmpRef
+import uk.gov.hmrc.essttpstubs.model.TaxId.EmpRef
 
 sealed trait TaxRegime extends EnumEntry {
 
-  def taxIdOf(value: String):  TaxID
+  def taxIdOf(value: String):  TaxId
 
 }
 
@@ -30,7 +30,7 @@ object TaxRegime extends Enum[TaxRegime]{
   object Paye extends TaxRegime {
     override def entryName: String = "Paye"
 
-    def taxIdOf(value: String): TaxID = EmpRef(value)
+    def taxIdOf(value: String): TaxId = EmpRef(value)
   }
 
   override val values = findValues

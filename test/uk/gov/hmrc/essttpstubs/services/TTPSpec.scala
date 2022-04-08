@@ -20,15 +20,17 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.services.TTP.jsString
-import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
+import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
 
 class TTPSpec extends AnyWordSpec with Matchers {
+
+  // Json.parse(jsString).as[TtpEligibilityData] shouldBe expectedTtpElibitilityData would be stronger assertion.
 
   "TTP" when {
     "the service is available" should {
       "return financial data" in {
         val js = Json.parse(jsString)
-        val result = Json.fromJson[TTPEligibilityData](js)
+        val result = Json.fromJson[TtpEligibilityData](js)
         result.isSuccess == true
       }
     }

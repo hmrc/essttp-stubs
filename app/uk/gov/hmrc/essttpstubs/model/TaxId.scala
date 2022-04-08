@@ -20,12 +20,12 @@ import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
-sealed trait TaxID extends EnumEntry
+sealed trait TaxId extends EnumEntry
 
-object TaxID extends Enum[TaxID]{
-  case class EmpRef(value: String) extends TaxID
+object TaxId extends Enum[TaxId]{
+  case class EmpRef(value: String) extends TaxId
 
-  override val values: immutable.IndexedSeq[TaxID] = findValues
+  override val values: immutable.IndexedSeq[TaxId] = findValues
 }
 
 
