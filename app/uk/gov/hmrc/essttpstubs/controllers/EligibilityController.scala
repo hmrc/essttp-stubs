@@ -29,13 +29,12 @@ import scala.concurrent.ExecutionContext
 @Singleton()
 class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def eligibilityData: Action[JsValue] = Action.async(parse.json) { implicit request =>
-    withJsonBody[EligibilityRequest]{ body =>
-       val regime = TaxRegime.withNameLowercaseOnly(body.regimeType.toLowerCase())
+  def eligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
+       val regime = TaxRegime.withNameLowercaseOnly(request.body.regimeType.toLowerCase())
        for{
-         data <- es.eligibilityData(regime, regime.taxIdOf(body.idNumber))
+         data <- es.eligibilityData(regime, regime.taxIdOf(request.body.idNumber))
        } yield Ok(Json.toJson(data))
-    }
+
   }
 }
 
