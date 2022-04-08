@@ -27,8 +27,8 @@ sealed trait TaxRegime extends EnumEntry {
 
 object TaxRegime extends Enum[TaxRegime]{
 
-  object EPaye extends TaxRegime {
-    override def entryName: String = "EPaye"
+  object Paye extends TaxRegime {
+    override def entryName: String = "Paye"
 
     def taxIdOf(value: String): TaxID = EmpRef(value)
   }

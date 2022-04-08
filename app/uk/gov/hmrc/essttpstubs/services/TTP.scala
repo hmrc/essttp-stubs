@@ -19,6 +19,7 @@ package uk.gov.hmrc.essttpstubs.services
 import uk.gov.hmrc.essttpstubs.model._
 import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
 import uk.gov.hmrc.essttpstubs.services.TTP.asError
+import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
 
 import java.time.LocalDate
 
@@ -40,22 +41,8 @@ object TTP {
 
   val qualifyingDebt: AmountInPence = AmountInPence(296345)
 
-  val Default = OverduePayments(
-    total = qualifyingDebt,
-    payments = List(
-      OverduePayment(
-        InvoicePeriod(
-          monthNumber = 7,
-          dueDate = LocalDate.of(2022, 1, 22),
-          start = LocalDate.of(2021, 11, 6),
-          end = LocalDate.of(2021, 12, 5)),
-        amount = AmountInPence((qualifyingDebt.value * 0.4).longValue())),
-      OverduePayment(
-        InvoicePeriod(
-          monthNumber = 8,
-          dueDate = LocalDate.of(2021, 12, 22),
-          start = LocalDate.of(2021, 10, 6),
-          end = LocalDate.of(2021, 11, 5)),
-        amount = AmountInPence((qualifyingDebt.value * 0.6).longValue()))))
+  val Default = AJsonSchemaForTtpEligibilityServiceApi(
+
+  )
 
 }
