@@ -22,13 +22,13 @@ import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
 import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
 
 
-case class TTP(items: Map[TaxID, Either[EligibilityError, TTPEligibilityData]]){
+case class TTP(items: Map[TaxID, TTPEligibilityData]){
 
   // def mapError(taxID: TaxID, error: EligibilityError): TTP = TTP(items + (taxID -> asError(error)))
 
   // def mapFinancialData(taxID: TaxID, data: OverduePayments): TTP = TTP(items + (taxID -> Right(data)))
 
-  def eligibilityData(taxID: TaxID): Either[EligibilityError,TTPEligibilityData] = items.getOrElse(taxID, Right(TTP.Default))
+  def eligibilityData(taxID: TaxID): TTPEligibilityData = items.getOrElse(taxID, TTP.Default)
 
 }
 

@@ -19,7 +19,6 @@ package uk.gov.hmrc.essttpstubs.services
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
 import uk.gov.hmrc.essttpstubs.model.TaxID
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.ServiceError
 import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
 
 object TtpEligibilityActor {
@@ -27,7 +26,7 @@ object TtpEligibilityActor {
   sealed trait Command
 
 
-  case class FindEligibilityData(taxId: TaxID, replyTo: ActorRef[Either[ServiceError, TTPEligibilityData]]) extends Command
+  case class FindEligibilityData(taxId: TaxID, replyTo: ActorRef[TTPEligibilityData]) extends Command
 
   def apply(): Behavior[Command] = Behaviors.setup[Command] { ctx =>
     ctx.log.info("starting the ttp eligibility actor")

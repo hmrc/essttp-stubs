@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import play.api.libs.json
-import play.api.libs.json.{Format, Json}
-import play.api.mvc.ControllerComponents
+import play.api.libs.json.{Format, JsValue, Json}
+import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.controllers.EligibilityController.EligibilityRequest
-import uk.gov.hmrc.essttpstubs.model.{OverduePayments, TaxRegime}
+import uk.gov.hmrc.essttpstubs.model.TaxRegime
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -30,14 +29,12 @@ import scala.concurrent.ExecutionContext
 @Singleton()
 class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def eligibilityData = Action.async(parse.json) { implicit request =>
+  def eligibilityData: Action[JsValue] = Action.async(parse.json) { implicit request =>
     withJsonBody[EligibilityRequest]{ body =>
        val regime = TaxRegime.withNameLowercaseOnly(body.regimeType.toLowerCase())
-       val result = for{
+       for{
          data <- es.eligibilityData(regime, regime.taxIdOf(body.idNumber))
        } yield Ok(Json.toJson(data))
-
-      result.getOrElse(throw new IllegalArgumentException("should not happen"))
     }
   }
 }

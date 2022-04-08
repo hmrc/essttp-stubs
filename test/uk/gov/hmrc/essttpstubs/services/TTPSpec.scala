@@ -29,8 +29,7 @@ class TTPSpec extends AnyWordSpec with Matchers {
       "return financial data" in {
         val js = Json.parse(jsString)
         val result = Json.fromJson[TTPEligibilityData](js)
-        println(result)
-        true
+        result.isSuccess == true
       }
     }
   }

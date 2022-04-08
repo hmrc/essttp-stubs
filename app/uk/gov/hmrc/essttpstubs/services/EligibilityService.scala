@@ -22,7 +22,6 @@ import akka.util.Timeout
 import cats.data.EitherT
 import enumeratum.{Enum, EnumEntry}
 import uk.gov.hmrc.essttpstubs.model.{TaxID, TaxRegime}
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.SR
 import uk.gov.hmrc.essttpstubs.services.TtpEligibilityActor.{Command, FindEligibilityData}
 import uk.gov.hmrc.essttpstubs.ttp.model.TTPEligibilityData
 
@@ -35,8 +34,8 @@ class EligibilityService @Inject()(ttp: ActorRef[Command])(implicit S: Scheduler
 
   implicit val timeout = Timeout(5.seconds)
 
-  def eligibilityData(regime: TaxRegime, id: TaxID): SR[TTPEligibilityData] = {
-    EitherT(ttp.ask(ref => FindEligibilityData(id,ref)))
+  def eligibilityData(regime: TaxRegime, id: TaxID): Future[TTPEligibilityData] = {
+    ttp.ask(ref => FindEligibilityData(id,ref))
   }
 
 }
