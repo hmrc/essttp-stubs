@@ -2,4 +2,6 @@
 ->         /essttp-stubs              app.Routes
 ->         /                          health.Routes
 
+POST       /time-to-pay/self-serve/eligibility  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.eligibilityData
+
 GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics

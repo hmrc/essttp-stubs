@@ -1,5 +1,5 @@
 ### Send POST request with json body
-POST http://localhost:9218/essttp-stubs/time-to-pay/self-serve/eligibility
+POST http://localhost:9218/time-to-pay/self-serve/eligibility
 Content-Type: application/json
 
 {
