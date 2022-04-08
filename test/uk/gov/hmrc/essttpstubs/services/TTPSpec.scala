@@ -19,19 +19,49 @@ package uk.gov.hmrc.essttpstubs.services
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
-import uk.gov.hmrc.essttpstubs.services.TTP.jsString
-import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
+import uk.gov.hmrc.essttpstubs.ttp.model._
 
 class TTPSpec extends AnyWordSpec with Matchers {
-
-  // Json.parse(jsString).as[TtpEligibilityData] shouldBe expectedTtpElibitilityData would be stronger assertion.
 
   "TTP" when {
     "the service is available" should {
       "return financial data" in {
-        val js = Json.parse(jsString)
+        val taxPeriodCharges = TaxPeriodCharges(
+          "T5545454554",
+          "22000",
+          "",
+          "1000",
+          "",
+          100000,
+          "2017-03-07",
+          15.97,
+          true,
+          ChargeLocks(
+            PaymentLock(false, ""),
+            PaymentLock(false, ""),
+            PaymentLock(false, ""),
+            PaymentLock(false, ""),
+            PaymentLock(false, "")
+          )
+        )
+
+        val chargeTypeAssessments: List[ChargeTypeAssessment] = List(
+          ChargeTypeAssessment("2020-08-13","2020-08-14",300000,List(taxPeriodCharges)))
+
+        val data = TtpEligibilityData(
+          "SSTTP",
+          "A00000000001",
+          "PAYE",
+          "2022-03-10",
+          CustomerDetails("NI", "B5 7LN"),
+          EligibilityStatus(false, 1, 6),
+          EligibilityRules(true,"Receiver is not known",false,false,false,false,false,300,600,false,false,false),
+          FinancialLimitBreached(true, 16000),
+          chargeTypeAssessments
+        )
+        val js = Json.toJson(data)
         val result = Json.fromJson[TtpEligibilityData](js)
-        result.isSuccess == true
+        result.get shouldBe data
       }
     }
   }
