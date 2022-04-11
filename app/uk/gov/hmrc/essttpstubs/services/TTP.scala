@@ -16,19 +16,14 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.model._
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
-import uk.gov.hmrc.essttpstubs.services.TTP.asError
+import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
 
-import java.time.LocalDate
 
-case class TTP(items: Map[TaxID, Either[EligibilityError, OverduePayments]]){
+case class TTP(items: Map[TaxId, TtpEligibilityData]){
 
-  def mapError(taxID: TaxID, error: EligibilityError): TTP = TTP(items + (taxID -> asError(error)))
-
-  def mapFinancialData(taxID: TaxID, data: OverduePayments): TTP = TTP(items + (taxID -> Right(data)))
-
-  def eligibilityData(taxID: TaxID): Either[EligibilityError,OverduePayments] = items.getOrElse(taxID, Right(TTP.Default))
+  def eligibilityData(taxID: TaxId): TtpEligibilityData = items.getOrElse(taxID, TTP.Default)
 
 }
 
@@ -36,26 +31,87 @@ object TTP {
 
   val Empty: TTP = TTP(Map.empty)
 
-  def asError(error: EligibilityError): Either[EligibilityError, OverduePayments] = Left(error)
-
   val qualifyingDebt: AmountInPence = AmountInPence(296345)
 
-  val Default = OverduePayments(
-    total = qualifyingDebt,
-    payments = List(
-      OverduePayment(
-        InvoicePeriod(
-          monthNumber = 7,
-          dueDate = LocalDate.of(2022, 1, 22),
-          start = LocalDate.of(2021, 11, 6),
-          end = LocalDate.of(2021, 12, 5)),
-        amount = AmountInPence((qualifyingDebt.value * 0.4).longValue())),
-      OverduePayment(
-        InvoicePeriod(
-          monthNumber = 8,
-          dueDate = LocalDate.of(2021, 12, 22),
-          start = LocalDate.of(2021, 10, 6),
-          end = LocalDate.of(2021, 11, 5)),
-        amount = AmountInPence((qualifyingDebt.value * 0.6).longValue()))))
+  // language=JSON
+  val jsString: String =
+    """{
+        "idType": "SSTTP",
+        "idNumber": "A00000000001",
+        "regimeType": "PAYE",
+        "processingDate": "2022-03-10",
+        "customerDetails": {
+          "country": "NI",
+          "postCode": "B5 7LN"
+        },
+        "eligibilityStatus": {
+          "overallEligibilityStatus": false,
+          "minPlanLengthMonths": 1,
+          "maxPlanLengthMonths": 6
+        },
+        "eligibilityRules": {
+          "rlsOnAddress": true,
+          "rlsReason": "Receiver is not known",
+          "markedAsInsolvent": false,
+          "minimumDebtAllowance": false,
+          "maxDebtAllowance": false,
+          "disallowedChargeLock": false,
+          "existingTTP": false,
+          "minInstalmentAmount": 300,
+          "maxInstalmentAmount": 600,
+          "maxDebtAge": false,
+          "eligibleChargeType": false,
+          "returnsFiled": false
+        },
+        "financialLimitBreached": {
+          "status": true,
+          "calculatedAmount": 16000
+        },
+        "chargeTypeAssessment": [
+          {
+            "taxPeriodFrom": "2020-08-13",
+            "taxPeriodTo": "2020-08-14",
+            "debtTotalAmount": 300000,
+            "taxPeriodCharges": [
+              {
+                "chargeId": "T5545454554",
+                "mainTrans": "22000",
+                "mainTransDesc": "",
+                "subTrans": "1000",
+                "subTransDesc": "",
+                "outstandingDebtAmount": 100000,
+                "interestStartDate": "2017-03-07",
+                "accruedInterestToDate": 15.97,
+                "disallowedCharge": true,
+                "chargeLocks": {
+                  "paymentLock": {
+                    "status": false,
+                    "reason": ""
+                  },
+                  "clearingLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  },
+                  "interestLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  },
+                  "dunningLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  },
+                  "disallowedLock": {
+                    "status": false,
+                    "reason": "there is no reason"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+      """
+
+  lazy val Default: TtpEligibilityData = Json.parse(jsString).as[TtpEligibilityData]
 
 }

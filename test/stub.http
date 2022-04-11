@@ -1,3 +1,10 @@
 ### Send POST request with json body
-GET http://localhost:9218/essttp-stubs/eligibility/epaye/1234/financials
-Accept: application/json
+POST http://localhost:9218/time-to-pay/self-serve/eligibility
+Content-Type: application/json
+
+{
+  "idType": "EMPREF",
+  "idNumber": "AA12345678",
+  "regimeType": "PAYE",
+  "returnFinancials": true
+}

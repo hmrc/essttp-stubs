@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.controllers
+package uk.gov.hmrc.essttpstubs.model
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import enumeratum.{Enum, EnumEntry}
 
-class TTPSpec extends AnyWordSpec with Matchers {
+import scala.collection.immutable
 
-  "TTP" when {
-    "the service is available" should {
-      "return financial data" in {
-        "Hello" shouldBe "Hello"
-      }
-    }
-  }
+sealed trait TaxId extends EnumEntry
 
+object TaxId extends Enum[TaxId]{
+  case class EmpRef(value: String) extends TaxId
+
+  override val values: immutable.IndexedSeq[TaxId] = findValues
 }
+
 

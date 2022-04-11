@@ -1,7 +1,3 @@
 # microservice specific routes
 
-#POST       /eligibility/:regime/:id/error  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.error(regime: TaxRegime, id)
 
-POST       /eligibility/:regime/:id/financials  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.financials(regime: TaxRegime, id)
-
-GET       /eligibility/:regime/:id/financials  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.eligibilityData(regime: TaxRegime,  id)

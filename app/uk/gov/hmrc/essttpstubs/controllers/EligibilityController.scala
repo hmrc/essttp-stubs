@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import play.api.libs.json.Json
-import play.api.mvc.ControllerComponents
-import uk.gov.hmrc.essttpstubs.model.{OverduePayments, TaxRegime}
+import play.api.libs.json.{Format, JsValue, Json}
+import play.api.mvc.{Action, ControllerComponents}
+import uk.gov.hmrc.essttpstubs.controllers.EligibilityController.EligibilityRequest
+import uk.gov.hmrc.essttpstubs.model.TaxRegime
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -28,29 +29,23 @@ import scala.concurrent.ExecutionContext
 @Singleton()
 class EligibilityController @Inject()(cc: ControllerComponents, es: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-//  def error(regime: TaxRegime,  id: String) = Action.async(parse.json) { implicit request =>
-//    withJsonBody[EligibilityService.EligibilityError]{ error =>
-//      val result = es.error(regime, regime.taxIdOf(id), error).map(_ => Ok("stored financial data"))
-//      result.getOrElse(throw new IllegalArgumentException("should not happen"))
-//    }
-//  }
-
-  def financials(regime: TaxRegime, id: String) = Action.async(parse.json) { implicit request =>
-    withJsonBody[OverduePayments]{ financials =>
-      val result = es.financials(regime, regime.taxIdOf(id), financials).map(_ => Ok("setup financial data"))
-      result.getOrElse(throw new IllegalArgumentException("should not happen"))
-    }
-  }
-
-  def eligibilityData(regime: TaxRegime, id: String) = Action.async { implicit request =>
-    val result = for{
-      data <- es.eligibilityData(regime, regime.taxIdOf(id))
-    } yield Ok(Json.toJson(data))
-
-    result.getOrElse(throw new Exception("failed to retrieve eligibility data"))
-
+  def eligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
+       val regime = TaxRegime.withNameLowercaseOnly(request.body.regimeType.toLowerCase())
+       for{
+         data <- es.eligibilityData(regime, regime.taxIdOf(request.body.idNumber))
+       } yield Ok(Json.toJson(data))
 
   }
+}
+
+object EligibilityController{
+
+  case class EligibilityRequest(idType: String, idNumber: String, regimeType: String, returnFinancials: Boolean)
+
+  object EligibilityRequest{
+     implicit val fmt: Format[EligibilityRequest] = Json.format[EligibilityRequest]
+  }
+
 }
 
 

@@ -21,9 +21,9 @@ import akka.actor.typed.{ActorRef, Scheduler}
 import akka.util.Timeout
 import cats.data.EitherT
 import enumeratum.{Enum, EnumEntry}
-import uk.gov.hmrc.essttpstubs.model.{OverduePayments, TaxID, TaxRegime}
-import uk.gov.hmrc.essttpstubs.services.EligibilityService.{EligibilityError, SR}
-import uk.gov.hmrc.essttpstubs.services.TtpEligibilityActor.{Command, FindEligibilityData, MapFinancialData, MapPayeError}
+import uk.gov.hmrc.essttpstubs.model.{TaxId, TaxRegime}
+import uk.gov.hmrc.essttpstubs.services.TtpEligibilityActor.{Command, FindEligibilityData}
+import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -34,16 +34,8 @@ class EligibilityService @Inject()(ttp: ActorRef[Command])(implicit S: Scheduler
 
   implicit val timeout = Timeout(5.seconds)
 
-  def error(regime: TaxRegime, id: TaxID, error: EligibilityError): SR[Unit] = {
-    EitherT(ttp.ask(ref => MapPayeError(id, error,ref)))
-  }
-
-  def financials(regime: TaxRegime, id: TaxID, data: OverduePayments): SR[Unit] = {
-    EitherT(ttp.ask(ref => MapFinancialData(id, data,ref)))
-  }
-
-  def eligibilityData(regime: TaxRegime, id: TaxID): SR[OverduePayments] = {
-    EitherT(ttp.ask(ref => FindEligibilityData(id,ref)))
+  def eligibilityData(regime: TaxRegime, id: TaxId): Future[TtpEligibilityData] = {
+    ttp.ask(ref => FindEligibilityData(id,ref))
   }
 
 }
