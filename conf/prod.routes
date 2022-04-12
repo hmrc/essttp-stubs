@@ -4,4 +4,8 @@
 
 POST       /time-to-pay/self-serve/eligibility  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.eligibilityData
 
+POST       /time-to-pay/self-serve/eligibility/:taxRegime/:taxId  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.insertEligibilityData(taxRegime: TaxRegime, taxId)
+
+POST       /time-to-pay/self-serve/eligibility/:taxRegime/:taxId/errors  uk.gov.hmrc.essttpstubs.controllers.EligibilityController.errors(taxRegime: TaxRegime, taxId)
+
 GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics

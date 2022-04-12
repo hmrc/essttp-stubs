@@ -18,20 +18,53 @@ package uk.gov.hmrc.essttpstubs.services
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.model._
-import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
+import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
+import uk.gov.hmrc.essttpstubs.ttp.model._
 
 
 case class TTP(items: Map[TaxId, TtpEligibilityData]){
 
-  def eligibilityData(taxID: TaxId): TtpEligibilityData = items.getOrElse(taxID, TTP.Default)
+  def eligibilityData(taxID: TaxId, financials: Boolean): TtpEligibilityData = {
+    val result = items.getOrElse(taxID, TTP.Default)
+    if(financials) result else result.copy(chargeTypeAssessment = Nil)
+  }
+
+  def insertEligibilityData(taxId: TaxId, data: TtpEligibilityData): TTP = copy(items = items + (taxId -> data))
+
+  def insertErrorData(taxId: TaxId, errors: List[EligibilityError]): TTP = copy(items = items + (taxId -> fromErrors(errors)))
+
+  def fromErrors(errors: List[EligibilityError]): TtpEligibilityData = {
+    val rlsOnAddress: Boolean = errors.contains(EligibilityError.RLSFlagIsSet)
+    val markedAsInsolvent: Boolean = errors.contains(EligibilityError.PayeIsInsolvent)
+    val minimumDebtAllowance: Boolean = false
+    val maxDebtAllowance: Boolean = errors.contains(EligibilityError.DebtIsTooLarge)
+    val disallowedChargeLock: Boolean = errors.contains(EligibilityError.PayeHasDisallowedCharges)
+    val existingTTP: Boolean = errors.contains(EligibilityError.YouAlreadyHaveAPaymentPlan)
+    val maxDebtAge: Boolean = errors.contains(EligibilityError.DebtIsTooOld)
+    val eligibleChargeType: Boolean = errors.contains(EligibilityError.OutstandingPenalty)
+    val returnsFiled: Boolean = errors.contains(EligibilityError.ReturnsAreNotUpToDate)
+
+    def rules: EligibilityRules = EligibilityRules(
+                                        rlsOnAddress = rlsOnAddress,
+                                        rlsReason =  "",
+                                        markedAsInsolvent =markedAsInsolvent,
+                                        minimumDebtAllowance = minimumDebtAllowance,
+                                        maxDebtAllowance = maxDebtAllowance,
+                                        disallowedChargeLock = disallowedChargeLock,
+                                        existingTTP = existingTTP,
+                                        minInstalmentAmount = 300,
+                                        maxInstalmentAmount = 600,
+                                        maxDebtAge = maxDebtAge,
+                                        eligibleChargeType = eligibleChargeType,
+                                        returnsFiled = returnsFiled)
+    TTP.IneligibleDefault.copy(eligibilityRules = rules)
+  }
 
 }
 
 object TTP {
 
   val Empty: TTP = TTP(Map.empty)
-
-  val qualifyingDebt: AmountInPence = AmountInPence(296345)
 
   // language=JSON
   val jsString: String =
@@ -112,6 +145,18 @@ object TTP {
       }
       """
 
-  lazy val Default: TtpEligibilityData = Json.parse(jsString).as[TtpEligibilityData]
+  lazy val Default = Json.parse(jsString).as[TtpEligibilityData]
 
+  val IneligibleDefault =
+    TtpEligibilityData(
+      "SSTTP",
+      "A00000000001",
+      "PAYE",
+      "2022-03-10",
+      CustomerDetails("NI", "B5 7LN"),
+      EligibilityStatus(false, 1, 6),
+      EligibilityRules(false,"",false,false,false,false,false,300,600,false,false,false),
+      FinancialLimitBreached(true, 16000),
+      Nil
+    )
 }
