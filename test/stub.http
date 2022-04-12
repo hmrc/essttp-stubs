@@ -120,7 +120,7 @@ POST http://localhost:9218/time-to-pay/self-serve/eligibility/paye/123ABCD/error
 Content-Type: application/json
 
 {
-   "errors": ["Debit is too large","Returns are not up to date"]
+   "errors": ["Debt is too large","Returns are not up to date", "Paye has disallowed charges"]
 }
 
 ### Retrieve errors

@@ -63,11 +63,11 @@ object EligibilityService {
   sealed trait EligibilityError extends EnumEntry with ServiceError
 
   object EligibilityError extends Enum[EligibilityError]{
-    object DebitIsTooLarge extends EligibilityError{
-      override val entryName = "Debit is too large"
+    object DebtIsTooLarge extends EligibilityError{
+      override val entryName = "Debt is too large"
     }
-    object DebitIsTooOld extends EligibilityError{
-      override val entryName = "Debit is too old"
+    object DebtIsTooOld extends EligibilityError{
+      override val entryName = "Debt is too old"
     }
     object ReturnsAreNotUpToDate extends EligibilityError{
       override val entryName = "Returns are not up to date"
