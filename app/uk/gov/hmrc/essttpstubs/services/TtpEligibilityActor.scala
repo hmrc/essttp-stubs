@@ -19,14 +19,21 @@ package uk.gov.hmrc.essttpstubs.services
 import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.{ActorRef, Behavior}
 import uk.gov.hmrc.essttpstubs.model.TaxId
+import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
 import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
 
 object TtpEligibilityActor {
 
+  val unit: Unit = ()
+
   sealed trait Command
 
 
-  case class FindEligibilityData(taxId: TaxId, replyTo: ActorRef[TtpEligibilityData]) extends Command
+  case class FindEligibilityData(taxId: TaxId, returnFinancials: Boolean, replyTo: ActorRef[TtpEligibilityData]) extends Command
+
+  case class InsertEligibilityData(taxId: TaxId, data: TtpEligibilityData, replyTo: ActorRef[Unit]) extends Command
+
+  case class InsertErrorData(taxId: TaxId, data: List[EligibilityError], replyTo: ActorRef[Unit]) extends Command
 
   def apply(): Behavior[Command] = Behaviors.setup[Command] { ctx =>
     ctx.log.info("starting the ttp eligibility actor")
@@ -35,8 +42,16 @@ object TtpEligibilityActor {
 
   def handler(ttp: TTP): Behavior[Command] = Behaviors.receiveMessage[Command] {
 
-    case FindEligibilityData(taxId, replyTo) => replyTo ! ttp.eligibilityData(taxId)
+    case FindEligibilityData(taxId, financials, replyTo) => replyTo ! ttp.eligibilityData(taxId, financials)
       Behaviors.same
+
+    case InsertEligibilityData(taxId, data, replyTo) => val result = ttp.insertEligibilityData(taxId, data)
+      replyTo ! unit
+      handler(result)
+
+    case InsertErrorData(taxId, data, replyTo) => val result = ttp.insertErrorData(taxId, data)
+      replyTo ! unit
+      handler(result)
   }
 
 }

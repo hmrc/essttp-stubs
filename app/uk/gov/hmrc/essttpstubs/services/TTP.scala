@@ -18,20 +18,31 @@ package uk.gov.hmrc.essttpstubs.services
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.model._
-import uk.gov.hmrc.essttpstubs.ttp.model.TtpEligibilityData
+import uk.gov.hmrc.essttpstubs.services.EligibilityService.EligibilityError
+import uk.gov.hmrc.essttpstubs.ttp.model.{ChargeLocks, ChargeTypeAssessment, CustomerDetails, EligibilityRules, EligibilityStatus, FinancialLimitBreached, PaymentLock, TaxPeriodCharges, TtpEligibilityData}
 
 
 case class TTP(items: Map[TaxId, TtpEligibilityData]){
 
-  def eligibilityData(taxID: TaxId): TtpEligibilityData = items.getOrElse(taxID, TTP.Default)
+  def eligibilityData(taxID: TaxId, financials: Boolean): TtpEligibilityData = {
+    val result = items.getOrElse(taxID, TTP.Default)
+    if(financials) result else result.copy(chargeTypeAssessment = Nil)
+  }
+
+  def insertEligibilityData(taxId: TaxId, data: TtpEligibilityData): TTP = copy(items = items + (taxId -> data))
+
+  def insertErrorData(taxId: TaxId, errors: List[EligibilityError]): TTP = copy(items = items + (taxId -> fromErrors(errors)))
+
+  def fromErrors(errors: List[EligibilityError]): TtpEligibilityData = {
+    def rules: EligibilityRules = EligibilityRules(false,"",true,true,false,false,false,300,600,false,false,false)
+    TTP.IneligibleDefault.copy(eligibilityRules = rules)
+  }
 
 }
 
 object TTP {
 
   val Empty: TTP = TTP(Map.empty)
-
-  val qualifyingDebt: AmountInPence = AmountInPence(296345)
 
   // language=JSON
   val jsString: String =
@@ -112,6 +123,43 @@ object TTP {
       }
       """
 
-  lazy val Default: TtpEligibilityData = Json.parse(jsString).as[TtpEligibilityData]
+  lazy val Default = Json.parse(jsString).as[TtpEligibilityData]
+
+  lazy val IneligibleDefault = {
+    val taxPeriodCharges = TaxPeriodCharges(
+      "T5545454554",
+      "22000",
+      "",
+      "1000",
+      "",
+      100000,
+      "2017-03-07",
+      15.97,
+      true,
+      ChargeLocks(
+        PaymentLock(false, ""),
+        PaymentLock(false, ""),
+        PaymentLock(false, ""),
+        PaymentLock(false, ""),
+        PaymentLock(false, "")
+      )
+    )
+
+    val chargeTypeAssessments: List[ChargeTypeAssessment] = List(
+      ChargeTypeAssessment("2020-08-13","2020-08-14",300000,List(taxPeriodCharges)))
+
+    TtpEligibilityData(
+      "SSTTP",
+      "A00000000001",
+      "PAYE",
+      "2022-03-10",
+      CustomerDetails("NI", "B5 7LN"),
+      EligibilityStatus(false, 1, 6),
+      EligibilityRules(false,"",false,false,false,false,false,300,600,false,false,false),
+      FinancialLimitBreached(true, 16000),
+      chargeTypeAssessments
+    )
+  }
+
 
 }
