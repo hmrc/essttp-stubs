@@ -83,7 +83,7 @@ object TTP {
           "maxPlanLengthMonths": 6
         },
         "eligibilityRules": {
-          "rlsOnAddress": true,
+          "rlsOnAddress": false,
           "rlsReason": "Receiver is not known",
           "markedAsInsolvent": false,
           "minimumDebtAllowance": false,
