@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.model
+package uk.gov.hmrc.essttpstubs.testutil
 
-import enumeratum.{EnumEntry, Enum}
-import uk.gov.hmrc.essttpstubs.model.TaxId.EmpRef
+import org.scalatest.{ AppendedClues, EitherValues, Inside, OptionValues, StreamlinedXml, TryValues }
+import org.scalatest.concurrent.{ Eventually, IntegrationPatience, ScalaFutures }
+import org.scalatest.matchers.should.Matchers
 
-sealed trait TaxRegime extends EnumEntry {
-
-  def taxIdOf(value: String):  TaxId
-
-}
-
-object TaxRegime extends Enum[TaxRegime]{
-
-  object Paye extends TaxRegime {
-    override def entryName: String = "epaye"
-
-    def taxIdOf(value: String): TaxId = EmpRef(value)
-  }
-
-  override val values = findValues
-
-}
-
+trait RichMatchers
+  extends Matchers
+  with TryValues
+  with EitherValues
+  with OptionValues
+  with AppendedClues
+  with ScalaFutures
+  with StreamlinedXml
+  with Inside
+  with Eventually
+  with IntegrationPatience

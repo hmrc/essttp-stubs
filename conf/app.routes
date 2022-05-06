@@ -1,3 +1,5 @@
 # microservice specific routes
 
-
+POST    /time-to-pay/self/serve/eligibility/insert     uk.gov.hmrc.essttpstubs.controllers.EligibilityController.insertEligibilityData()
+POST    /time-to-pay/self/serve/eligibility            uk.gov.hmrc.essttpstubs.controllers.EligibilityController.retrieveEligibilityData
+DELETE  /time-to-pay/self/serve/eligibility/drop       uk.gov.hmrc.essttpstubs.controllers.EligibilityController.removeAllRecordsFromEligibilityDb

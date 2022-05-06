@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.model
+package uk.gov.hmrc.essttpstubs.testutil
 
-import enumeratum.{Enum, EnumEntry}
+import org.scalatest.freespec.AnyFreeSpecLike
 
-import scala.collection.immutable
-
-sealed trait TaxId extends EnumEntry
-
-object TaxId extends Enum[TaxId]{
-  case class EmpRef(value: String) extends TaxId
-
-  override val values: immutable.IndexedSeq[TaxId] = findValues
-}
-
-
+/**
+ * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
+ */
+trait UnitSpec
+  extends AnyFreeSpecLike
+  with RichMatchers

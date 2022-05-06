@@ -15,14 +15,5 @@
  */
 
 import com.google.inject.AbstractModule
-import play.api.libs.concurrent.AkkaGuiceSupport
-import uk.gov.hmrc.essttpstubs.services.TtpEligibilityActor
 
-class AppModule  extends AbstractModule with AkkaGuiceSupport{
-
-  override def configure(): Unit ={
-    bindTypedActor(TtpEligibilityActor.apply, "repaymentsActor")
-  }
-
-
-}
+class AppModule extends AbstractModule

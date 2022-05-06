@@ -16,13 +16,16 @@
 
 package uk.gov.hmrc.essttpstubs.config
 
-import javax.inject.{ Inject, Singleton }
-import play.api.Configuration
+import com.google.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-@Singleton
-class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) {
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
+import scala.concurrent.duration.Duration
+
+final case class EligibilityRepoConfig(expireEligibilityMongo: Duration) {
+
+  @Inject
+  def this(servicesConfig: ServicesConfig) = {
+    this(servicesConfig.getDuration("expire-eligibility-mongo "))
+  }
+
 }
