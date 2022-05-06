@@ -17,11 +17,13 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    ),
-    routesImport ++= Seq("uk.gov.hmrc.essttpstubs.model._", "uk.gov.hmrc.essttpstubs.controllers.Implicits._")
+    )
     // ***************
   )
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
+  .settings(PlayKeys.playDefaultPort := 9218)
+  .settings(routesImport ++= Seq("uk.gov.hmrc.essttpstubs.model._", "uk.gov.hmrc.essttpstubs.controllers.Implicits._"))
+  .settings(scalacOptions in Compile -= "utf8")

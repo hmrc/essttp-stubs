@@ -15,49 +15,43 @@ POST http://localhost:9218/time-to-pay/self-serve/eligibility/paye/123AAAA
 Content-Type: application/json
 
 {
-  "idType": "SSTTP",
+  "idType": "NI",
   "idNumber": "A00000000001",
   "regimeType": "PAYE",
   "processingDate": "2022-03-10",
-  "customerDetails":
-  {
+  "customerDetails": {
     "country": "NI",
     "postCode": "B5 7LN"
   },
-  "eligibilityStatus":
-  {
+  "eligibilityStatus": {
     "overallEligibilityStatus": false,
     "minPlanLengthMonths": 1,
     "maxPlanLengthMonths": 6
   },
-  "eligibilityRules":
-  {
-    "rlsOnAddress": true,
+  "eligibilityRules": {
+    "hasRlsOnAddress": true,
     "rlsReason": "Receiver is not known",
     "markedAsInsolvent": true,
-    "minimumDebtAllowance": false,
-    "maxDebtAllowance": false,
-    "disallowedChargeLock": false,
+    "isLessThanMinDebtAllowance": false,
+    "isMoreThanMaxDebtAllowance": false,
+    "disallowedChargeLocks": false,
     "existingTTP": false,
     "minInstalmentAmount": 300,
     "maxInstalmentAmount": 600,
-    "maxDebtAge": false,
+    "exceedsMaxDebtAge": false,
     "eligibleChargeType": false,
-    "returnsFiled": false
+    "missingFiledReturns": false
   },
-  "financialLimitBreached":
-  {
+  "financialLimitBreached": {
     "status": true,
     "calculatedAmount": 16000
   },
-  "chargeTypeAssessment":
-  [
+  "chargeTypeAssessment": [
     {
       "taxPeriodFrom": "2020-08-13",
       "taxPeriodTo": "2020-08-14",
       "debtTotalAmount": 300000,
-      "taxPeriodCharges":
-      [
+      "taxPeriodCharges": [
         {
           "chargeId": "T5545454554",
           "mainTrans": "22000",
@@ -68,30 +62,24 @@ Content-Type: application/json
           "interestStartDate": "2017-03-07",
           "accruedInterestToDate": 15.97,
           "disallowedCharge": true,
-          "chargeLocks":
-          {
-            "paymentLock":
-            {
+          "chargeLocks": {
+            "paymentLock": {
               "status": false,
               "reason": ""
             },
-            "clearingLock":
-            {
+            "clearingLock": {
               "status": false,
               "reason": "there is no reason"
             },
-            "interestLock":
-            {
+            "interestLock": {
               "status": false,
               "reason": "there is no reason"
             },
-            "dunningLock":
-            {
+            "dunningLock": {
               "status": false,
               "reason": "there is no reason"
             },
-            "disallowedLock":
-            {
+            "disallowedLock": {
               "status": false,
               "reason": "there is no reason"
             }
@@ -120,7 +108,11 @@ POST http://localhost:9218/time-to-pay/self-serve/eligibility/paye/123ABCD/error
 Content-Type: application/json
 
 {
-   "errors": ["Debt is too large","Returns are not up to date", "Paye has disallowed charges"]
+  "errors": [
+    "Debt is too large",
+    "Returns are not up to date",
+    "Paye has disallowed charges"
+  ]
 }
 
 ### Retrieve errors
