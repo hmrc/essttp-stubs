@@ -1,0 +1,89 @@
+### insert eligibility record
+POST http://localhost:9218/time-to-pay/self/serve/eligibility/insert
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+
+{
+  "idType": "NI",
+  "idNumber": "number",
+  "regimeType": "SIMP",
+  "processingDate": "2022-04-27",
+  "customerDetails": {
+    "country": "TR",
+    "postCode": "RC2 9MN"
+  },
+  "minPlanLengthMonths": 0,
+  "maxPlanLengthMonths": 0,
+  "eligibilityStatus": {
+    "eligibilityPass": false
+  },
+  "eligibilityRules": {
+    "hasRlsOnAddress": false,
+    "rlsReason": "",
+    "markedAsInsolvent": false,
+    "isLessThanMinDebtAllowance": true,
+    "isMoreThanMaxDebtAllowance": false,
+    "disallowedChargeLocks": false,
+    "existingTTP": false,
+    "exceedsMaxDebtAge": false,
+    "eligibleChargeType": false,
+    "missingFiledReturns": true
+  },
+  "chargeTypeAssessment": [
+    {
+      "taxPeriodFrom": "2022-04-27",
+      "taxPeriodTo": "2022-04-27",
+      "debtTotalAmount": 0,
+      "disallowedChargeLocks": [
+        {
+          "chargeId": "",
+          "mainTrans": "5330",
+          "mainTransDesc": "type",
+          "subTrans": "7006",
+          "subTransDesc": "type",
+          "outstandingDebtAmount": 0,
+          "interestStartDate": "2022-04-27",
+          "accruedInterestToDate": 0,
+          "chargeLocks": {
+            "paymentLock": {
+              "status": false,
+              "reason": ""
+            },
+            "clearingLock": {
+              "status": false,
+              "reason": ""
+            },
+            "interestLock": {
+              "status": false,
+              "reason": ""
+            },
+            "dunningLock": {
+              "status": false,
+              "reason": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
+### find eligibility record
+POST http://localhost:9218/time-to-pay/self/serve/eligibility
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+
+{
+  "idType": "SSTTP",
+  "idNumber": "number",
+  "regimeType": "PAYE",
+  "returnFinancials": true,
+  "returnLocks": false
+}
+
+
+### drop eligibility mongo db (remove all records)
+DELETE http://localhost:9218/time-to-pay/self/serve/eligibility/drop
+Cache-Control: no-cache
