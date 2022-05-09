@@ -45,7 +45,6 @@ object TestData {
         eligibilityStatus = EligibilityStatus(eligibilityPass = false),
         eligibilityRules = EligibilityRules(
           hasRlsOnAddress = true,
-          rlsReason = "someReason",
           markedAsInsolvent = true,
           isLessThanMinDebtAllowance = false,
           isMoreThanMaxDebtAllowance = false,
@@ -103,7 +102,6 @@ object TestData {
           |	},
           |	"eligibilityRules": {
           |		"hasRlsOnAddress": true,
-          |		"rlsReason": "someReason",
           |		"markedAsInsolvent": true,
           |		"isLessThanMinDebtAllowance": false,
           |		"isMoreThanMaxDebtAllowance": false,

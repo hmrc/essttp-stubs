@@ -20,7 +20,6 @@ Content-Type: Application/Json
   },
   "eligibilityRules": {
     "hasRlsOnAddress": false,
-    "rlsReason": "",
     "markedAsInsolvent": false,
     "isLessThanMinDebtAllowance": true,
     "isMoreThanMaxDebtAllowance": false,

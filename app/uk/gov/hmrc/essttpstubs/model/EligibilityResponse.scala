@@ -50,7 +50,6 @@ object EligibilityStatus {
 
 final case class EligibilityRules(
   hasRlsOnAddress: Boolean,
-  rlsReason: String,
   markedAsInsolvent: Boolean,
   isLessThanMinDebtAllowance: Boolean,
   isMoreThanMaxDebtAllowance: Boolean,
