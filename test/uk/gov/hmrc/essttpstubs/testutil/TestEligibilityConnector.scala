@@ -27,7 +27,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 @Singleton
 class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) {
   val port = 19001
-  val eligibilityApiBaseUrl = s"http://localhost:$port/time-to-pay/self/serve/eligibility"
+  val eligibilityApiBaseUrl = s"http://localhost:$port/time-to-pay/self-serve/eligibility"
   implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
 
   def insertEligibilityData(eligibilityResponse: EligibilityResponse)(implicit hc: HeaderCarrier): Future[HttpResponse] =

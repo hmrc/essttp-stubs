@@ -17,9 +17,9 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import play.api.Logger
-import play.api.libs.json.{ JsObject, JsValue, Json }
+import play.api.libs.json.{ JsObject, Json }
 import play.api.mvc.{ Action, AnyContent, ControllerComponents }
-import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest, EligibilityResponse }
+import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 

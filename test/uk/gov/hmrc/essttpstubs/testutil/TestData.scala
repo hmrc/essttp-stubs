@@ -87,6 +87,7 @@ object TestData {
       val eligibilityResponseJson: JsValue = Json.parse(
         //language=JSON
         """{
+          | "_id": "test-idNumber",
           |	"idType": "test-idType",
           |	"idNumber": "test-idNumber",
           |	"regimeType": "test-regimeType",
