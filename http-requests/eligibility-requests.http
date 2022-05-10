@@ -1,5 +1,5 @@
 ### insert eligibility record
-POST http://localhost:9218/time-to-pay/self/serve/eligibility/insert
+POST http://localhost:9218/time-to-pay/self-serve/eligibility/insert
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -69,7 +69,7 @@ Content-Type: Application/Json
 }
 
 ### find eligibility record
-POST http://localhost:9218/time-to-pay/self/serve/eligibility
+POST http://localhost:9218/time-to-pay/self-serve/eligibility
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -84,5 +84,5 @@ Content-Type: Application/Json
 
 
 ### drop eligibility mongo db (remove all records)
-DELETE http://localhost:9218/time-to-pay/self/serve/eligibility/drop
+DELETE http://localhost:9218/time-to-pay/self-serve/eligibility/drop
 Cache-Control: no-cache
