@@ -17,9 +17,9 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import play.api.Logger
-import play.api.libs.json.Json
+import play.api.libs.json.{ JsObject, Json }
 import play.api.mvc.{ Action, AnyContent, ControllerComponents }
-import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest, EligibilityResponse }
+import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -33,14 +33,15 @@ class EligibilityController @Inject() (
 
   private val logger: Logger = Logger("EligibilityController")
 
-  def insertEligibilityData(): Action[EligibilityResponse] = Action.async(parse.json[EligibilityResponse]) { implicit request =>
-    eligibilityService.insertEligibilityData(request.body)
+  def insertEligibilityData(): Action[JsObject] = Action.async(parse.json[JsObject]) { implicit request =>
+    val idNumber: String = (request.body \ "idNumber").get.as[String]
+    eligibilityService.insertEligibilityData(idNumber, request.body)
       .map(_ => Created(s"Inserted eligibility record into MongoDb: [ ${request.body.toString} ]"))
   }
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
     for {
-      eligibilityResponse: Option[EligibilityResponse] <- eligibilityService.eligibilityData(request.body)
+      eligibilityResponse: Option[JsObject] <- eligibilityService.eligibilityData(request.body)
     } yield eligibilityResponse match {
       case Some(validResponse) => Ok(Json.toJson(validResponse))
       case None =>

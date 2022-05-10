@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import uk.gov.hmrc.essttpstubs.testutil.{ ItSpec, TestData }
-import uk.gov.hmrc.http.{ HttpReads, HttpReadsInstances, HttpResponse, UpstreamErrorResponse }
-import TestData.EligibilityApi.ModelInstances._
-import uk.gov.hmrc.essttpstubs.model.EligibilityResponse
+import uk.gov.hmrc.essttpstubs.testutil.ItSpec
+import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
+import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.ModelInstances._
+import uk.gov.hmrc.http.{HttpReads, HttpReadsInstances, HttpResponse, UpstreamErrorResponse}
 
 class EligibilityControllerSpec extends ItSpec {
 
@@ -34,7 +34,7 @@ class EligibilityControllerSpec extends ItSpec {
     ".retrieveEligibilityData should return correct EligibilityResponse" in {
       connector.insertEligibilityData(eligibilityResponse)
       val response: HttpResponse = connector.retrieveEligibilityData(eligibilityRequest).futureValue
-      response.json.as[EligibilityResponse] shouldBe eligibilityResponse
+      response.json shouldBe eligibilityResponseJson
     }
 
     ".retrieveEligibilityData should return 'NotFound/404' when no corresponding record found" in {
