@@ -25,7 +25,7 @@ final case class EligibilityResponse(
   idNumber: String,
   regimeType: String,
   processingDate: String,
-  customerDetails: CustomerDetails,
+  customerPostcodes: List[CustomerPostcode],
   minPlanLengthMonths: Int,
   maxPlanLengthMonths: Int,
   eligibilityStatus: EligibilityStatus,
@@ -36,10 +36,10 @@ object EligibilityResponse {
   implicit val format: OFormat[EligibilityResponse] = Json.format[EligibilityResponse]
 }
 
-final case class CustomerDetails(country: String, postCode: String)
+final case class CustomerPostcode(addressPostcode: String, postcodeDate: String)
 
-object CustomerDetails {
-  implicit val format: OFormat[CustomerDetails] = Json.format[CustomerDetails]
+object CustomerPostcode {
+  implicit val format: OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
 }
 
 final case class EligibilityStatus(eligibilityPass: Boolean)

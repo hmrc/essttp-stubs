@@ -9,10 +9,12 @@ Content-Type: Application/Json
   "idNumber": "number",
   "regimeType": "SIMP",
   "processingDate": "2022-04-27",
-  "customerDetails": {
-    "country": "TR",
-    "postCode": "RC2 9MN"
-  },
+  "customerPostcodes": [
+    {
+      "addressPostcode": "RC2 9MN",
+      "postcodeDate": "2022-01-01"
+    }
+  ],
   "minPlanLengthMonths": 0,
   "maxPlanLengthMonths": 0,
   "eligibilityStatus": {
