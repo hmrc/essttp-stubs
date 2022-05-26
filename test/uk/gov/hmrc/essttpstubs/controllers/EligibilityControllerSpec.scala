@@ -19,7 +19,7 @@ package uk.gov.hmrc.essttpstubs.controllers
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.ModelInstances._
-import uk.gov.hmrc.http.{HttpReads, HttpReadsInstances, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{ HttpReads, HttpReadsInstances, HttpResponse, UpstreamErrorResponse }
 
 class EligibilityControllerSpec extends ItSpec {
 
