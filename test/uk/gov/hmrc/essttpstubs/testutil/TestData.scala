@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.testutil
 
 import play.api.libs.json.{ JsValue, Json }
-import uk.gov.hmrc.essttpstubs.model.{ ChargeLock, ChargeLocks, ChargeTypeAssessment, CustomerDetails, DisallowedChargeLocks, EligibilityRequest, EligibilityResponse, EligibilityRules, EligibilityStatus }
+import uk.gov.hmrc.essttpstubs.model.{ ChargeLock, ChargeLocks, ChargeTypeAssessment, CustomerPostcode, DisallowedChargeLocks, EligibilityRequest, EligibilityResponse, EligibilityRules, EligibilityStatus }
 
 object TestData {
 
@@ -38,8 +38,8 @@ object TestData {
         idNumber = "test-idNumber",
         regimeType = "test-regimeType",
         processingDate = "test-processingDate",
-        customerDetails = CustomerDetails(
-          country = "test-country", postCode = "test-postcode"),
+        customerPostcodes = List(
+          CustomerPostcode(addressPostcode = "test-postcode", postcodeDate = "2022-01-01")),
         minPlanLengthMonths = 1,
         maxPlanLengthMonths = 3,
         eligibilityStatus = EligibilityStatus(eligibilityPass = false),
@@ -92,10 +92,12 @@ object TestData {
           |	"idNumber": "test-idNumber",
           |	"regimeType": "test-regimeType",
           |	"processingDate": "test-processingDate",
-          |	"customerDetails": {
-          |		"country": "test-country",
-          |		"postCode": "test-postcode"
-          |	},
+          |	"customerPostcodes": [
+          |  {
+          |	  "addressPostcode": "test-postcode",
+          |		"postcodeDate": "2022-01-01"
+          |  }
+          | ],
           |	"minPlanLengthMonths": 1,
           |	"maxPlanLengthMonths": 3,
           |	"eligibilityStatus": {
