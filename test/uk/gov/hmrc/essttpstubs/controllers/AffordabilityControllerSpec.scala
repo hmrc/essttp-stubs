@@ -19,12 +19,11 @@ package uk.gov.hmrc.essttpstubs.controllers
 import com.typesafe.config.ConfigFactory
 import play.api.Configuration
 import play.api.http.Status.BAD_REQUEST
-import play.api.libs.json.{ JsArray, JsObject, JsValue, Json }
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import uk.gov.hmrc.essttpstubs.controllers.AffordabilityControllerSpec.InstalmentAmountsTestCase
 import uk.gov.hmrc.essttpstubs.model.InstalmentAmounts
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestAffordabilityConnector
-import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.util.Random
 
@@ -39,7 +38,9 @@ class AffordabilityControllerSpec extends ItSpec {
         |    additional-interest-rate = 2.5
         |  }
         |}
-        |""".stripMargin))
+        |""".stripMargin
+    )
+  )
 
   lazy val testAffordabilityConnector = injector.instanceOf[TestAffordabilityConnector]
 
@@ -48,13 +49,13 @@ class AffordabilityControllerSpec extends ItSpec {
     ".calculateInstalmentAmounts should return BadRequest when total debt is equal to initial payment amount" in {
       val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(500, 500)))
       val response = testAffordabilityConnector.calculateInstalmentAmounts(request).failed.futureValue
-      response.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe BAD_REQUEST
+      asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
 
     ".calculateInstalmentAmounts should return BadRequest when total debt is strictly less than the initial payment amount" in {
       val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(900)))
       val response = testAffordabilityConnector.calculateInstalmentAmounts(request).failed.futureValue
-      response.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe BAD_REQUEST
+      asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
 
     ".calculateInstalmentAmounts should return an Ok with the correct instalment amounts when passed a valid request" in {
@@ -63,7 +64,8 @@ class AffordabilityControllerSpec extends ItSpec {
           ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1)), InstalmentAmounts(55250, 300875)),
           ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000)), InstalmentAmounts(138125, 752188)),
           ("3", InstalmentAmountsTestCase(1, 6, None, List(2000)), InstalmentAmounts(368, 2006)),
-          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200)), InstalmentAmounts(18, 100)))
+          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200)), InstalmentAmounts(18, 100))
+        )
 
       testCases.foreach {
         case (id, testCase, expectedResult) =>
@@ -85,7 +87,8 @@ class AffordabilityControllerSpec extends ItSpec {
            |  "initialPaymentDate": "2022-03-02",
            |  "initialPaymentAmount": $amount
            |}
-           |""".stripMargin).as[JsObject])
+           |""".stripMargin
+      ).as[JsObject])
 
     val debtItemCharges = {
       val array = JsArray(
@@ -99,8 +102,10 @@ class AffordabilityControllerSpec extends ItSpec {
                |  "debtItemChargeId":"ChargeRef ${Random.nextInt(1000)}",
                |  "interestStartDate":"2021-09-03"
                |}
-               |""".stripMargin).as[JsObject]
-        })
+               |""".stripMargin
+          ).as[JsObject]
+        }
+      )
       JsObject(Map("debtItemCharges" -> array))
     }
 
@@ -120,7 +125,8 @@ class AffordabilityControllerSpec extends ItSpec {
          |      }
          |    ]
          |}
-         |""".stripMargin).as[JsObject]
+         |""".stripMargin
+    ).as[JsObject]
 
     json ++ initialPaymentDetails.getOrElse(JsObject.empty) ++ debtItemCharges
   }
@@ -130,6 +136,7 @@ class AffordabilityControllerSpec extends ItSpec {
 object AffordabilityControllerSpec {
 
   final case class InstalmentAmountsTestCase(
-    minPlanLength: Int, maxPlanLength: Int, initialPaymentAmount: Option[Int], outstandingDebtAmounts: List[Int])
+      minPlanLength: Int, maxPlanLength: Int, initialPaymentAmount: Option[Int], outstandingDebtAmounts: List[Int]
+  )
 
 }

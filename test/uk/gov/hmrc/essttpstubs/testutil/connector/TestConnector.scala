@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
-import uk.gov.hmrc.http.{ HttpReads, HttpReadsInstances, HttpResponse }
+import uk.gov.hmrc.http.{HttpReads, HttpReadsInstances, HttpResponse}
 
 trait TestConnector {
 

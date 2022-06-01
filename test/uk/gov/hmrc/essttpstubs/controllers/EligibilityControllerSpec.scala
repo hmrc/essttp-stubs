@@ -19,7 +19,7 @@ package uk.gov.hmrc.essttpstubs.controllers
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.ModelInstances._
-import uk.gov.hmrc.http.{ HttpResponse, UpstreamErrorResponse }
+import uk.gov.hmrc.http.HttpResponse
 
 class EligibilityControllerSpec extends ItSpec {
 
@@ -37,7 +37,7 @@ class EligibilityControllerSpec extends ItSpec {
 
     ".retrieveEligibilityData should return 'NotFound/404' when no corresponding record found" in {
       val result = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest).failed.futureValue
-      result.asInstanceOf[UpstreamErrorResponse].getMessage() should include("returned 404")
+      asUpstreamErrorResponse(result).getMessage() should include("returned 404")
     }
 
     ".removeAllRecordsFromEligibilityDb return 'Accepted/202'" in {

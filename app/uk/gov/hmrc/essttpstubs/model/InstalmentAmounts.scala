@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{ Json, OWrites }
+import play.api.libs.json.{Json, OWrites}
 
 final case class InstalmentAmounts(minimumInstalmentAmount: Int, maximumInstalmentAmount: Int)
 

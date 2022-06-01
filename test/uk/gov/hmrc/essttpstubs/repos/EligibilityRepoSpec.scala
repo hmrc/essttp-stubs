@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.repos
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.essttpstubs.testutil.{ ItSpec, TestData }
+import uk.gov.hmrc.essttpstubs.testutil.{ItSpec, TestData}
 
 class EligibilityRepoSpec extends ItSpec {
 
@@ -26,7 +26,8 @@ class EligibilityRepoSpec extends ItSpec {
 
     val dbOperation = eligibilityRepo.upsert(
       id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber,
-      a = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)).futureValue
+      a  = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)
+    ).futureValue
     dbOperation.n shouldBe 1
     dbOperation.ok shouldBe true
 
@@ -41,7 +42,8 @@ class EligibilityRepoSpec extends ItSpec {
 
     val dbOperationInsert = eligibilityRepo.upsert(
       id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber,
-      a = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)).futureValue
+      a  = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)
+    ).futureValue
     dbOperationInsert.n shouldBe 1
     dbOperationInsert.ok shouldBe true
     collectionSize shouldBe 1

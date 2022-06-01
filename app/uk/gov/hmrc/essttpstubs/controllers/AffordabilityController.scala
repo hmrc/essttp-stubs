@@ -18,17 +18,18 @@ package uk.gov.hmrc.essttpstubs.controllers
 
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{ Action, ControllerComponents }
+import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.model.InstalmentAmountRequest
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 
 @Singleton()
 class AffordabilityController @Inject() (
-  affordabilityService: AffordabilityService,
-  cc: ControllerComponents) extends BackendController(cc) {
+    affordabilityService: AffordabilityService,
+    cc:                   ControllerComponents
+) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
@@ -44,7 +45,8 @@ class AffordabilityController @Inject() (
             logger.warn(s"Returning internal server error response for request body ${Json.toJson(request.body).toString()}: $message")
             InternalServerError
         },
-        instalmentAmounts => Ok(Json.toJson(instalmentAmounts)))
+        instalmentAmounts => Ok(Json.toJson(instalmentAmounts))
+      )
 
     }
 

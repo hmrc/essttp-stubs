@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.config
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 

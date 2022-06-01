@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{Format, Json}
 
 final case class EligibilityRequest(idType: String, idNumber: String, regimeType: String, returnFinancials: Boolean)
 

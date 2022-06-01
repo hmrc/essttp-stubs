@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{ Json, OFormat }
+import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmountRequest(
-  minPlanLength: Int,
-  maxPlanLength: Int,
-  interestAccrued: Double,
-  frequency: String,
-  earliestPlanStartDate: String,
-  latestPlanStartDate: String,
-  initialPaymentDate: Option[String],
-  initialPaymentAmount: Option[Int],
-  debtItemCharges: List[DebtItemCharge],
-  customerPostcodes: List[CustomerPostcode])
+    minPlanLength:         Int,
+    maxPlanLength:         Int,
+    interestAccrued:       Double,
+    frequency:             String,
+    earliestPlanStartDate: String,
+    latestPlanStartDate:   String,
+    initialPaymentDate:    Option[String],
+    initialPaymentAmount:  Option[Int],
+    debtItemCharges:       List[DebtItemCharge],
+    customerPostcodes:     List[CustomerPostcode]
+)
 
 object InstalmentAmountRequest {
 

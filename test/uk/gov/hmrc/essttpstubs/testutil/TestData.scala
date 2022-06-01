@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
-import play.api.libs.json.{ JsValue, Json }
-import uk.gov.hmrc.essttpstubs.model.{ ChargeLock, ChargeLocks, ChargeTypeAssessment, CustomerPostcode, DisallowedChargeLocks, EligibilityRequest, EligibilityResponse, EligibilityRules, EligibilityStatus }
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.essttpstubs.model.{ChargeLock, ChargeLocks, ChargeTypeAssessment, CustomerPostcode, DisallowedChargeLocks, EligibilityRequest, EligibilityResponse, EligibilityRules, EligibilityStatus}
 
 object TestData {
 
@@ -28,51 +28,60 @@ object TestData {
       val testChargeLock: ChargeLock = ChargeLock(status = false, reason = "some reason")
 
       val eligibilityRequest: EligibilityRequest = EligibilityRequest(
-        idType = "test-idType",
-        idNumber = "test-idNumber",
-        regimeType = "test-regimeType",
-        returnFinancials = true)
+        idType           = "test-idType",
+        idNumber         = "test-idNumber",
+        regimeType       = "test-regimeType",
+        returnFinancials = true
+      )
 
       val eligibilityResponse: EligibilityResponse = EligibilityResponse(
-        idType = "test-idType",
-        idNumber = "test-idNumber",
-        regimeType = "test-regimeType",
-        processingDate = "test-processingDate",
-        customerPostcodes = List(
-          CustomerPostcode(addressPostcode = "test-postcode", postcodeDate = "2022-01-01")),
-        minPlanLengthMonths = 1,
-        maxPlanLengthMonths = 3,
-        eligibilityStatus = EligibilityStatus(eligibilityPass = false),
-        eligibilityRules = EligibilityRules(
-          hasRlsOnAddress = true,
-          markedAsInsolvent = true,
+        idType               = "test-idType",
+        idNumber             = "test-idNumber",
+        regimeType           = "test-regimeType",
+        processingDate       = "test-processingDate",
+        customerPostcodes    = List(
+          CustomerPostcode(addressPostcode = "test-postcode", postcodeDate = "2022-01-01")
+        ),
+        minPlanLengthMonths  = 1,
+        maxPlanLengthMonths  = 3,
+        eligibilityStatus    = EligibilityStatus(eligibilityPass = false),
+        eligibilityRules     = EligibilityRules(
+          hasRlsOnAddress            = true,
+          markedAsInsolvent          = true,
           isLessThanMinDebtAllowance = false,
           isMoreThanMaxDebtAllowance = false,
-          disallowedChargeLocks = false,
-          existingTTP = false,
-          exceedsMaxDebtAge = false,
-          eligibleChargeType = false,
-          missingFiledReturns = false),
+          disallowedChargeLocks      = false,
+          existingTTP                = false,
+          exceedsMaxDebtAge          = false,
+          eligibleChargeType         = false,
+          missingFiledReturns        = false
+        ),
         chargeTypeAssessment = Seq(
           ChargeTypeAssessment(
-            taxPeriodFrom = "2022-04-27",
-            taxPeriodTo = "2022-04-27",
-            debtTotalAmount = 100,
+            taxPeriodFrom         = "2022-04-27",
+            taxPeriodTo           = "2022-04-27",
+            debtTotalAmount       = 100,
             disallowedChargeLocks = Seq(
               DisallowedChargeLocks(
-                chargeId = "test-chargeId",
-                mainTrans = "test-mainTrans",
-                mainTransDesc = "test-mainTransDesc",
-                subTrans = "test-subTrans",
-                subTransDesc = "test-subTransDesc",
+                chargeId              = "test-chargeId",
+                mainTrans             = "test-mainTrans",
+                mainTransDesc         = "test-mainTransDesc",
+                subTrans              = "test-subTrans",
+                subTransDesc          = "test-subTransDesc",
                 outstandingDebtAmount = 10,
-                interestStartDate = "2022-04-27",
+                interestStartDate     = "2022-04-27",
                 accruedInterestToDate = 1,
-                chargeLocks = ChargeLocks(
-                  paymentLock = testChargeLock,
+                chargeLocks           = ChargeLocks(
+                  paymentLock  = testChargeLock,
                   clearingLock = testChargeLock,
                   interestLock = testChargeLock,
-                  dunningLock = testChargeLock))))))
+                  dunningLock  = testChargeLock
+                )
+              )
+            )
+          )
+        )
+      )
     }
     object JsonInstances {
       val eligibilityRequestJson: JsValue = Json.parse(
@@ -83,7 +92,8 @@ object TestData {
           | "regimeType": "test-regimeType",
           | "returnFinancials": true
           |}
-          |""".stripMargin)
+          |""".stripMargin
+      )
       val eligibilityResponseJson: JsValue = Json.parse(
         //language=JSON
         """{
@@ -147,7 +157,8 @@ object TestData {
           |			}
           |		}]
           |	}]
-          |}""".stripMargin)
+          |}""".stripMargin
+      )
     }
   }
 

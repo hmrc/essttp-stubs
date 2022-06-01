@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
-import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest, EligibilityResponse }
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient, HttpResponse }
+import uk.gov.hmrc.essttpstubs.model.{EligibilityRequest, EligibilityResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {

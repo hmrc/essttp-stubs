@@ -19,10 +19,10 @@ package uk.gov.hmrc.essttpstubs.services
 import cats.syntax.either._
 
 import play.api.Configuration
-import uk.gov.hmrc.essttpstubs.model.{ InstalmentAmountRequest, InstalmentAmounts }
-import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{ BadRequestError, CalculationError, Error }
+import uk.gov.hmrc.essttpstubs.model.{InstalmentAmountRequest, InstalmentAmounts}
+import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{BadRequestError, CalculationError, Error}
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Try
 

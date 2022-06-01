@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import play.api.libs.json.{ JsObject }
-import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest }
+import play.api.libs.json.{JsObject}
+import uk.gov.hmrc.essttpstubs.model.{EligibilityRequest}
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit executionContext: ExecutionContext) {

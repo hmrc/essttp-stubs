@@ -17,19 +17,20 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import play.api.Logger
-import play.api.libs.json.{ JsObject, Json }
-import play.api.mvc.{ Action, AnyContent, ControllerComponents }
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton()
 class EligibilityController @Inject() (
-  cc: ControllerComponents,
-  eligibilityService: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
+    cc:                 ControllerComponents,
+    eligibilityService: EligibilityService
+)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   private val logger: Logger = Logger("EligibilityController")
 

@@ -21,20 +21,20 @@ import com.google.inject.AbstractModule
 import com.typesafe.config.ConfigFactory
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.time.{ Millis, Seconds, Span }
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.{ Application, Configuration, Mode }
+import play.api.{Application, Configuration, Mode}
 import play.api.inject.Injector
-import play.api.inject.guice.{ GuiceApplicationBuilder, GuiceableModule }
+import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.Result
-import play.api.test.{ DefaultTestServerFactory, RunningServer }
+import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.core.server.ServerConfig
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestEligibilityConnector
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
-import scala.concurrent.{ Await, ExecutionContext, Future }
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 /**
  * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
@@ -52,8 +52,9 @@ trait ItSpec
   implicit val emptyHC: HeaderCarrier = HeaderCarrier()
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
-    timeout = scaled(Span(3, Seconds)),
-    interval = scaled(Span(300, Millis)))
+    timeout  = scaled(Span(3, Seconds)),
+    interval = scaled(Span(300, Millis))
+  )
 
   lazy val injector: Injector = fakeApplication().injector
   lazy val testEligibilityConnector: TestEligibilityConnector = injector.instanceOf[TestEligibilityConnector]
@@ -71,7 +72,10 @@ trait ItSpec
           """
             |  mongodb.uri = "mongodb://localhost:27017/essttp-stubs-eligibility",
             |  metrics.enabled = false
-            |""".stripMargin)).withFallback(additionalConfig)).build()
+            |""".stripMargin
+        )
+      ).withFallback(additionalConfig)
+    ).build()
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -83,12 +87,17 @@ trait ItSpec
 
   def status(of: Future[Result])(implicit timeout: Timeout): Int = Await.result(of, timeout.duration).header.status
 
+  def asUpstreamErrorResponse(t: Throwable): UpstreamErrorResponse = t match {
+    case u: UpstreamErrorResponse => u
+    case other                    => fail(s"Expected an UpstreamErrorResponse but got ${other.getClass.getSimpleName}")
+  }
+
   override implicit protected lazy val runningServer: RunningServer =
     TestServerFactory.start(app)
 
   object TestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
-      val sc = ServerConfig(port = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
+      val sc = ServerConfig(port    = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
   }

@@ -16,14 +16,15 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{ Json, OFormat }
+import play.api.libs.json.{Json, OFormat}
 
 final case class DebtItemCharge(
-  outstandingDebtAmount: Int,
-  mainTrans: String,
-  subTrans: String,
-  debtItemChargeId: String,
-  interestStartDate: String)
+    outstandingDebtAmount: Int,
+    mainTrans:             String,
+    subTrans:              String,
+    debtItemChargeId:      String,
+    interestStartDate:     String
+)
 
 object DebtItemCharge {
 
