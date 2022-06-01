@@ -19,31 +19,29 @@ package uk.gov.hmrc.essttpstubs.controllers
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.ModelInstances._
-import uk.gov.hmrc.http.{ HttpReads, HttpReadsInstances, HttpResponse, UpstreamErrorResponse }
+import uk.gov.hmrc.http.{ HttpResponse, UpstreamErrorResponse }
 
 class EligibilityControllerSpec extends ItSpec {
-
-  implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
 
   "EligibilityController" - {
 
     ".insertEligibilityData() should return 'Created/201'" in {
-      connector.insertEligibilityData(eligibilityResponse).futureValue.status shouldBe 201
+      testEligibilityConnector.insertEligibilityData(eligibilityResponse).futureValue.status shouldBe 201
     }
 
     ".retrieveEligibilityData should return correct EligibilityResponse" in {
-      connector.insertEligibilityData(eligibilityResponse)
-      val response: HttpResponse = connector.retrieveEligibilityData(eligibilityRequest).futureValue
+      testEligibilityConnector.insertEligibilityData(eligibilityResponse).futureValue.status shouldBe 201
+      val response: HttpResponse = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest).futureValue
       response.json shouldBe eligibilityResponseJson
     }
 
     ".retrieveEligibilityData should return 'NotFound/404' when no corresponding record found" in {
-      val result = connector.retrieveEligibilityData(eligibilityRequest).failed.futureValue
+      val result = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest).failed.futureValue
       result.asInstanceOf[UpstreamErrorResponse].getMessage() should include("returned 404")
     }
 
     ".removeAllRecordsFromEligibilityDb return 'Accepted/202'" in {
-      connector.removeAllRecordsFromEligibilityDb().futureValue.status shouldBe 202
+      testEligibilityConnector.removeAllRecordsFromEligibilityDb().futureValue.status shouldBe 202
     }
 
   }

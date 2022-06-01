@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import play.api.libs.json.{ JsObject, JsValue }
-import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest, EligibilityResponse }
+import play.api.libs.json.{ JsObject }
+import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest }
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
 
 import javax.inject.{ Inject, Singleton }
@@ -35,3 +35,4 @@ class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit e
   def removeAllRecordsFromEligibilityDb(): Future[Unit] = eligibilityRepo.removeAllRecords().map(_ => ())
 
 }
+
