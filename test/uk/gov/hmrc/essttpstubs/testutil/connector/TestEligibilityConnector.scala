@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.testutil
+package uk.gov.hmrc.essttpstubs.testutil.connector
 
-import uk.gov.hmrc.essttpstubs.model.{ EligibilityRequest, EligibilityResponse }
+import uk.gov.hmrc.essttpstubs.model.{EligibilityRequest, EligibilityResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
-import javax.inject.{ Inject, Singleton }
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpReads, HttpReadsInstances, HttpResponse }
-import uk.gov.hmrc.http.HttpClient
-
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) {
-  val port = 19001
+class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
+
   val eligibilityApiBaseUrl = s"http://localhost:$port/time-to-pay/self-serve/eligibility"
-  implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
 
   def insertEligibilityData(eligibilityResponse: EligibilityResponse)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpClient.POST[EligibilityResponse, HttpResponse](s"$eligibilityApiBaseUrl/insert", eligibilityResponse)

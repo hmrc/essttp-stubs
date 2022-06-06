@@ -16,21 +16,22 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{ Json, OFormat }
+import play.api.libs.json.{Json, OFormat}
 
 //todo should we move this into cor and make more type safe, i.e. idType: IdType?
 //also, probably poorly named, since we use it to insert into the db, could be misleading
 final case class EligibilityResponse(
-  idType: String,
-  idNumber: String,
-  regimeType: String,
-  processingDate: String,
-  customerPostcodes: List[CustomerPostcode],
-  minPlanLengthMonths: Int,
-  maxPlanLengthMonths: Int,
-  eligibilityStatus: EligibilityStatus,
-  eligibilityRules: EligibilityRules,
-  chargeTypeAssessment: Seq[ChargeTypeAssessment])
+    idType:               String,
+    idNumber:             String,
+    regimeType:           String,
+    processingDate:       String,
+    customerPostcodes:    List[CustomerPostcode],
+    minPlanLengthMonths:  Int,
+    maxPlanLengthMonths:  Int,
+    eligibilityStatus:    EligibilityStatus,
+    eligibilityRules:     EligibilityRules,
+    chargeTypeAssessment: Seq[ChargeTypeAssessment]
+)
 
 object EligibilityResponse {
   implicit val format: OFormat[EligibilityResponse] = Json.format[EligibilityResponse]
@@ -49,15 +50,16 @@ object EligibilityStatus {
 }
 
 final case class EligibilityRules(
-  hasRlsOnAddress: Boolean,
-  markedAsInsolvent: Boolean,
-  isLessThanMinDebtAllowance: Boolean,
-  isMoreThanMaxDebtAllowance: Boolean,
-  disallowedChargeLocks: Boolean,
-  existingTTP: Boolean,
-  exceedsMaxDebtAge: Boolean,
-  eligibleChargeType: Boolean,
-  missingFiledReturns: Boolean)
+    hasRlsOnAddress:            Boolean,
+    markedAsInsolvent:          Boolean,
+    isLessThanMinDebtAllowance: Boolean,
+    isMoreThanMaxDebtAllowance: Boolean,
+    disallowedChargeLocks:      Boolean,
+    existingTTP:                Boolean,
+    exceedsMaxDebtAge:          Boolean,
+    eligibleChargeType:         Boolean,
+    missingFiledReturns:        Boolean
+)
 
 object EligibilityRules {
   implicit val format: OFormat[EligibilityRules] = Json.format[EligibilityRules]
@@ -70,15 +72,16 @@ object ChargeTypeAssessment {
 }
 
 final case class DisallowedChargeLocks(
-  chargeId: String,
-  mainTrans: String,
-  mainTransDesc: String,
-  subTrans: String,
-  subTransDesc: String,
-  outstandingDebtAmount: Int,
-  interestStartDate: String,
-  accruedInterestToDate: Int,
-  chargeLocks: ChargeLocks)
+    chargeId:              String,
+    mainTrans:             String,
+    mainTransDesc:         String,
+    subTrans:              String,
+    subTransDesc:          String,
+    outstandingDebtAmount: Int,
+    interestStartDate:     String,
+    accruedInterestToDate: Int,
+    chargeLocks:           ChargeLocks
+)
 
 object DisallowedChargeLocks {
   implicit val format: OFormat[DisallowedChargeLocks] = Json.format[DisallowedChargeLocks]

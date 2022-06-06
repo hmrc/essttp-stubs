@@ -16,10 +16,18 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
-final case class EligibilityRequest(idType: String, idNumber: String, regimeType: String, returnFinancials: Boolean)
+final case class DebtItemCharge(
+    outstandingDebtAmount: Int,
+    mainTrans:             String,
+    subTrans:              String,
+    debtItemChargeId:      String,
+    interestStartDate:     String
+)
 
-object EligibilityRequest {
-  implicit val format: Format[EligibilityRequest] = Json.format[EligibilityRequest]
+object DebtItemCharge {
+
+  implicit val format: OFormat[DebtItemCharge] = Json.format
+
 }

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.model
+package uk.gov.hmrc.essttpstubs.testutil.connector
 
-import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.essttpstubs.testutil.ItSpec
+import uk.gov.hmrc.http.{HttpReads, HttpReadsInstances, HttpResponse}
 
-final case class EligibilityRequest(idType: String, idNumber: String, regimeType: String, returnFinancials: Boolean)
+trait TestConnector {
 
-object EligibilityRequest {
-  implicit val format: Format[EligibilityRequest] = Json.format[EligibilityRequest]
+  val port = ItSpec.testServerPort
+
+  implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
+
 }

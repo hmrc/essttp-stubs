@@ -21,20 +21,23 @@ import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.UpdateWriteResult
 import uk.gov.hmrc.mongo.ReactiveRepository
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 abstract class Repo[A, ID](
-  collectionName: String,
-  reactiveMongoComponent: ReactiveMongoComponent)(
-  implicit
-  domainFormat: OFormat[A],
-  idFormat: Format[ID],
-  executionContext: ExecutionContext)
+    collectionName:         String,
+    reactiveMongoComponent: ReactiveMongoComponent
+)(
+    implicit
+    domainFormat:     OFormat[A],
+    idFormat:         Format[ID],
+    executionContext: ExecutionContext
+)
   extends ReactiveRepository[A, ID](
     collectionName,
     reactiveMongoComponent.mongoConnector.db,
     domainFormat,
-    idFormat) {
+    idFormat
+  ) {
 
   implicit val f: OWrites[JsObject] = (o: JsObject) => o
 
@@ -44,6 +47,7 @@ abstract class Repo[A, ID](
   def upsert(id: ID, a: A): Future[UpdateWriteResult] = collection.update(ordered = false).one(
     _id(id),
     a,
-    upsert = true)
+    upsert = true
+  )
 
 }

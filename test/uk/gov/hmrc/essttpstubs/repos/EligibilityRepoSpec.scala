@@ -17,40 +17,42 @@
 package uk.gov.hmrc.essttpstubs.repos
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.essttpstubs.testutil.{ ItSpec, TestData }
+import uk.gov.hmrc.essttpstubs.testutil.{ItSpec, TestData}
 
 class EligibilityRepoSpec extends ItSpec {
 
   "insert a record into mongodb" in {
     collectionSize shouldBe 0
 
-    val dbOperation = repo.upsert(
+    val dbOperation = eligibilityRepo.upsert(
       id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber,
-      a = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)).futureValue
+      a  = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)
+    ).futureValue
     dbOperation.n shouldBe 1
     dbOperation.ok shouldBe true
 
     collectionSize shouldBe 1
 
-    repo.findEligibilityDataByTaxRef(TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber)
+    eligibilityRepo.findEligibilityDataByTaxRef(TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber)
       .futureValue.value shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson
   }
 
   "drop the records from mongodb" in {
     collectionSize shouldBe 0
 
-    val dbOperationInsert = repo.upsert(
+    val dbOperationInsert = eligibilityRepo.upsert(
       id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber,
-      a = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)).futureValue
+      a  = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)
+    ).futureValue
     dbOperationInsert.n shouldBe 1
     dbOperationInsert.ok shouldBe true
     collectionSize shouldBe 1
 
-    val dbOperationRemove = repo.removeAllRecords().futureValue
+    val dbOperationRemove = eligibilityRepo.removeAllRecords().futureValue
     dbOperationRemove.n shouldBe 1
     dbOperationRemove.ok shouldBe true
     collectionSize shouldBe 0
   }
 
-  private def collectionSize: Int = repo.count(Json.obj()).futureValue
+  private def collectionSize: Int = eligibilityRepo.count(Json.obj()).futureValue
 }

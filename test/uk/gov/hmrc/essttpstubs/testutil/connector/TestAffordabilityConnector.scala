@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.essttpstubs.config
+package uk.gov.hmrc.essttpstubs.testutil.connector
+
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) {
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
+class TestAffordabilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
+
+  private val affordabilityApiUrl = s"http://localhost:$port/time-to-pay/self-serve/affordability"
+
+  def calculateInstalmentAmounts(request: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    httpClient.POST[JsValue, HttpResponse](affordabilityApiUrl, request)
+
 }

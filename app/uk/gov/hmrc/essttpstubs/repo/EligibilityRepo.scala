@@ -16,28 +16,31 @@
 
 package uk.gov.hmrc.essttpstubs.repo
 
-import play.api.libs.json.{ JsError, JsObject, JsResult, JsSuccess, JsValue, OFormat }
+import play.api.libs.json.{JsError, JsObject, JsResult, JsSuccess, JsValue, OFormat}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.WriteResult
-import reactivemongo.api.indexes.{ Index, IndexType }
+import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONDocument
 import uk.gov.hmrc.essttpstubs.config.EligibilityRepoConfig
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo.format
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 final class EligibilityRepo @Inject() (
-  reactiveMongoComponent: ReactiveMongoComponent,
-  eligibilityRepoConfig: EligibilityRepoConfig)(implicit ec: ExecutionContext)
+    reactiveMongoComponent: ReactiveMongoComponent,
+    eligibilityRepoConfig:  EligibilityRepoConfig
+)(implicit ec: ExecutionContext)
   extends Repo[JsObject, String]("essttp-stubs-eligibility", reactiveMongoComponent) {
 
   override def indexes: Seq[Index] = Seq(
     Index(
-      key = Seq("lastUpdated" -> IndexType.Ascending),
-      name = Some("lastUpdatedId"),
-      options = BSONDocument("expireAfterSeconds" -> eligibilityRepoConfig.expireEligibilityMongo.toSeconds)))
+      key     = Seq("lastUpdated" -> IndexType.Ascending),
+      name    = Some("lastUpdatedId"),
+      options = BSONDocument("expireAfterSeconds" -> eligibilityRepoConfig.expireEligibilityMongo.toSeconds)
+    )
+  )
 
   def findEligibilityDataByTaxRef(taxRef: String): Future[Option[JsObject]] =
     find("idNumber" -> taxRef).map { records => records.headOption }
@@ -50,7 +53,7 @@ object EligibilityRepo {
   implicit val format: OFormat[JsObject] = new OFormat[JsObject] {
     override def reads(json: JsValue): JsResult[JsObject] = json match {
       case jsObject: JsObject => JsSuccess(jsObject)
-      case _ => JsError("Not json")
+      case _                  => JsError("Not json")
     }
 
     override def writes(o: JsObject): JsObject = o
