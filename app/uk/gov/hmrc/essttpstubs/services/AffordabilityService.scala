@@ -17,9 +17,9 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.either._
-
+import essttp.journey.model.ttp.affordability.{InstalmentAmountRequest, InstalmentAmounts}
+import essttp.rootmodel.AmountInPence
 import play.api.Configuration
-import uk.gov.hmrc.essttpstubs.model.{InstalmentAmountRequest, InstalmentAmounts}
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{BadRequestError, CalculationError, Error}
 
 import javax.inject.{Inject, Singleton}
@@ -38,33 +38,33 @@ class AffordabilityService @Inject() (config: Configuration) {
   private val totalInterestRate: BigDecimal = baseInterestRate + additionalInterestRate
 
   def calculateInstalmentAmounts(request: InstalmentAmountRequest): Either[Error, InstalmentAmounts] = {
-    val totalDebtAmount = request.debtItemCharges.map(_.outstandingDebtAmount).sum
-    val initialPaymentAmount = request.initialPaymentAmount.getOrElse(0)
+    val totalDebtAmount = request.debtItemCharges.map(_.outstandingDebtAmount.value).sum
+    val initialPaymentAmount = request.initialPaymentAmount.map(_.value).getOrElse(0L)
     if (totalDebtAmount <= initialPaymentAmount)
-      Left(BadRequestError("Total debt amount was less than or eqaul to the initial payment amount"))
-    else if (request.minPlanLength > request.maxPlanLength)
+      Left(BadRequestError("Total debt amount was less than or equal to the initial payment amount"))
+    else if (request.minPlanLength.value > request.maxPlanLength.value)
       Left(BadRequestError("Min plan length was strictly greater than the max plan length"))
     else {
       val residualDebtAmount = BigDecimal(totalDebtAmount - initialPaymentAmount)
       val interestPerMonth = totalInterestRate * residualDebtAmount / BigDecimal(1200)
 
-      val minInterest = request.minPlanLength * interestPerMonth
-      val maxInterest = request.maxPlanLength * interestPerMonth
+      val minInterest = request.minPlanLength.value * interestPerMonth
+      val maxInterest = request.maxPlanLength.value * interestPerMonth
 
-      val minInstalmentAmount = residualDebtAmount / request.maxPlanLength + maxInterest
-      val maxInstalmentAmount = residualDebtAmount / request.minPlanLength + minInterest
+      val minInstalmentAmount = residualDebtAmount / request.maxPlanLength.value + maxInterest
+      val maxInstalmentAmount = residualDebtAmount / request.minPlanLength.value + minInterest
 
       for {
-        min <- toInt(minInstalmentAmount)
-        max <- toInt(maxInstalmentAmount)
-      } yield InstalmentAmounts(min, max)
+        min <- toLong(minInstalmentAmount)
+        max <- toLong(maxInstalmentAmount)
+      } yield InstalmentAmounts(AmountInPence(min), AmountInPence(max))
 
     }
 
   }
 
-  private def toInt(n: BigDecimal): Either[CalculationError, Int] =
-    Try(n.setScale(0, RoundingMode.HALF_UP).toIntExact)
+  private def toLong(n: BigDecimal): Either[CalculationError, Long] =
+    Try(n.setScale(0, RoundingMode.HALF_UP).toLongExact)
       .toEither
       .leftMap(e => CalculationError(s"Could not convert BigDecimal to Int: ${e.getMessage}"))
 

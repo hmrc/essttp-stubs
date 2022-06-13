@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.journey.model.ttp.affordability.InstalmentAmountRequest
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
-import uk.gov.hmrc.essttpstubs.model.InstalmentAmountRequest
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 

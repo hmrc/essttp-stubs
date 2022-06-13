@@ -17,11 +17,12 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import com.typesafe.config.ConfigFactory
+import essttp.journey.model.ttp.affordability.InstalmentAmounts
+import essttp.rootmodel.AmountInPence
 import play.api.Configuration
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import uk.gov.hmrc.essttpstubs.controllers.AffordabilityControllerSpec.InstalmentAmountsTestCase
-import uk.gov.hmrc.essttpstubs.model.InstalmentAmounts
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestAffordabilityConnector
 
@@ -59,12 +60,15 @@ class AffordabilityControllerSpec extends ItSpec {
     }
 
     ".calculateInstalmentAmounts should return an Ok with the correct instalment amounts when passed a valid request" in {
+        def instalmentAmounts(min: Long, max: Long): InstalmentAmounts =
+          InstalmentAmounts(AmountInPence(min), AmountInPence(max))
+
       val testCases =
         List(
-          ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1)), InstalmentAmounts(55250, 300875)),
-          ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000)), InstalmentAmounts(138125, 752188)),
-          ("3", InstalmentAmountsTestCase(1, 6, None, List(2000)), InstalmentAmounts(368, 2006)),
-          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200)), InstalmentAmounts(18, 100))
+          ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1)), instalmentAmounts(55250, 300875)),
+          ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000)), instalmentAmounts(138125, 752188)),
+          ("3", InstalmentAmountsTestCase(1, 6, None, List(2000)), instalmentAmounts(368, 2006)),
+          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200)), instalmentAmounts(18, 100))
         )
 
       testCases.foreach {
