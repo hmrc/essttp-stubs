@@ -43,7 +43,7 @@ class AffordabilityControllerSpec extends ItSpec {
     )
   )
 
-  lazy val testAffordabilityConnector = injector.instanceOf[TestAffordabilityConnector]
+  lazy val testAffordabilityConnector: TestAffordabilityConnector = injector.instanceOf[TestAffordabilityConnector]
 
   "AffordabilityController" - {
 
