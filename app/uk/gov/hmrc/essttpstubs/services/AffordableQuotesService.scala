@@ -22,8 +22,6 @@ import essttp.journey.model.ttp.affordablequotes._
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
 import play.api.Configuration
-import play.api.libs.json.Json
-import uk.gov.hmrc.essttpstubs.services.AffordableQuotesService.Error
 
 import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
@@ -41,8 +39,7 @@ class AffordableQuotesService @Inject() (config: Configuration) {
 
   private val totalInterestRate: BigDecimal = baseInterestRate + additionalInterestRate
 
-  def calculateAffordableQuotes(affordableQuotesRequest: AffordableQuotesRequest): Either[Error, AffordableQuotesResponse] = {
-    println(Json.toJson(affordableQuotesRequest).toString())
+  def calculateAffordableQuotes(affordableQuotesRequest: AffordableQuotesRequest): AffordableQuotesResponse = {
     val totalDebt: TotalDebt = TotalDebt(
       AmountInPence(affordableQuotesRequest.debtItemCharges.map(x => x.outstandingDebtAmount.value).sum)
         .-(affordableQuotesRequest.initialPaymentAmount.map(_.value).getOrElse(AmountInPence(0)))
@@ -67,8 +64,8 @@ class AffordableQuotesService @Inject() (config: Configuration) {
     }
     val paymentPlans = deriveCollectionsToReturnBasedOnOptimum(optimumPlan, allPossiblePlans)
     paymentPlans match {
-      case Right(valid)    => Right(AffordableQuotesResponse(valid))
-      case Left(someError) => Left(someError)
+      case Right(valid)    => AffordableQuotesResponse(valid)
+      case Left(someError) => throw new RuntimeException(someError.message)
     }
   }
 
@@ -110,17 +107,16 @@ class AffordableQuotesService @Inject() (config: Configuration) {
     val collectionsLessThanAffordableAmount: List[PaymentPlan] =
       paymentPlans.filter(_.collections.regularCollections.headOption.getOrElse(throw new RuntimeException("There were no regular collections")).amountDue.value.value <= paymentPlanAffordableAmount.value.value)
 
-      def getClosest(theAffordableAmount: PaymentPlanAffordableAmount, remainingCollections: List[PaymentPlan]): Either[AffordableQuotesService.CalculationError, PaymentPlan] = remainingCollections match {
-        case Nil => Left(AffordableQuotesService.CalculationError("Can't find the optimum when the list of possible collections is empty"))
-        case h :: _ => remainingCollections.foldLeft(h) { (ans, next) =>
-          if (math.abs(next.collections.regularCollections.headOption.getOrElse(throw new RuntimeException("There were no regular collections")).amountDue.value.value - theAffordableAmount.value.value) <
-            math.abs(ans.collections.regularCollections.headOption.getOrElse(throw new RuntimeException("There were no regular collections")).amountDue.value.value - theAffordableAmount.value.value)) {
-            next
-          } else ans
-        }.asRight
+      def getClosest(remainingCollections: List[PaymentPlan]): Option[PaymentPlan] = {
+        val sortedOnes = remainingCollections
+          .sortWith(_.collections.regularCollections(0).amountDue.value.value > _.collections.regularCollections(0).amountDue.value.value)
+        sortedOnes.headOption
       }
 
-    getClosest(paymentPlanAffordableAmount, collectionsLessThanAffordableAmount)
+    getClosest(collectionsLessThanAffordableAmount) match {
+      case Some(value) => Right(value)
+      case None        => Left(AffordableQuotesService.CalculationError("Couldn't find the closest payment plan based on affordableAmount"))
+    }
   }
 
   def deriveCollectionsToReturnBasedOnOptimum(optimum: PaymentPlan, paymentPlans: List[PaymentPlan]): Either[AffordableQuotesService.CalculationError, List[PaymentPlan]] = {

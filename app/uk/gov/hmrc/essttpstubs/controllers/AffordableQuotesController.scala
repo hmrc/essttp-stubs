@@ -34,13 +34,6 @@ class AffordableQuotesController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   val affordableQuotes: Action[AffordableQuotesRequest] = Action(parse.json[AffordableQuotesRequest]) { implicit request =>
-    affordableQuotesService.calculateAffordableQuotes(request.body).fold(
-      {
-        case AffordableQuotesService.CalculationError(message) =>
-          logger.warn(s"Returning internal server error response for request body ${Json.toJson(request.body).toString()}: $message")
-          InternalServerError
-      },
-      instalmentAmounts => Ok(Json.toJson(instalmentAmounts))
-    )
+    Ok(Json.toJson(affordableQuotesService.calculateAffordableQuotes(request.body)))
   }
 }
