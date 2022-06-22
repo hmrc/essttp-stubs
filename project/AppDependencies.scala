@@ -1,6 +1,3 @@
-import play.core.PlayVersion
-import play.sbt.PlayImport._
-import sbt.Keys.libraryDependencies
 import sbt._
 
 object AppDependencies {
@@ -10,7 +7,7 @@ object AppDependencies {
     "org.typelevel" %% "cats-core"                   % "2.7.0",
     "com.beachape"  %% "enumeratum"                  % "1.7.0",
     "uk.gov.hmrc"   %% "simple-reactivemongo"        % "8.0.0-play-28",
-    "uk.gov.hmrc"   %% "essttp-backend-cor-journey"  % "1.21.0"
+    "uk.gov.hmrc"   %% "essttp-backend-cor-journey"  % "1.24.0"
   )
 
   val test: Seq[ModuleID] = Seq(
