@@ -58,7 +58,9 @@ class AffordableQuotesService @Inject() (config: Configuration) {
           affordableQuotesRequest.initialPaymentDate
             .map(someUpfrontPaymentDate => InitialCollection(DueDate(someUpfrontPaymentDate.value), AmountDue(someUpfrontPaymentAmount.value)))
         }
-    val allPossiblePlans: List[PaymentPlan] = computeAllPossiblePlans(affordableQuotesRequest, totalDebt, interestPerMonth, initialCollection)
+    val allPossiblePlans: List[PaymentPlan] =
+      computeAllPossiblePlans(affordableQuotesRequest, totalDebt, interestPerMonth, initialCollection)
+        .filterNot(_.collections.regularCollections.exists(_.amountDue.value.inPounds < 1))
     val optimumPlan: PaymentPlan = optimumPaymentPlan(affordableQuotesRequest.paymentPlanAffordableAmount, allPossiblePlans) match {
       case Some(value) => value
       case None        => allPossiblePlans.find(p => p.planDuration.value === 1).getOrElse(throw new RuntimeException("There was no optimum plan, investigate..."))

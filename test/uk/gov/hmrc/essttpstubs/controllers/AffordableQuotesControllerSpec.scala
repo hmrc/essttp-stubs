@@ -94,6 +94,13 @@ class AffordableQuotesControllerSpec extends ItSpec {
       result.json shouldBe Json.toJson(expectedResult)
       result.json.as[AffordableQuotesResponse].paymentPlans.map(_.collections.regularCollections.size) shouldBe List(1, 2, 3)
     }
+    "not return plan where the collection amount is less than £1" in {
+      val affordableAmount: PaymentPlanAffordableAmount = PaymentPlanAffordableAmount(AmountInPence(200))
+      val request: JsValue = affordableQuotesRequest(TotalDebt(AmountInPence(240)), affordableAmount)
+      val response: AffordableQuotesResponse = testAffordableQuotesConnector.calculateAffordableQuotes(request).futureValue.json.as[AffordableQuotesResponse]
+      // plan with 3 instalments shouldn't appear since dividing £2.40 into 3 instalments would take the collection amount less than £1
+      response.paymentPlans.map(_.collections.regularCollections.size) shouldBe List(1, 2)
+    }
   }
 
   def affordableQuotesRequest(totalDebt: TotalDebt, affordableAmount: PaymentPlanAffordableAmount, upfrontPaymentAmount: Option[UpfrontPaymentAmount] = None): JsObject = {
