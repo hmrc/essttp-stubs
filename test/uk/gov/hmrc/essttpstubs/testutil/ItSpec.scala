@@ -17,7 +17,8 @@
 package uk.gov.hmrc.essttpstubs.testutil
 
 import akka.util.Timeout
-import com.google.inject.AbstractModule
+import com.github.ghik.silencer.silent
+import com.google.inject.{AbstractModule, Provides}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
@@ -34,6 +35,9 @@ import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestEligibilityConnector
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
+import java.time.format.DateTimeFormatter
+import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
+import javax.inject.Singleton
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 /**
@@ -56,26 +60,41 @@ trait ItSpec
     interval = scaled(Span(300, Millis))
   )
 
+  lazy val frozenZonedDateTime: ZonedDateTime = {
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+    LocalDateTime.parse("2057-08-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
+  }
+
+  val clock: Clock = Clock.fixed(frozenZonedDateTime.toInstant, ZoneId.of("UTC"))
+
+  lazy val overridesModule: AbstractModule = new AbstractModule {
+    override def configure(): Unit = ()
+
+    @Provides
+    @Singleton
+    @silent // silence "method never used" warning
+    def clock: Clock = self.clock
+  }
+
   lazy val injector: Injector = fakeApplication().injector
   lazy val testEligibilityConnector: TestEligibilityConnector = injector.instanceOf[TestEligibilityConnector]
   lazy val eligibilityRepo: EligibilityRepo = injector.instanceOf[EligibilityRepo]
 
   lazy val additionalConfig: Configuration = Configuration()
 
-  override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .overrides(GuiceableModule.fromGuiceModules(Seq(new AbstractModule {
-      override def configure(): Unit = ()
-    })))
-    .configure(
-      Configuration(
-        ConfigFactory.parseString(
-          """
+  override def fakeApplication(): Application =
+    new GuiceApplicationBuilder()
+      .overrides(GuiceableModule.fromGuiceModules(Seq(overridesModule)))
+      .configure(
+        Configuration(
+          ConfigFactory.parseString(
+            """
             |  mongodb.uri = "mongodb://localhost:27017/essttp-stubs-eligibility",
             |  metrics.enabled = false
             |""".stripMargin
-        )
-      ).withFallback(additionalConfig)
-    ).build()
+          )
+        ).withFallback(additionalConfig)
+      ).build()
 
   override def beforeEach(): Unit = {
     super.beforeEach()

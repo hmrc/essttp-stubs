@@ -6,3 +6,5 @@ DELETE  /time-to-pay/self-serve/eligibility/drop       uk.gov.hmrc.essttpstubs.c
 
 POST    /time-to-pay/self-serve/affordability          uk.gov.hmrc.essttpstubs.controllers.AffordabilityController.calculateInstalmentAmounts
 POST    /time-to-pay/self-serve/affordable-quotes      uk.gov.hmrc.essttpstubs.controllers.AffordableQuotesController.affordableQuotes
+
+POST    /time-to-pay/self-serve/arrangement            uk.gov.hmrc.essttpstubs.controllers.ArrangementController.enactArrangement
