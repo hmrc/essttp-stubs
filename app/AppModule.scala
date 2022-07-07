@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Provides, Singleton}
 
-class AppModule extends AbstractModule
+import java.time.Clock
+
+class AppModule extends AbstractModule {
+
+  @Provides
+  @Singleton
+  def provideClock(): Clock = Clock.systemUTC()
+
+}
