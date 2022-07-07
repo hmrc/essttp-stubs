@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.rootmodel.arrangement.ArrangementRequest
+import essttp.journey.model.ttp.arrangement.ArrangementRequest
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.services.ArrangementService
