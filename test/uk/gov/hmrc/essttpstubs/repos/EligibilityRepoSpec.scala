@@ -25,7 +25,7 @@ class EligibilityRepoSpec extends ItSpec {
     collectionSize shouldBe 0
 
     val dbOperation = eligibilityRepo.upsert(
-      id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber,
+      id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.identification(0).idValue.value,
       a  = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)
     ).futureValue
     dbOperation.n shouldBe 1
@@ -33,15 +33,16 @@ class EligibilityRepoSpec extends ItSpec {
 
     collectionSize shouldBe 1
 
-    eligibilityRepo.findEligibilityDataByTaxRef(TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber)
-      .futureValue.value shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson
+    val x = eligibilityRepo.findEligibilityDataByTaxRef(TestData.EligibilityApi.ModelInstances.eligibilityResponse.identification(0).idValue.value)
+      .futureValue.value
+    x shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson withClue (s"Json was infact: ${x}")
   }
 
   "drop the records from mongodb" in {
     collectionSize shouldBe 0
 
     val dbOperationInsert = eligibilityRepo.upsert(
-      id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.idNumber,
+      id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.identification(0).idValue.value,
       a  = Json.toJsObject(TestData.EligibilityApi.ModelInstances.eligibilityResponse)
     ).futureValue
     dbOperationInsert.n shouldBe 1

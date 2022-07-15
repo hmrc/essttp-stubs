@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
-import uk.gov.hmrc.essttpstubs.model.{EligibilityRequest, EligibilityResponse}
+import essttp.journey.model.ttp.EligibilityCheckResult
+import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import javax.inject.{Inject, Singleton}
@@ -27,8 +28,8 @@ class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit execu
 
   val eligibilityApiBaseUrl = s"http://localhost:$port/time-to-pay/self-serve/eligibility"
 
-  def insertEligibilityData(eligibilityResponse: EligibilityResponse)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.POST[EligibilityResponse, HttpResponse](s"$eligibilityApiBaseUrl/insert", eligibilityResponse)
+  def insertEligibilityData(eligibilityResponse: EligibilityCheckResult)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    httpClient.POST[EligibilityCheckResult, HttpResponse](s"$eligibilityApiBaseUrl/insert", eligibilityResponse)
 
   def retrieveEligibilityData(eligibilityRequest: EligibilityRequest)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpClient.POST[EligibilityRequest, HttpResponse](s"$eligibilityApiBaseUrl", eligibilityRequest)

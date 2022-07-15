@@ -43,7 +43,7 @@ final class EligibilityRepo @Inject() (
   )
 
   def findEligibilityDataByTaxRef(taxRef: String): Future[Option[JsObject]] =
-    find("idNumber" -> taxRef).map { records => records.headOption }
+    find("_id" -> taxRef).map { records => records.headOption }
 
   def removeAllRecords(): Future[WriteResult] = removeAll()
 

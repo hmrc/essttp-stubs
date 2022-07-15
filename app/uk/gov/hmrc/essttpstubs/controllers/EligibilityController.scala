@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.journey.model.ttp.{EligibilityCheckResult, IdType, Identification}
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -35,8 +36,11 @@ class EligibilityController @Inject() (
   private val logger: Logger = Logger("EligibilityController")
 
   def insertEligibilityData(): Action[JsObject] = Action.async(parse.json[JsObject]) { implicit request =>
-    val idNumber: String = (request.body \ "idNumber").get.as[String]
-    eligibilityService.insertEligibilityData(idNumber, request.body)
+    val idValue: String = request.body.as[EligibilityCheckResult]
+      .identification
+      .collectFirst({ case Identification(IdType("EMPREF"), idValue) => idValue.value })
+      .getOrElse(throw new RuntimeException("There was no EMPREF idValue!"))
+    eligibilityService.insertEligibilityData(idValue, request.body)
       .map(_ => Created(s"Inserted eligibility record into MongoDb: [ ${request.body.toString} ]"))
   }
 

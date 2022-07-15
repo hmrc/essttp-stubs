@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.{CustomerReference, ProcessingDate}
+import essttp.journey.model.ttp.{CustomerReference, ProcessingDateTime}
 import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsSuccess, Json}
@@ -58,7 +58,7 @@ class ArrangementControllerSpec extends ItSpec {
       val response = testArrangementConnector.enactArrangement(request).futureValue
       response.json.validate[ArrangementResponse] shouldBe JsSuccess(
         ArrangementResponse(
-          ProcessingDate("2057-08-02T15:28:55.185Z"),
+          ProcessingDateTime("2057-08-02T15:28:55.185Z"),
           CustomerReference("id")
         )
       )
