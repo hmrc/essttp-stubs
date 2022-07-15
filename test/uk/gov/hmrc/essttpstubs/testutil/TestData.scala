@@ -16,8 +16,13 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
+import essttp.journey.model.ttp._
+import essttp.journey.model.ttp.affordablequotes.DueDate
+import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.essttpstubs.model.{ChargeLock, ChargeLocks, ChargeTypeAssessment, CustomerPostcode, DisallowedChargeLocks, EligibilityRequest, EligibilityResponse, EligibilityRules, EligibilityStatus}
+import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
+
+import java.time.LocalDate
 
 object TestData {
 
@@ -25,93 +30,104 @@ object TestData {
 
     object ModelInstances {
 
-      val testChargeLock: ChargeLock = ChargeLock(status = false, reason = "some reason")
-
-      val eligibilityRequest: EligibilityRequest = EligibilityRequest(
-        idType           = "test-idType",
-        idNumber         = "test-idNumber",
-        regimeType       = "test-regimeType",
-        returnFinancials = true
+      val testLock: Lock = Lock(
+        lockType                 = LockType("testLockType"),
+        lockReason               = LockReason("testLockReason"),
+        disallowedChargeLockType = DisallowedChargeLockType(false)
       )
 
-      val eligibilityResponse: EligibilityResponse = EligibilityResponse(
-        idType               = "test-idType",
-        idNumber             = "test-idNumber",
-        regimeType           = "test-regimeType",
-        processingDate       = "test-processingDate",
-        customerPostcodes    = List(
-          CustomerPostcode(addressPostcode = "test-postcode", postcodeDate = "2022-01-01")
+      val eligibilityRequest: EligibilityRequest = EligibilityRequest(
+        channelIdentifier         = "eSSTTP",
+        idType                    = "EMPREF",
+        idValue                   = "test-idValue",
+        regimeType                = "test-regimeType",
+        returnFinancialAssessment = true
+      )
+
+      val eligibilityResponse: EligibilityCheckResult = EligibilityCheckResult(
+        processingDateTime     = ProcessingDateTime("test-processingDate"),
+        identification         = List(
+          Identification(
+            idType  = IdType("EMPREF"),
+            idValue = IdValue("test-idValue")
+          )
         ),
-        minPlanLengthMonths  = 1,
-        maxPlanLengthMonths  = 3,
-        eligibilityStatus    = EligibilityStatus(eligibilityPass = false),
-        eligibilityRules     = EligibilityRules(
+        customerPostcodes      = List(
+          CustomerPostcode(addressPostcode = Postcode("test-postcode"), postcodeDate = PostcodeDate("2022-01-01"))
+        ),
+        regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
+        paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,
+        paymentPlanMinLength   = PaymentPlanMinLength(1),
+        paymentPlanMaxLength   = PaymentPlanMaxLength(6),
+        eligibilityStatus      = EligibilityStatus(OverallEligibilityStatus(false)),
+        eligibilityRules       = EligibilityRules(
           hasRlsOnAddress            = true,
           markedAsInsolvent          = true,
           isLessThanMinDebtAllowance = false,
           isMoreThanMaxDebtAllowance = false,
           disallowedChargeLocks      = false,
           existingTTP                = false,
-          exceedsMaxDebtAge          = false,
-          eligibleChargeType         = false,
+          chargesOverMaxDebtAge      = false,
+          ineligibleChargeTypes      = false,
           missingFiledReturns        = false
         ),
-        chargeTypeAssessment = Seq(
+        chargeTypeAssessment   = List(
           ChargeTypeAssessment(
-            taxPeriodFrom         = "2022-04-27",
-            taxPeriodTo           = "2022-04-27",
-            debtTotalAmount       = 100,
-            disallowedChargeLocks = Seq(
-              DisallowedChargeLocks(
-                chargeId              = "test-chargeId",
-                mainTrans             = "test-mainTrans",
-                mainTransDesc         = "test-mainTransDesc",
-                subTrans              = "test-subTrans",
-                subTransDesc          = "test-subTransDesc",
-                outstandingDebtAmount = 10,
-                interestStartDate     = "2022-04-27",
-                accruedInterestToDate = 1,
-                chargeLocks           = ChargeLocks(
-                  paymentLock  = testChargeLock,
-                  clearingLock = testChargeLock,
-                  interestLock = testChargeLock,
-                  dunningLock  = testChargeLock
-                )
+            taxPeriodFrom   = TaxPeriodFrom("2022-04-27"),
+            taxPeriodTo     = TaxPeriodTo("2022-04-27"),
+            debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
+            charges         = List(
+              Charges(
+                chargeType           = ChargeType("test-chargeId"),
+                mainTrans            = MainTrans("test-mainTrans"),
+                subTrans             = SubTrans("test-subTrans"),
+                outstandingAmount    = OutstandingAmount(AmountInPence(10)),
+                interestStartDate    = InterestStartDate(LocalDate.parse("2022-04-27")),
+                accruedInterest      = AccruedInterest(AmountInPence(1)),
+                mainType             = MainType("test-mainType"),
+                chargeReference      = ChargeReference("test-chargeReference"),
+                dueDate              = DueDate(LocalDate.parse("2022-04-27")),
+                ineligibleChargeType = IneligibleChargeType(false),
+                chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
+                locks                = List(testLock)
               )
             )
           )
         )
       )
     }
+
     object JsonInstances {
       val eligibilityRequestJson: JsValue = Json.parse(
         //language=JSON
         """{
-          | "idType": "test-idType",
-          | "idNumber": "test-idNumber",
-          | "regimeType": "test-regimeType",
-          | "returnFinancials": true
+          |   "channelIdentifier":"eSSTTP",
+          |   "idType": "test-idType",
+          |   "idValue": "test-idValue",
+          |   "regimeType": "test-regimeType",
+          |   "returnFinancialAssessment": true
           |}
           |""".stripMargin
       )
       val eligibilityResponseJson: JsValue = Json.parse(
         //language=JSON
         """{
-          | "_id": "test-idNumber",
-          |	"idType": "test-idType",
-          |	"idNumber": "test-idNumber",
-          |	"regimeType": "test-regimeType",
-          |	"processingDate": "test-processingDate",
-          |	"customerPostcodes": [
-          |  {
-          |	  "addressPostcode": "test-postcode",
+          |	"_id": "test-idValue",
+          |	"processingDateTime": "test-processingDate",
+          |	"identification": [{
+          |		"idType": "EMPREF",
+          |		"idValue": "test-idValue"
+          |	}],
+          |	"customerPostcodes": [{
+          |		"addressPostcode": "test-postcode",
           |		"postcodeDate": "2022-01-01"
-          |  }
-          | ],
-          |	"minPlanLengthMonths": 1,
-          |	"maxPlanLengthMonths": 3,
+          |	}],
+          |	"regimePaymentFrequency": "Monthly",
+          |	"paymentPlanFrequency": "Monthly",
+          |	"paymentPlanMinLength": 1,
+          |	"paymentPlanMaxLength": 6,
           |	"eligibilityStatus": {
-          |		"eligibilityPass": false
+          |		"overallEligibilityStatus": false
           |	},
           |	"eligibilityRules": {
           |		"hasRlsOnAddress": true,
@@ -120,41 +136,31 @@ object TestData {
           |		"isMoreThanMaxDebtAllowance": false,
           |		"disallowedChargeLocks": false,
           |		"existingTTP": false,
-          |		"exceedsMaxDebtAge": false,
-          |		"eligibleChargeType": false,
+          |		"chargesOverMaxDebtAge": false,
+          |		"ineligibleChargeTypes": false,
           |		"missingFiledReturns": false
           |	},
           |	"chargeTypeAssessment": [{
           |		"taxPeriodFrom": "2022-04-27",
           |		"taxPeriodTo": "2022-04-27",
           |		"debtTotalAmount": 100,
-          |		"disallowedChargeLocks": [{
-          |			"chargeId": "test-chargeId",
+          |		"charges": [{
+          |			"chargeType": "test-chargeId",
+          |			"mainType": "test-mainType",
+          |			"chargeReference": "test-chargeReference",
           |			"mainTrans": "test-mainTrans",
-          |			"mainTransDesc": "test-mainTransDesc",
           |			"subTrans": "test-subTrans",
-          |			"subTransDesc": "test-subTransDesc",
-          |			"outstandingDebtAmount": 10,
+          |			"outstandingAmount": 10,
           |			"interestStartDate": "2022-04-27",
-          |			"accruedInterestToDate": 1,
-          |			"chargeLocks": {
-          |				"paymentLock": {
-          |					"status": false,
-          |					"reason": "some reason"
-          |				},
-          |				"clearingLock": {
-          |					"status": false,
-          |					"reason": "some reason"
-          |				},
-          |				"interestLock": {
-          |					"status": false,
-          |					"reason": "some reason"
-          |				},
-          |				"dunningLock": {
-          |					"status": false,
-          |					"reason": "some reason"
-          |				}
-          |			}
+          |			"dueDate": "2022-04-27",
+          |			"accruedInterest": 1,
+          |			"ineligibleChargeType": false,
+          |			"chargeOverMaxDebtAge": false,
+          |			"locks": [{
+          |				"lockType": "testLockType",
+          |				"lockReason": "testLockReason",
+          |				"disallowedChargeLockType": false
+          |			}]
           |		}]
           |	}]
           |}""".stripMargin

@@ -89,7 +89,7 @@ trait ItSpec
         Configuration(
           ConfigFactory.parseString(
             """
-            |  mongodb.uri = "mongodb://localhost:27017/essttp-stubs-eligibility",
+            |  mongodb.uri = "mongodb://localhost:27017/essttp-stubs-eligibility-it",
             |  metrics.enabled = false
             |""".stripMargin
           )

@@ -119,7 +119,7 @@ class AffordabilityControllerSpec extends ItSpec {
          |    "minPlanLength": ${testCase.minPlanLength},
          |    "maxPlanLength": ${testCase.maxPlanLength},
          |    "interestAccrued": 500,
-         |    "frequency": "monthly",
+         |    "frequency": "Monthly",
          |    "earliestPlanStartDate": "2022-03-03",
          |    "latestPlanStartDate": "2022-03-28",
          |    "customerPostcodes":[

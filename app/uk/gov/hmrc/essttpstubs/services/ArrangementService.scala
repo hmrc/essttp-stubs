@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.eq._
-import essttp.journey.model.ttp.{CustomerReference, ProcessingDate}
+import essttp.journey.model.ttp.{CustomerReference, ProcessingDateTime}
 import essttp.journey.model.ttp.arrangement.{ArrangementRequest, ArrangementResponse}
 import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -35,7 +35,7 @@ class ArrangementService @Inject() (clock: Clock) {
         throw UpstreamErrorResponse("Could not find ID with ID type 'BROCS'", BAD_REQUEST)
       case Some(id) =>
         val now = DateTimeFormatter.ISO_INSTANT.format(Instant.now(clock))
-        ArrangementResponse(ProcessingDate(now), CustomerReference(id.idValue.value))
+        ArrangementResponse(ProcessingDateTime(now), CustomerReference(id.idValue.value))
     }
   }
 

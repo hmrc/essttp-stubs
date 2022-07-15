@@ -5,69 +5,57 @@ Cache-Control: no-cache
 Content-Type: Application/Json
 
 {
-  "idType": "NI",
-  "idNumber": "number",
-  "regimeType": "SIMP",
-  "processingDate": "2022-04-27",
-  "customerPostcodes": [
-    {
-      "addressPostcode": "RC2 9MN",
-      "postcodeDate": "2022-01-01"
-    }
-  ],
-  "minPlanLengthMonths": 0,
-  "maxPlanLengthMonths": 0,
+  "_id": "test-idValue",
+  "processingDateTime": "test-processingDate",
+  "identification": [{
+    "idType": "EMPREF",
+    "idValue": "test-idValue"
+  }],
+  "customerPostcodes": [{
+    "addressPostcode": "test-postcode",
+    "postcodeDate": "2022-01-01"
+  }],
+  "regimePaymentFrequency": "Monthly",
+  "paymentPlanFrequency": "Monthly",
+  "paymentPlanMinLength": 1,
+  "paymentPlanMaxLength": 6,
   "eligibilityStatus": {
-    "eligibilityPass": false
+    "overallEligibilityStatus": false
   },
   "eligibilityRules": {
-    "hasRlsOnAddress": false,
-    "markedAsInsolvent": false,
-    "isLessThanMinDebtAllowance": true,
+    "hasRlsOnAddress": true,
+    "markedAsInsolvent": true,
+    "isLessThanMinDebtAllowance": false,
     "isMoreThanMaxDebtAllowance": false,
     "disallowedChargeLocks": false,
     "existingTTP": false,
-    "exceedsMaxDebtAge": false,
-    "eligibleChargeType": false,
-    "missingFiledReturns": true
+    "chargesOverMaxDebtAge": false,
+    "ineligibleChargeTypes": false,
+    "missingFiledReturns": false
   },
-  "chargeTypeAssessment": [
-    {
-      "taxPeriodFrom": "2022-04-27",
-      "taxPeriodTo": "2022-04-27",
-      "debtTotalAmount": 0,
-      "disallowedChargeLocks": [
-        {
-          "chargeId": "",
-          "mainTrans": "5330",
-          "mainTransDesc": "type",
-          "subTrans": "7006",
-          "subTransDesc": "type",
-          "outstandingDebtAmount": 0,
-          "interestStartDate": "2022-04-27",
-          "accruedInterestToDate": 0,
-          "chargeLocks": {
-            "paymentLock": {
-              "status": false,
-              "reason": ""
-            },
-            "clearingLock": {
-              "status": false,
-              "reason": ""
-            },
-            "interestLock": {
-              "status": false,
-              "reason": ""
-            },
-            "dunningLock": {
-              "status": false,
-              "reason": ""
-            }
-          }
-        }
-      ]
-    }
-  ]
+  "chargeTypeAssessment": [{
+    "taxPeriodFrom": "2022-04-27",
+    "taxPeriodTo": "2022-04-27",
+    "debtTotalAmount": 100,
+    "charges": [{
+      "chargeType": "test-chargeId",
+      "mainType": "test-mainType",
+      "chargeReference": "test-chargeReference",
+      "mainTrans": "test-mainTrans",
+      "subTrans": "test-subTrans",
+      "outstandingAmount": 10,
+      "interestStartDate": "2022-04-27",
+      "dueDate": "2022-04-27",
+      "accruedInterest": 1,
+      "ineligibleChargeType": false,
+      "chargeOverMaxDebtAge": false,
+      "locks": [{
+        "lockType": "testLockType",
+        "lockReason": "testLockReason",
+        "disallowedChargeLockType": false
+      }]
+    }]
+  }]
 }
 
 ### find eligibility record
@@ -77,11 +65,11 @@ Cache-Control: no-cache
 Content-Type: Application/Json
 
 {
-  "idType": "SSTTP",
-  "idNumber": "number",
-  "regimeType": "PAYE",
-  "returnFinancials": true,
-  "returnLocks": false
+  "channelIdentifier":"eSSTTP",
+  "idType": "test-idType",
+  "idValue": "test-idValue",
+  "regimeType": "test-regimeType",
+  "returnFinancialAssessment": true
 }
 
 
