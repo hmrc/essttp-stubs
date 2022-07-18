@@ -17,6 +17,7 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import com.typesafe.config.ConfigFactory
+import essttp.journey.model.ttp.ProcessingDateTime
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.AmountInPence
 import play.api.Configuration
@@ -61,9 +62,9 @@ class AffordabilityControllerSpec extends ItSpec {
 
     ".calculateInstalmentAmounts should return an Ok with the correct instalment amounts when passed a valid request" in {
         def instalmentAmounts(min: Long, max: Long): InstalmentAmounts =
-          InstalmentAmounts(AmountInPence(min), AmountInPence(max))
+          InstalmentAmounts(ProcessingDateTime("2057-08-02T15:28:55.185Z"), AmountInPence(min), AmountInPence(max))
 
-      val testCases =
+      val testCases: List[(String, InstalmentAmountsTestCase, InstalmentAmounts)] =
         List(
           ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1)), instalmentAmounts(55250, 300875)),
           ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000)), instalmentAmounts(138125, 752188)),
@@ -84,7 +85,7 @@ class AffordabilityControllerSpec extends ItSpec {
   }
 
   def instalmentAmountsRequest(testCase: InstalmentAmountsTestCase): JsValue = {
-    val initialPaymentDetails = testCase.initialPaymentAmount.map(amount =>
+    val initialPaymentDetails = testCase.initialPaymentAmount.map((amount: Int) =>
       Json.parse(
         s"""
            |{
@@ -104,7 +105,8 @@ class AffordabilityControllerSpec extends ItSpec {
                |  "mainTrans":"1525",
                |  "subTrans":"1000",
                |  "debtItemChargeId":"ChargeRef ${Random.nextInt(1000)}",
-               |  "interestStartDate":"2021-09-03"
+               |  "interestStartDate":"2021-09-03",
+               |  "debtItemOriginalDueDate":"2021-09-03"
                |}
                |""".stripMargin
           ).as[JsObject]
@@ -116,18 +118,14 @@ class AffordabilityControllerSpec extends ItSpec {
     val json = Json.parse(
       s"""
          |{
-         |    "minPlanLength": ${testCase.minPlanLength},
-         |    "maxPlanLength": ${testCase.maxPlanLength},
+         |    "channelIdentifier": "eSSTTP",
+         |    "paymentPlanFrequency": "Monthly",
+         |    "paymentPlanMinLength": ${testCase.minPlanLength},
+         |    "paymentPlanMaxLength": ${testCase.maxPlanLength},
          |    "interestAccrued": 500,
-         |    "frequency": "Monthly",
-         |    "earliestPlanStartDate": "2022-03-03",
-         |    "latestPlanStartDate": "2022-03-28",
-         |    "customerPostcodes":[
-         |      {
-         |         "postcodeDate":"2022-03-09",
-         |         "addressPostcode":"AB1 3DE"
-         |      }
-         |    ]
+         |    "earliestPaymentPlanStartDate": "2022-03-03",
+         |    "latestPaymentPlanStartDate": "2022-03-28",
+         |    "accruedDebtInterest": 1326
          |}
          |""".stripMargin
     ).as[JsObject]
