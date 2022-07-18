@@ -23,13 +23,14 @@ import essttp.rootmodel.AmountInPence
 import play.api.Configuration
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{BadRequestError, CalculationError, Error}
 
-import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.{Clock, Instant}
 import javax.inject.{Inject, Singleton}
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Try
 
 @Singleton
-class AffordabilityService @Inject() (config: Configuration) {
+class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
 
   private val baseInterestRate: BigDecimal =
     BigDecimal(config.get[String]("affordability.instalment-amounts.base-interest-rate"))
@@ -56,10 +57,12 @@ class AffordabilityService @Inject() (config: Configuration) {
       val minInstalmentAmount = residualDebtAmount / request.paymentPlanMaxLength.value + maxInterest
       val maxInstalmentAmount = residualDebtAmount / request.paymentPlanMinLength.value + minInterest
 
+      val now: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now(clock))
+
       for {
         min <- toLong(minInstalmentAmount)
         max <- toLong(maxInstalmentAmount)
-      } yield InstalmentAmounts(ProcessingDateTime(LocalDate.now().toString), AmountInPence(min), AmountInPence(max))
+      } yield InstalmentAmounts(ProcessingDateTime(now), AmountInPence(min), AmountInPence(max))
 
     }
 
