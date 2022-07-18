@@ -27,6 +27,7 @@ import uk.gov.hmrc.essttpstubs.controllers.AffordabilityControllerSpec.Instalmen
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestAffordabilityConnector
 
+import java.time.LocalDate
 import scala.util.Random
 
 class AffordabilityControllerSpec extends ItSpec {
@@ -62,7 +63,7 @@ class AffordabilityControllerSpec extends ItSpec {
 
     ".calculateInstalmentAmounts should return an Ok with the correct instalment amounts when passed a valid request" in {
         def instalmentAmounts(min: Long, max: Long): InstalmentAmounts =
-          InstalmentAmounts(ProcessingDateTime("2022-07-15"), AmountInPence(min), AmountInPence(max))
+          InstalmentAmounts(ProcessingDateTime(LocalDate.now().toString), AmountInPence(min), AmountInPence(max))
 
       val testCases: List[(String, InstalmentAmountsTestCase, InstalmentAmounts)] =
         List(
