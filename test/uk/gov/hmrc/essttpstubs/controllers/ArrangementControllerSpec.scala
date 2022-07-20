@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.{CustomerReference, ProcessingDateTime}
 import essttp.journey.model.ttp.arrangement.ArrangementResponse
+import essttp.journey.model.ttp.{CustomerReference, ProcessingDateTime}
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
@@ -44,13 +44,59 @@ class ArrangementControllerSpec extends ItSpec {
 
     ".enactArrangement should return Ok when an ID with ID type BROCS can be found in the request" in {
       val request = Json.parse(
-        """{
-          |  "identification" : [
-          |    {
-          |      "idType": "BROCS",
-          |      "idValue": "id"
-          |    }
-          |  ]
+        """
+          |{
+          |	"identification": [{
+          |		"idType": "BROCS",
+          |		"idValue": "id"
+          |	}],
+          |	"channelIdentifier": "eSSTTP",
+          |	"regimeType": "PAYE",
+          |	"arrangementAgreedDate": "2022-06-08",
+          |	"directDebitInstruction": {
+          |		"sortCode": "123456",
+          |		"accountNumber": "12345678",
+          |		"accountName": "Current",
+          |		"paperAuddisFlag": false
+          |	},
+          |	"paymentPlan": {
+          |		"planDuration": 2,
+          |		"totalDebt": 745183,
+          |		"totalDebtIncInt": 752238,
+          |		"planInterest": 5755,
+          |		"paymentPlanFrequency": "Monthly",
+          |		"collections": {
+          |			"initialCollection": {
+          |				"dueDate": "2022-06-18",
+          |				"amountDue": 1000
+          |			},
+          |			"regularCollections": [{
+          |				"dueDate": "2022-07-08",
+          |				"amountDue": 130447
+          |			}, {
+          |				"dueDate": "2022-08-08",
+          |				"amountDue": 130447
+          |			}]
+          |		},
+          |		"numberOfInstalments": 2,
+          |		"instalments": [{
+          |			"instalmentNumber": 1,
+          |			"dueDate": "2022-06-18",
+          |			"instalmentInterestAccrued": 459,
+          |			"instalmentBalance": 480896,
+          |			"debtItemChargeId": "XW006559808862",
+          |			"amountDue": 1000,
+          |			"debtItemOriginalDueDate": "2022-05-22"
+          |		}, {
+          |			"instalmentNumber": 2,
+          |			"dueDate": "2022-06-18",
+          |			"instalmentInterestAccrued": 459,
+          |			"instalmentBalance": 480896,
+          |			"debtItemChargeId": "XW006559808862",
+          |			"amountDue": 1000,
+          |			"debtItemOriginalDueDate": "2022-05-22"
+          |		}]
+          |	}
           |}
           |""".stripMargin
       )
