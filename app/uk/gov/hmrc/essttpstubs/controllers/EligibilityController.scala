@@ -45,6 +45,7 @@ class EligibilityController @Inject() (
   }
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
+    logger.debug(s"EligibilityRequest: ${Json.prettyPrint(Json.toJson(request.body))}")
     for {
       eligibilityResponse: Option[JsObject] <- eligibilityService.eligibilityData(request.body)
     } yield eligibilityResponse match {

@@ -17,6 +17,7 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import essttp.journey.model.ttp.arrangement.ArrangementRequest
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.services.ArrangementService
@@ -27,7 +28,10 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ArrangementController @Inject() (cc: ControllerComponents, arrangementService: ArrangementService) extends BackendController(cc) {
 
+  val logger: Logger = Logger(this.getClass)
+
   val enactArrangement: Action[ArrangementRequest] = Action(parse.json[ArrangementRequest]) { request =>
+    logger.debug(s"ArrangementRequest: ${Json.prettyPrint(Json.toJson(request.body))}")
     val response = arrangementService.enactArrangement(request.body)
     Ok(Json.toJson(response))
   }

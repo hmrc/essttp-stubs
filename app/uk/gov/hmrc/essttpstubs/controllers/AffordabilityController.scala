@@ -35,6 +35,7 @@ class AffordabilityController @Inject() (
 
   val calculateInstalmentAmounts: Action[InstalmentAmountRequest] =
     Action(parse.json[InstalmentAmountRequest]) { implicit request =>
+      logger.debug(s"InstalmentAmountRequest: ${Json.prettyPrint(Json.toJson(request.body))}")
       affordabilityService.calculateInstalmentAmounts(request.body).fold(
         {
           case AffordabilityService.BadRequestError(message) =>

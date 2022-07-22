@@ -34,6 +34,7 @@ class AffordableQuotesController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   val affordableQuotes: Action[AffordableQuotesRequest] = Action(parse.json[AffordableQuotesRequest]) { implicit request =>
+    logger.debug(s"AffordableQuotesRequest: ${Json.prettyPrint(Json.toJson(request.body))}")
     Ok(Json.toJson(affordableQuotesService.calculateAffordableQuotes(request.body)))
   }
 }
