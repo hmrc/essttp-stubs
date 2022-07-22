@@ -45,12 +45,15 @@ class EligibilityController @Inject() (
   }
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
+    logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
     for {
       eligibilityResponse: Option[JsObject] <- eligibilityService.eligibilityData(request.body)
     } yield eligibilityResponse match {
-      case Some(validResponse) => Ok(Json.toJson(validResponse))
+      case Some(validResponse) =>
+        logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(validResponse))} ]")
+        Ok(Json.toJson(validResponse))
       case None =>
-        logger.debug(s"No entry in mongo for eligibility request: [ ${request.body.toString} ]")
+        logger.info(s"No entry in mongo for eligibility request: [ ${request.body.toString} ]")
         NotFound //todo update this to reflect the spec responses maybe
     }
   }
