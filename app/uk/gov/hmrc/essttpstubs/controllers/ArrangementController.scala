@@ -31,8 +31,9 @@ class ArrangementController @Inject() (cc: ControllerComponents, arrangementServ
   val logger: Logger = Logger(this.getClass)
 
   val enactArrangement: Action[ArrangementRequest] = Action(parse.json[ArrangementRequest]) { request =>
-    logger.debug(s"ArrangementRequest: ${Json.prettyPrint(Json.toJson(request.body))}")
+    logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
     val response = arrangementService.enactArrangement(request.body)
+    logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(response))} ]")
     Ok(Json.toJson(response))
   }
 

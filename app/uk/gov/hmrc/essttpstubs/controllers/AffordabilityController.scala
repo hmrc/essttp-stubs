@@ -35,18 +35,21 @@ class AffordabilityController @Inject() (
 
   val calculateInstalmentAmounts: Action[InstalmentAmountRequest] =
     Action(parse.json[InstalmentAmountRequest]) { implicit request =>
-      logger.debug(s"InstalmentAmountRequest: ${Json.prettyPrint(Json.toJson(request.body))}")
+      logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
       affordabilityService.calculateInstalmentAmounts(request.body).fold(
         {
           case AffordabilityService.BadRequestError(message) =>
-            logger.warn(s"Returning bad request response for request body ${Json.toJson(request.body).toString()}: $message")
+            logger.info(s"Returning bad request response for request body ${Json.toJson(request.body).toString()}: $message")
             BadRequest
 
           case AffordabilityService.CalculationError(message) =>
-            logger.warn(s"Returning internal server error response for request body ${Json.toJson(request.body).toString()}: $message")
+            logger.info(s"Returning internal server error response for request body ${Json.toJson(request.body).toString()}: $message")
             InternalServerError
         },
-        instalmentAmounts => Ok(Json.toJson(instalmentAmounts))
+        instalmentAmounts => {
+          logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(instalmentAmounts))} ]")
+          Ok(Json.toJson(instalmentAmounts))
+        }
       )
 
     }
