@@ -98,8 +98,12 @@ trait ItSpec
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    eligibilityRepo.removeAll().futureValue
-    ()
+    eligibilityRepo.collection.drop().toFuture().map(_ => ()).futureValue
+  }
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    eligibilityRepo.collection.drop().toFuture().map(_ => ()).futureValue
   }
 
   def status(of: Result): Int = of.header.status

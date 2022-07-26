@@ -16,36 +16,40 @@
 
 package uk.gov.hmrc.essttpstubs.repo
 
-import play.api.libs.json.{JsError, JsObject, JsResult, JsSuccess, JsValue, OFormat}
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.WriteResult
-import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.bson.BSONDocument
+import com.google.inject.{Inject, Singleton}
+import essttp.journey.model.ttp.EligibilityCheckResult
+import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
+import org.mongodb.scala.result.InsertOneResult
+import play.api.libs.json._
 import uk.gov.hmrc.essttpstubs.config.EligibilityRepoConfig
-import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo.format
+import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
-import javax.inject.{Inject, Singleton}
+import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 final class EligibilityRepo @Inject() (
-    reactiveMongoComponent: ReactiveMongoComponent,
-    eligibilityRepoConfig:  EligibilityRepoConfig
+    mongoComponent:        MongoComponent,
+    eligibilityRepoConfig: EligibilityRepoConfig
 )(implicit ec: ExecutionContext)
-  extends Repo[JsObject, String]("essttp-stubs-eligibility", reactiveMongoComponent) {
+  extends PlayMongoRepository[EligibilityCheckResult](
+    mongoComponent = mongoComponent,
+    collectionName = "essttp-stubs-eligibility",
+    domainFormat   = EligibilityCheckResult.format,
+    indexes        = EligibilityRepo.indexes(30.minutes.toSeconds),
+    replaceIndexes = true
+  ) {
 
-  override def indexes: Seq[Index] = Seq(
-    Index(
-      key     = Seq("lastUpdated" -> IndexType.Ascending),
-      name    = Some("lastUpdatedId"),
-      options = BSONDocument("expireAfterSeconds" -> eligibilityRepoConfig.expireEligibilityMongo.toSeconds)
-    )
-  )
+  def insertEligibilityData(eligibilityCheckResult: EligibilityCheckResult): Future[InsertOneResult] =
+    collection.insertOne(eligibilityCheckResult).toFuture()
 
-  def findEligibilityDataByTaxRef(taxRef: String): Future[Option[JsObject]] =
-    find("_id" -> taxRef).map { records => records.headOption }
+  def findEligibilityDataByTaxRef(taxRef: String): Future[Option[EligibilityCheckResult]] =
+    collection.find(Filters.eq("identification.idValue", taxRef)).headOption()
 
-  def removeAllRecords(): Future[WriteResult] = removeAll()
+  def removeAllRecords(): Future[Unit] = collection.drop().toFuture().map(_ => ())
 
 }
 
@@ -58,4 +62,11 @@ object EligibilityRepo {
 
     override def writes(o: JsObject): JsObject = o
   }
+
+  def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
+    IndexModel(
+      keys         = Indexes.ascending("lastUpdated"),
+      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
+    )
+  )
 }
