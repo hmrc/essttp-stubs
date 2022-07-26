@@ -32,7 +32,7 @@ class EligibilityControllerSpec extends ItSpec {
     ".retrieveEligibilityData should return correct EligibilityResponse" in {
       testEligibilityConnector.insertEligibilityData(eligibilityResponse).futureValue.status shouldBe 201
       val response: HttpResponse = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest).futureValue
-      response.json shouldBe eligibilityResponseJson withClue (s"Json was infact: ${response.json}")
+      response.json shouldBe eligibilityResponseJson withClue s"Json was infact: ${response.json}"
     }
 
     ".retrieveEligibilityData should return 'NotFound/404' when no corresponding record found" in {

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import play.api.libs.json.JsObject
+import essttp.journey.model.ttp.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
 
@@ -26,10 +26,10 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton()
 class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit executionContext: ExecutionContext) {
 
-  def insertEligibilityData(idValue: String, eligibilityResponse: JsObject): Future[Unit] =
-    eligibilityRepo.upsert(idValue, eligibilityResponse).map(_ => ())
+  def insertEligibilityData(eligibilityCheckResult: EligibilityCheckResult): Future[Unit] =
+    eligibilityRepo.insertEligibilityData(eligibilityCheckResult).map(_ => ())
 
-  def eligibilityData(eligibilityRequest: EligibilityRequest): Future[Option[JsObject]] =
+  def eligibilityData(eligibilityRequest: EligibilityRequest): Future[Option[EligibilityCheckResult]] =
     eligibilityRepo.findEligibilityDataByTaxRef(eligibilityRequest.idValue)
 
   def removeAllRecordsFromEligibilityDb(): Future[Unit] = eligibilityRepo.removeAllRecords().map(_ => ())

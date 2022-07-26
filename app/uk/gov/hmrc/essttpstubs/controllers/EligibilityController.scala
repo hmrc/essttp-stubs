@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.{EligibilityCheckResult, IdType, Identification}
+import essttp.journey.model.ttp.EligibilityCheckResult
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -36,18 +36,14 @@ class EligibilityController @Inject() (
   private val logger: Logger = Logger("EligibilityController")
 
   def insertEligibilityData(): Action[JsObject] = Action.async(parse.json[JsObject]) { implicit request =>
-    val idValue: String = request.body.as[EligibilityCheckResult]
-      .identification
-      .collectFirst({ case Identification(IdType("EMPREF"), idValue) => idValue.value })
-      .getOrElse(throw new RuntimeException("There was no EMPREF idValue!"))
-    eligibilityService.insertEligibilityData(idValue, request.body)
+    eligibilityService.insertEligibilityData(request.body.as[EligibilityCheckResult])
       .map(_ => Created(s"Inserted eligibility record into MongoDb: [ ${request.body.toString} ]"))
   }
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
     logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
     for {
-      eligibilityResponse: Option[JsObject] <- eligibilityService.eligibilityData(request.body)
+      eligibilityResponse: Option[EligibilityCheckResult] <- eligibilityService.eligibilityData(request.body)
     } yield eligibilityResponse match {
       case Some(validResponse) =>
         logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(validResponse))} ]")

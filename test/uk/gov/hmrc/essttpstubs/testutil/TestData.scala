@@ -112,7 +112,6 @@ object TestData {
       val eligibilityResponseJson: JsValue = Json.parse(
         //language=JSON
         """{
-          |	"_id": "test-idValue",
           |	"processingDateTime": "test-processingDate",
           |	"identification": [{
           |		"idType": "EMPREF",
