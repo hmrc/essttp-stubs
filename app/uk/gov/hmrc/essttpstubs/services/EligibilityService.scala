@@ -20,6 +20,7 @@ import essttp.journey.model.ttp.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.repo.{EligibilityEntry, EligibilityRepo}
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit executionContext: ExecutionContext) {
 
   def insertEligibilityData(eligibilityCheckResult: EligibilityCheckResult): Future[Unit] = {
-    eligibilityRepo.insertEligibilityData(EligibilityEntry(eligibilityCheckResult)).map(_ => ())
+    eligibilityRepo.insertEligibilityData(EligibilityEntry(eligibilityCheckResult, Instant.now())).map(_ => ())
   }
 
   def eligibilityData(eligibilityRequest: EligibilityRequest): Future[Option[EligibilityCheckResult]] =

@@ -17,26 +17,13 @@
 package uk.gov.hmrc.essttpstubs.repo
 
 import essttp.journey.model.ttp.EligibilityCheckResult
-import julienrf.json.derived
-import play.api.libs.json.{Json, OFormat, OWrites}
+import play.api.libs.json.{Json, OFormat}
 
 import java.time.Instant
 
-final case class EligibilityEntry(eligibilityCheckResult: EligibilityCheckResult) {
-  def createdAt: Instant = Instant.now()
-}
+final case class EligibilityEntry(eligibilityCheckResult: EligibilityCheckResult, createdAt: Instant)
 
 object EligibilityEntry {
 
-  implicit val format: OFormat[EligibilityEntry] = {
-    val defaultFormat: OFormat[EligibilityEntry] = derived.oformat[EligibilityEntry]()
-    val customWrites = OWrites[EligibilityEntry](j =>
-      defaultFormat.writes(j) ++ Json.obj(
-        "createdAt" -> j.createdAt
-      ))
-    OFormat(
-      defaultFormat,
-      customWrites
-    )
-  }
+  implicit val format: OFormat[EligibilityEntry] = Json.format[EligibilityEntry]
 }

@@ -41,8 +41,8 @@ final class EligibilityRepo @Inject() (
     replaceIndexes = true
   ) {
 
-  def insertEligibilityData(eligibilityCheckResultStubs: EligibilityEntry): Future[InsertOneResult] =
-    collection.insertOne(eligibilityCheckResultStubs).toFuture()
+  def insertEligibilityData(eligibilityEntry: EligibilityEntry): Future[InsertOneResult] =
+    collection.insertOne(eligibilityEntry).toFuture()
 
   def findEligibilityDataByTaxRef(taxRef: String): Future[Option[EligibilityEntry]] =
     collection.find(Filters.eq("eligibilityCheckResult.identification.idValue", taxRef)).headOption()

@@ -21,13 +21,15 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.repo.EligibilityEntry
 import uk.gov.hmrc.essttpstubs.testutil.{ItSpec, TestData}
 
+import java.time.Instant
+
 class EligibilityRepoSpec extends ItSpec {
 
   "insert a record into mongodb" in {
     collectionSize shouldBe 0
 
     val dbOperation: InsertOneResult = eligibilityRepo
-      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse))
+      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
       .futureValue
 
     dbOperation.wasAcknowledged() shouldBe true
@@ -44,7 +46,7 @@ class EligibilityRepoSpec extends ItSpec {
     collectionSize shouldBe 0
 
     val dbOperationInsert: InsertOneResult = eligibilityRepo
-      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse))
+      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
       .futureValue
 
     dbOperationInsert.wasAcknowledged() shouldBe true
