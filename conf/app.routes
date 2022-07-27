@@ -1,8 +1,8 @@
 # microservice specific routes
 
-POST    /time-to-pay/self-serve/eligibility/insert     uk.gov.hmrc.essttpstubs.controllers.EligibilityController.insertEligibilityData()
-POST    /time-to-pay/self-serve/eligibility            uk.gov.hmrc.essttpstubs.controllers.EligibilityController.retrieveEligibilityData
-DELETE  /time-to-pay/self-serve/eligibility/drop       uk.gov.hmrc.essttpstubs.controllers.EligibilityController.removeAllRecordsFromEligibilityDb
+POST    /debts/time-to-pay/eligibility/insert     uk.gov.hmrc.essttpstubs.controllers.EligibilityController.insertEligibilityData()
+POST    /debts/time-to-pay/eligibility            uk.gov.hmrc.essttpstubs.controllers.EligibilityController.retrieveEligibilityData
+DELETE  /debts/time-to-pay/eligibility/drop       uk.gov.hmrc.essttpstubs.controllers.EligibilityController.removeAllRecordsFromEligibilityDb
 
 POST    /time-to-pay/self-serve/affordability          uk.gov.hmrc.essttpstubs.controllers.AffordabilityController.calculateInstalmentAmounts
 POST    /time-to-pay/self-serve/affordable-quotes      uk.gov.hmrc.essttpstubs.controllers.AffordableQuotesController.affordableQuotes

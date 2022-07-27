@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
 
-  val eligibilityApiBaseUrl = s"http://localhost:$port/time-to-pay/self-serve/eligibility"
+  val eligibilityApiBaseUrl = s"http://localhost:$port/debts/time-to-pay/eligibility"
 
   def insertEligibilityData(eligibilityResponse: EligibilityCheckResult)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpClient.POST[EligibilityCheckResult, HttpResponse](s"$eligibilityApiBaseUrl/insert", eligibilityResponse)
