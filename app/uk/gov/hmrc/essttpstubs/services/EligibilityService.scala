@@ -18,19 +18,22 @@ package uk.gov.hmrc.essttpstubs.services
 
 import essttp.journey.model.ttp.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
-import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
+import uk.gov.hmrc.essttpstubs.repo.{EligibilityEntry, EligibilityRepo}
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit executionContext: ExecutionContext) {
 
-  def insertEligibilityData(eligibilityCheckResult: EligibilityCheckResult): Future[Unit] =
-    eligibilityRepo.insertEligibilityData(eligibilityCheckResult).map(_ => ())
+  def insertEligibilityData(eligibilityCheckResult: EligibilityCheckResult): Future[Unit] = {
+    eligibilityRepo.insertEligibilityData(EligibilityEntry(eligibilityCheckResult, Instant.now())).map(_ => ())
+  }
 
   def eligibilityData(eligibilityRequest: EligibilityRequest): Future[Option[EligibilityCheckResult]] =
     eligibilityRepo.findEligibilityDataByTaxRef(eligibilityRequest.idValue)
+      .map(f => f.map(_.eligibilityCheckResult))
 
   def removeAllRecordsFromEligibilityDb(): Future[Unit] = eligibilityRepo.removeAllRecords().map(_ => ())
 

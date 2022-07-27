@@ -17,10 +17,8 @@
 package uk.gov.hmrc.essttpstubs.repo
 
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.ttp.EligibilityCheckResult
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.InsertOneResult
-import play.api.libs.json._
 import uk.gov.hmrc.essttpstubs.config.EligibilityRepoConfig
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -35,38 +33,30 @@ final class EligibilityRepo @Inject() (
     mongoComponent:        MongoComponent,
     eligibilityRepoConfig: EligibilityRepoConfig
 )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[EligibilityCheckResult](
+  extends PlayMongoRepository[EligibilityEntry](
     mongoComponent = mongoComponent,
     collectionName = "essttp-stubs-eligibility",
-    domainFormat   = EligibilityCheckResult.format,
+    domainFormat   = EligibilityEntry.format,
     indexes        = EligibilityRepo.indexes(30.minutes.toSeconds),
     replaceIndexes = true
   ) {
 
-  def insertEligibilityData(eligibilityCheckResult: EligibilityCheckResult): Future[InsertOneResult] =
-    collection.insertOne(eligibilityCheckResult).toFuture()
+  def insertEligibilityData(eligibilityEntry: EligibilityEntry): Future[InsertOneResult] =
+    collection.insertOne(eligibilityEntry).toFuture()
 
-  def findEligibilityDataByTaxRef(taxRef: String): Future[Option[EligibilityCheckResult]] =
-    collection.find(Filters.eq("identification.idValue", taxRef)).headOption()
+  def findEligibilityDataByTaxRef(taxRef: String): Future[Option[EligibilityEntry]] =
+    collection.find(Filters.eq("eligibilityCheckResult.identification.idValue", taxRef)).headOption()
 
   def removeAllRecords(): Future[Unit] = collection.drop().toFuture().map(_ => ())
 
 }
 
 object EligibilityRepo {
-  implicit val format: OFormat[JsObject] = new OFormat[JsObject] {
-    override def reads(json: JsValue): JsResult[JsObject] = json match {
-      case jsObject: JsObject => JsSuccess(jsObject)
-      case _                  => JsError("Not json")
-    }
-
-    override def writes(o: JsObject): JsObject = o
-  }
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
-      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
+      keys         = Indexes.ascending("createdAt"),
+      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS)
     )
   )
 }
