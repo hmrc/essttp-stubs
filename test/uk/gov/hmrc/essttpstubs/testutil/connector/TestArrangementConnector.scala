@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TestArrangementConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
 
-  private val arrangementApiUrl = s"http://localhost:$port/time-to-pay/self-serve/arrangement"
+  private val arrangementApiUrl = s"http://localhost:$port/debts/time-to-pay/self-serve/arrangement"
 
   def enactArrangement(request: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpClient.POST[JsValue, HttpResponse](arrangementApiUrl, request)

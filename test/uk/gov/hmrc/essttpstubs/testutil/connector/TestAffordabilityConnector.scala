@@ -25,7 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class TestAffordabilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
 
-  private val affordabilityApiUrl = s"http://localhost:$port/time-to-pay/self-serve/affordability"
+  private val affordabilityApiUrl = s"http://localhost:$port/debts/time-to-pay/self-serve/affordability"
 
   def calculateInstalmentAmounts(request: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpClient.POST[JsValue, HttpResponse](affordabilityApiUrl, request)
