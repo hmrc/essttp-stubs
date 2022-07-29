@@ -17,8 +17,8 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.eq._
-import essttp.journey.model.ttp.{CustomerReference, ProcessingDateTime}
-import essttp.journey.model.ttp.arrangement.{ArrangementRequest, ArrangementResponse}
+import essttp.rootmodel.ttp.{CustomerReference, ProcessingDateTime}
+import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse}
 import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.http.UpstreamErrorResponse
 

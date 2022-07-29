@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.repo
 
-import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.EligibilityCheckResult
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.Instant

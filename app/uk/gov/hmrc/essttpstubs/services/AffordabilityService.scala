@@ -17,8 +17,8 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.either._
-import essttp.journey.model.ttp.ProcessingDateTime
-import essttp.journey.model.ttp.affordability.{InstalmentAmountRequest, InstalmentAmounts}
+import essttp.rootmodel.ttp.ProcessingDateTime
+import essttp.rootmodel.ttp.affordability.{InstalmentAmountRequest, InstalmentAmounts}
 import essttp.rootmodel.AmountInPence
 import play.api.Configuration
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{BadRequestError, CalculationError, Error}

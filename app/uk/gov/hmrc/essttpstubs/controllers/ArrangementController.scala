@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.arrangement.ArrangementRequest
+import essttp.rootmodel.ttp.arrangement.ArrangementRequest
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.services.ArrangementService
+import uk.gov.hmrc.essttpstubs.util.LoggingHelper
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -31,9 +32,9 @@ class ArrangementController @Inject() (cc: ControllerComponents, arrangementServ
   val logger: Logger = Logger(this.getClass)
 
   val enactArrangement: Action[ArrangementRequest] = Action(parse.json[ArrangementRequest]) { request =>
-    logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
+    LoggingHelper.logRequestInfo(logger  = logger, request = request)
     val response = arrangementService.enactArrangement(request.body)
-    logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(response))} ]")
+    LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(response))
     Ok(Json.toJson(response))
   }
 

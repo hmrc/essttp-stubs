@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
-import essttp.journey.model.ttp._
-import essttp.journey.model.ttp.affordablequotes.DueDate
+import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest

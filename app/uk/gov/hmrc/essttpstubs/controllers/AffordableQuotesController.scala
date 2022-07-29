@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.affordablequotes.AffordableQuotesRequest
+import essttp.rootmodel.ttp.affordablequotes.AffordableQuotesRequest
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.services.AffordableQuotesService
+import uk.gov.hmrc.essttpstubs.util.LoggingHelper
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -34,9 +35,9 @@ class AffordableQuotesController @Inject() (
   val logger: Logger = Logger(this.getClass)
 
   val affordableQuotes: Action[AffordableQuotesRequest] = Action(parse.json[AffordableQuotesRequest]) { implicit request =>
-    logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
+    LoggingHelper.logRequestInfo(logger  = logger, request = request)
     val response = affordableQuotesService.calculateAffordableQuotes(request.body)
-    logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(response))} ]")
+    LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(response))
     Ok(Json.toJson(response))
   }
 }

@@ -17,8 +17,8 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import com.typesafe.config.ConfigFactory
-import essttp.journey.model.ttp.ProcessingDateTime
-import essttp.journey.model.ttp.affordability.InstalmentAmounts
+import essttp.rootmodel.ttp.ProcessingDateTime
+import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.AmountInPence
 import play.api.Configuration
 import play.api.http.Status.BAD_REQUEST

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
-import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
