@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import com.typesafe.config.ConfigFactory
-import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlanAffordableAmount, TotalDebt}
+import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlanAffordableAmount, TotalDebt}
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, JsValue, Json}

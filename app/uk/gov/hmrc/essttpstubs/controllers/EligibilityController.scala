@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.EligibilityCheckResult
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.services.EligibilityService
+import uk.gov.hmrc.essttpstubs.util.LoggingHelper
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -33,7 +34,7 @@ class EligibilityController @Inject() (
     eligibilityService: EligibilityService
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  private val logger: Logger = Logger("EligibilityController")
+  private val logger: Logger = Logger(this.getClass)
 
   def insertEligibilityData(): Action[JsObject] = Action.async(parse.json[JsObject]) { implicit request =>
     eligibilityService.insertEligibilityData(request.body.as[EligibilityCheckResult])
@@ -41,12 +42,12 @@ class EligibilityController @Inject() (
   }
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
-    logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
+    LoggingHelper.logRequestInfo(logger  = logger, request = request)
     for {
       eligibilityResponse: Option[EligibilityCheckResult] <- eligibilityService.eligibilityData(request.body)
     } yield eligibilityResponse match {
       case Some(validResponse) =>
-        logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(validResponse))} ]")
+        LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(validResponse))
         Ok(Json.toJson(validResponse))
       case None =>
         logger.info(s"No entry in mongo for eligibility request: [ ${request.body.toString} ]")

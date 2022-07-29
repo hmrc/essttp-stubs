@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.journey.model.ttp.affordability.InstalmentAmountRequest
+import essttp.rootmodel.ttp.affordability.InstalmentAmountRequest
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService
+import uk.gov.hmrc.essttpstubs.util.LoggingHelper
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -35,7 +36,7 @@ class AffordabilityController @Inject() (
 
   val calculateInstalmentAmounts: Action[InstalmentAmountRequest] =
     Action(parse.json[InstalmentAmountRequest]) { implicit request =>
-      logger.info(s"Request body for request: ${request.uri} [ ${Json.prettyPrint(Json.toJson(request.body))} ]")
+      LoggingHelper.logRequestInfo(logger  = logger, request = request)
       affordabilityService.calculateInstalmentAmounts(request.body).fold(
         {
           case AffordabilityService.BadRequestError(message) =>
@@ -47,7 +48,7 @@ class AffordabilityController @Inject() (
             InternalServerError
         },
         instalmentAmounts => {
-          logger.info(s"Response body for request to ${request.uri}: [ ${Json.prettyPrint(Json.toJson(instalmentAmounts))} ]")
+          LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(instalmentAmounts))
           Ok(Json.toJson(instalmentAmounts))
         }
       )
