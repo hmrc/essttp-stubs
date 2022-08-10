@@ -19,14 +19,14 @@ Content-Type: Application/Json
   "paymentPlanMinLength": 1,
   "paymentPlanMaxLength": 6,
   "eligibilityStatus": {
-    "overallEligibilityStatus": false
+    "eligibilityPass": false
   },
   "eligibilityRules": {
     "hasRlsOnAddress": true,
     "markedAsInsolvent": true,
     "isLessThanMinDebtAllowance": false,
     "isMoreThanMaxDebtAllowance": false,
-    "disallowedChargeLocks": false,
+    "disallowedChargeLockTypes": false,
     "existingTTP": false,
     "chargesOverMaxDebtAge": false,
     "ineligibleChargeTypes": false,
