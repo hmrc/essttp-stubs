@@ -59,13 +59,13 @@ object TestData {
         paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,
         paymentPlanMinLength   = PaymentPlanMinLength(1),
         paymentPlanMaxLength   = PaymentPlanMaxLength(6),
-        eligibilityStatus      = EligibilityStatus(OverallEligibilityStatus(false)),
+        eligibilityStatus      = EligibilityStatus(EligibilityPass(false)),
         eligibilityRules       = EligibilityRules(
           hasRlsOnAddress            = true,
           markedAsInsolvent          = true,
           isLessThanMinDebtAllowance = false,
           isMoreThanMaxDebtAllowance = false,
-          disallowedChargeLocks      = false,
+          disallowedChargeLockTypes  = false,
           existingTTP                = false,
           chargesOverMaxDebtAge      = false,
           ineligibleChargeTypes      = false,
@@ -126,14 +126,14 @@ object TestData {
           |	"paymentPlanMinLength": 1,
           |	"paymentPlanMaxLength": 6,
           |	"eligibilityStatus": {
-          |		"overallEligibilityStatus": false
+          |		"eligibilityPass": false
           |	},
           |	"eligibilityRules": {
           |		"hasRlsOnAddress": true,
           |		"markedAsInsolvent": true,
           |		"isLessThanMinDebtAllowance": false,
           |		"isMoreThanMaxDebtAllowance": false,
-          |		"disallowedChargeLocks": false,
+          |		"disallowedChargeLockTypes": false,
           |		"existingTTP": false,
           |		"chargesOverMaxDebtAge": false,
           |		"ineligibleChargeTypes": false,
