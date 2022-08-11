@@ -17,9 +17,8 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import com.typesafe.config.ConfigFactory
-import essttp.rootmodel.ttp.ProcessingDateTime
-import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.AmountInPence
+import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import play.api.Configuration
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
@@ -62,7 +61,7 @@ class AffordabilityControllerSpec extends ItSpec {
 
     ".calculateInstalmentAmounts should return an Ok with the correct instalment amounts when passed a valid request" in {
         def instalmentAmounts(min: Long, max: Long): InstalmentAmounts =
-          InstalmentAmounts(ProcessingDateTime("2057-08-02T15:28:55.185Z"), AmountInPence(min), AmountInPence(max))
+          InstalmentAmounts(AmountInPence(min), AmountInPence(max))
 
       val testCases: List[(String, InstalmentAmountsTestCase, InstalmentAmounts)] =
         List(
@@ -125,7 +124,17 @@ class AffordabilityControllerSpec extends ItSpec {
          |    "interestAccrued": 500,
          |    "earliestPaymentPlanStartDate": "2022-03-03",
          |    "latestPaymentPlanStartDate": "2022-03-28",
-         |    "accruedDebtInterest": 1326
+         |    "accruedDebtInterest": 1326,
+         |    "customerPostcodes": [
+         |       {
+         |        "addressPostcode": "BN127ER",
+         |        "postcodeDate": "2022-05-22"
+         |      },
+         |      {
+         |        "addressPostcode": "BN129ER",
+         |        "postcodeDate": "2022-04-30"
+         |      }
+         |    ]
          |}
          |""".stripMargin
     ).as[JsObject]

@@ -4,7 +4,7 @@ resolvers += Resolver.typesafeRepo("releases")
 resolvers += "hmrc-releases" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases/"
 resolvers += "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases/"
 
-addSbtPlugin("uk.gov.hmrc"       % "sbt-auto-build"        % "3.7.0")
+addSbtPlugin("uk.gov.hmrc"       % "sbt-auto-build"        % "3.8.0")
 addSbtPlugin("uk.gov.hmrc"       % "sbt-distributables"    % "2.1.0")
 addSbtPlugin("com.typesafe.play" % "sbt-plugin"            % "2.8.8")
 addSbtPlugin("org.wartremover"   % "sbt-wartremover"       % "2.4.15")
