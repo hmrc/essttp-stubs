@@ -27,7 +27,7 @@ object LoggingHelper {
       s"$infoMessage " +
         s"[ uri: ${request.uri} ] " +
         s"[ headers:  ${request.headers} ]" +
-        s"[body: ${Json.prettyPrint(Json.toJson(request.body)(format.writes))} ]"
+        s"[body: ${Json.prettyPrint(Json.toJson(request.body))} ]"
     )
 
   def logResponseInfo(uri: String, logger: Logger, responseBody: JsValue): Unit =
