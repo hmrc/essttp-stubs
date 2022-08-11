@@ -17,17 +17,17 @@
 package uk.gov.hmrc.essttpstubs.util
 
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Format, JsValue, Json}
 import play.api.mvc.Request
 
 object LoggingHelper {
 
-  def logRequestInfo(infoMessage: String = "Request info for: ", logger: Logger, request: Request[_]): Unit =
+  def logRequestInfo[A](infoMessage: String = "Request info for: ", logger: Logger, request: Request[A])(implicit format: Format[A]): Unit =
     logger.info(
       s"$infoMessage " +
         s"[ uri: ${request.uri} ] " +
         s"[ headers:  ${request.headers} ]" +
-        s"[body: ${Json.prettyPrint(Json.toJson(request.body.toString))} ]"
+        s"[body: ${Json.prettyPrint(Json.toJson(request.body))} ]"
     )
 
   def logResponseInfo(uri: String, logger: Logger, responseBody: JsValue): Unit =
