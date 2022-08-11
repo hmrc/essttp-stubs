@@ -17,14 +17,12 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.either._
-import essttp.rootmodel.ttp.ProcessingDateTime
-import essttp.rootmodel.ttp.affordability.{InstalmentAmountRequest, InstalmentAmounts}
 import essttp.rootmodel.AmountInPence
+import essttp.rootmodel.ttp.affordability.{InstalmentAmountRequest, InstalmentAmounts}
 import play.api.Configuration
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{BadRequestError, CalculationError, Error}
 
-import java.time.format.DateTimeFormatter
-import java.time.{Clock, Instant}
+import java.time.Clock
 import javax.inject.{Inject, Singleton}
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Try
@@ -57,12 +55,10 @@ class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
       val minInstalmentAmount = residualDebtAmount / request.paymentPlanMaxLength.value + maxInterest
       val maxInstalmentAmount = residualDebtAmount / request.paymentPlanMinLength.value + minInterest
 
-      val now: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now(clock))
-
       for {
         min <- toLong(minInstalmentAmount)
         max <- toLong(maxInstalmentAmount)
-      } yield InstalmentAmounts(ProcessingDateTime(now), AmountInPence(min), AmountInPence(max))
+      } yield InstalmentAmounts(AmountInPence(min), AmountInPence(max))
 
     }
 
