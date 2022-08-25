@@ -56,7 +56,7 @@ object EligibilityRepo {
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(
       keys         = Indexes.ascending("createdAt"),
-      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS)
+      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("createdAtIdx")
     )
   )
 }
