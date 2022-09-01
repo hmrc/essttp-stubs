@@ -82,7 +82,7 @@ object TestData {
                 mainTrans            = MainTrans("test-mainTrans"),
                 subTrans             = SubTrans("test-subTrans"),
                 outstandingAmount    = OutstandingAmount(AmountInPence(10)),
-                interestStartDate    = InterestStartDate(LocalDate.parse("2022-04-27")),
+                interestStartDate    = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
                 accruedInterest      = AccruedInterest(AmountInPence(1)),
                 mainType             = MainType("test-mainType"),
                 chargeReference      = ChargeReference("test-chargeReference"),
