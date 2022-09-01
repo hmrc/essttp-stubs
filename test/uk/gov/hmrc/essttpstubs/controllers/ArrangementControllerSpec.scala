@@ -52,6 +52,7 @@ class ArrangementControllerSpec extends ItSpec {
           |	}],
           |	"channelIdentifier": "eSSTTP",
           |	"regimeType": "PAYE",
+          | "regimePaymentFrequency": "Monthly",
           |	"arrangementAgreedDate": "2022-06-08",
           |	"directDebitInstruction": {
           |		"sortCode": "123456",
