@@ -52,6 +52,7 @@ class ArrangementControllerSpec extends ItSpec {
           |	}],
           |	"channelIdentifier": "eSSTTP",
           |	"regimeType": "PAYE",
+          |	"regimePaymentFrequency": "monthly",
           |	"arrangementAgreedDate": "2022-06-08",
           |	"directDebitInstruction": {
           |		"sortCode": "123456",
@@ -64,7 +65,7 @@ class ArrangementControllerSpec extends ItSpec {
           |		"totalDebt": 745183,
           |		"totalDebtIncInt": 752238,
           |		"planInterest": 5755,
-          |		"paymentPlanFrequency": "Monthly",
+          |		"paymentPlanFrequency": "monthly",
           |		"collections": {
           |			"initialCollection": {
           |				"dueDate": "2022-06-18",
