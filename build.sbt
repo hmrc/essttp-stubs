@@ -7,8 +7,6 @@ import wartremover.Wart
 
 val appName = "essttp-stubs"
 
-val silencerVersion = "1.7.5"
-
 lazy val scalariformSettings =
 // description of options found here -> https://github.com/scala-ide/scalariform
   ScalariformKeys.preferences := ScalariformKeys.preferences.value
@@ -75,7 +73,10 @@ lazy val scalaCompilerOptions = Seq(
   "-feature",
   "-unchecked",
   "-language:implicitConversions",
-  "-Ypartial-unification" //required by cats
+  "-Ypartial-unification", //required by cats
+  // required in place of silencer plugin
+  "-Wconf:cat=unused-imports&src=html/.*:s",
+  "-Wconf:src=routes/.*:s"
 )
 
 
@@ -84,17 +85,9 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
     majorVersion                     := 0,
-    scalaVersion                     := "2.12.14",
+    scalaVersion                     := "2.12.15",
     scalacOptions ++= scalaCompilerOptions,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
-    // ***************
-    // Use the silencer plugin to suppress warnings
-    scalacOptions += "-P:silencer:pathFilters=routes",
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    )
-    // ***************
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )
   .settings(wartRemoverSettings)
   .settings(scalariformSettings)
