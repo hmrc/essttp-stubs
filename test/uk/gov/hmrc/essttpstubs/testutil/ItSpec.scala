@@ -17,7 +17,6 @@
 package uk.gov.hmrc.essttpstubs.testutil
 
 import akka.util.Timeout
-import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.freespec.AnyFreeSpec
@@ -72,7 +71,7 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @silent // silence "method never used" warning
+    @annotation.nowarn // silence "method never used" warning
     def clock: Clock = self.clock
   }
 
