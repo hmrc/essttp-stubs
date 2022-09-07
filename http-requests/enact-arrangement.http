@@ -1,0 +1,87 @@
+### submit arrangement
+POST http://localhost:9218/debts/time-to-pay/self-serve/arrangement
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+
+{
+  "channelIdentifier": "eSSTTP",
+  "regimeType": "PAYE",
+  "regimePaymentFrequency": "Monthly",
+  "arrangementAgreedDate": "2022-09-07",
+  "identification": [
+    {
+      "idType": "BROCS",
+      "idValue": "someBrocs"
+    },
+    {
+      "idType": "EMPREF",
+      "idValue": "someEmpRef"
+    }
+  ],
+  "directDebitInstruction": {
+    "sortCode": "123456",
+    "accountNumber": "12345678",
+    "accountName": "Bob Ross",
+    "paperAuddisFlag": false
+  },
+  "paymentPlan": {
+    "planDuration": 3,
+    "paymentPlanFrequency": "Monthly",
+    "numberOfInstalments": 3,
+    "totalDebt": 16839,
+    "totalDebtIncInt": 16840,
+    "planInterest": 1,
+    "collections": "",
+    "instalments": "",
+    "collections": {
+      "initialCollection": {
+        "dueDate": "2022-06-18",
+        "amountDue": 1000
+      },
+      "regularCollections": [
+        {
+          "dueDate": "2022-08-08",
+          "amountDue": 5613
+        },
+        {
+          "dueDate": "2022-09-08",
+          "amountDue": 5613
+        },
+        {
+          "dueDate": "2022-10-08",
+          "amountDue": 5613
+        }
+      ]
+    },
+    "instalments": [
+      {
+        "instalmentNumber": 3,
+        "dueDate": "2022-10-08",
+        "instalmentInterestAccrued": 0,
+        "instalmentBalance": 5613,
+        "debtItemChargeId": "XW006559808862",
+        "amountDue": 5613,
+        "debtItemOriginalDueDate": "2021-07-08"
+      },
+      {
+        "instalmentNumber": 2,
+        "dueDate": "2022-09-08",
+        "instalmentInterestAccrued": 0,
+        "instalmentBalance": 11226,
+        "debtItemChargeId": "XW006559808862",
+        "amountDue": 5613,
+        "debtItemOriginalDueDate": "2021-07-08"
+      },
+      {
+        "instalmentNumber": 1,
+        "dueDate": "2022-08-08",
+        "instalmentInterestAccrued": 0,
+        "instalmentBalance": 16839,
+        "debtItemChargeId": "XW006559808862",
+        "amountDue": 5613,
+        "debtItemOriginalDueDate": "2021-07-08"
+      }
+    ]
+  }
+}

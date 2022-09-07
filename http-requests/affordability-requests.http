@@ -1,0 +1,89 @@
+### request affordability (Instalment amounts) with upfront payment
+POST http://localhost:9218/debts/time-to-pay/self-serve/affordability
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+
+{
+  "channelIdentifier": "eSSTTP",
+  "paymentPlanFrequency": "Monthly",
+  "paymentPlanMinLength":  1,
+  "paymentPlanMaxLength": 6,
+  "earliestPaymentPlanStartDate":  "2022-07-08",
+  "latestPaymentPlanStartDate": "2022-08-08",
+  "initialPaymentDate":  "2022-06-18",
+  "initialPaymentAmount": 1000,
+  "accruedDebtInterest": 10,
+  "debtItemCharges": [
+    {
+      "outstandingDebtAmount": 14781,
+      "mainTrans": "2000",
+      "subTrans": "1000",
+      "debtItemChargeId": "XW006559808862",
+      "interestStartDate": "2022-05-22",
+      "debtItemOriginalDueDate": "2022-05-22"
+    },
+    {
+      "outstandingDebtAmount": 3058,
+      "mainTrans": "2000",
+      "subTrans": "1100",
+      "debtItemChargeId": "XW006559808862",
+      "interestStartDate": "2022-05-22",
+      "debtItemOriginalDueDate": "2022-05-22"
+    }
+  ],
+  "customerPostcodes": [
+    {
+      "addressPostcode": "BN127ER",
+      "postcodeDate": "2022-05-22"
+    },
+    {
+      "addressPostcode": "BN129ER",
+      "postcodeDate": "2022-04-30"
+    }
+  ]
+}
+
+### request affordability (Instalment amounts) with no upfront payment
+POST http://localhost:9218/debts/time-to-pay/self-serve/affordability
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+
+{
+  "channelIdentifier": "eSSTTP",
+  "paymentPlanFrequency": "Monthly",
+  "paymentPlanMinLength":  1,
+  "paymentPlanMaxLength": 6,
+  "earliestPaymentPlanStartDate":  "2022-07-08",
+  "latestPaymentPlanStartDate": "2022-08-08",
+  "accruedDebtInterest": 10,
+  "debtItemCharges": [
+    {
+      "outstandingDebtAmount": 14781,
+      "mainTrans": "2000",
+      "subTrans": "1000",
+      "debtItemChargeId": "XW006559808862",
+      "interestStartDate": "2022-05-22",
+      "debtItemOriginalDueDate": "2022-05-22"
+    },
+    {
+      "outstandingDebtAmount": 3058,
+      "mainTrans": "2000",
+      "subTrans": "1100",
+      "debtItemChargeId": "XW006559808862",
+      "interestStartDate": "2022-05-22",
+      "debtItemOriginalDueDate": "2022-05-22"
+    }
+  ],
+  "customerPostcodes": [
+    {
+      "addressPostcode": "BN127ER",
+      "postcodeDate": "2022-05-22"
+    },
+    {
+      "addressPostcode": "BN129ER",
+      "postcodeDate": "2022-04-30"
+    }
+  ]
+}
