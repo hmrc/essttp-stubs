@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
@@ -35,6 +36,8 @@ class EligibilityController @Inject() (
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   private val logger: Logger = Logger(this.getClass)
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   def insertEligibilityData(): Action[JsObject] = Action.async(parse.json[JsObject]) { implicit request =>
     eligibilityService.insertEligibilityData(request.body.as[EligibilityCheckResult])

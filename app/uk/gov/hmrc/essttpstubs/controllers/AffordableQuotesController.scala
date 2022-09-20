@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.affordablequotes.AffordableQuotesRequest
 import play.api.Logger
 import play.api.libs.json.Json
@@ -33,6 +34,8 @@ class AffordableQuotesController @Inject() (
 ) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val affordableQuotes: Action[AffordableQuotesRequest] = Action(parse.json[AffordableQuotesRequest]) { implicit request =>
     LoggingHelper.logRequestInfo(logger  = logger, request = request)

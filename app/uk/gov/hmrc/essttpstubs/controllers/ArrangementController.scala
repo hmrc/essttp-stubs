@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.arrangement.ArrangementRequest
 import play.api.Logger
 import play.api.libs.json.Json
@@ -30,6 +31,8 @@ import javax.inject.{Inject, Singleton}
 class ArrangementController @Inject() (cc: ControllerComponents, arrangementService: ArrangementService) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val enactArrangement: Action[ArrangementRequest] = Action(parse.json[ArrangementRequest]) { request =>
     LoggingHelper.logRequestInfo(logger  = logger, request = request)

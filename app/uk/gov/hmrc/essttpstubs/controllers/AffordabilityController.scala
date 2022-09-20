@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.affordability.InstalmentAmountRequest
 import play.api.Logger
 import play.api.libs.json.Json
@@ -33,6 +34,8 @@ class AffordabilityController @Inject() (
 ) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val calculateInstalmentAmounts: Action[InstalmentAmountRequest] =
     Action(parse.json[InstalmentAmountRequest]) { implicit request =>
