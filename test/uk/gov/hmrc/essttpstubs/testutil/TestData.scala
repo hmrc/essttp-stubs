@@ -20,6 +20,7 @@ import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 
 import java.time.LocalDate
@@ -53,7 +54,7 @@ object TestData {
           )
         ),
         customerPostcodes      = List(
-          CustomerPostcode(addressPostcode = Postcode("test-postcode"), postcodeDate = PostcodeDate("2022-01-01"))
+          CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate("2022-01-01"))
         ),
         regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
         paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,

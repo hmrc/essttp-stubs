@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.repo
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -25,6 +26,11 @@ import java.time.Instant
 final case class EligibilityEntry(eligibilityCheckResult: EligibilityCheckResult, createdAt: Instant)
 
 object EligibilityEntry {
+
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+
   implicit val format: OFormat[EligibilityEntry] = Json.format[EligibilityEntry]
+
 }

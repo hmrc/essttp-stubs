@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -25,6 +26,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val eligibilityApiBaseUrl = s"http://localhost:$port/debts/time-to-pay/eligibility"
 

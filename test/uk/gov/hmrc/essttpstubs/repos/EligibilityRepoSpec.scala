@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.repos
 
+import essttp.crypto.CryptoFormat
 import org.mongodb.scala.result.InsertOneResult
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.repo.EligibilityEntry
@@ -24,6 +25,8 @@ import uk.gov.hmrc.essttpstubs.testutil.{ItSpec, TestData}
 import java.time.Instant
 
 class EligibilityRepoSpec extends ItSpec {
+
+  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   "insert a record into mongodb" in {
     collectionSize shouldBe 0
