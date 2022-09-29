@@ -90,7 +90,7 @@ object TestData {
                 dueDate              = DueDate(LocalDate.parse("2022-04-27")),
                 ineligibleChargeType = IneligibleChargeType(false),
                 chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
-                locks                = List(testLock)
+                locks                = Some(List(testLock))
               )
             )
           )
