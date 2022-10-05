@@ -8,3 +8,6 @@ POST    /debts/time-to-pay/self-serve/affordability             uk.gov.hmrc.esst
 POST    /debts/time-to-pay/affordability/affordable-quotes      uk.gov.hmrc.essttpstubs.controllers.AffordableQuotesController.affordableQuotes
 
 POST    /debts/time-to-pay/self-serve/arrangement               uk.gov.hmrc.essttpstubs.controllers.ArrangementController.enactArrangement
+
+POST    /email-verification/request-passcode                    uk.gov.hmrc.essttpstubs.controllers.EmailVerificationController.requestPasscode
+POST    /email-verification/verify-passcode                     uk.gov.hmrc.essttpstubs.controllers.EmailVerificationController.verifyPasscode
