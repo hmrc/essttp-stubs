@@ -122,8 +122,8 @@ object TestData {
           |		"addressPostcode": "test-postcode",
           |		"postcodeDate": "2022-01-01"
           |	}],
-          |	"regimePaymentFrequency": "monthly",
-          |	"paymentPlanFrequency": "monthly",
+          |	"regimePaymentFrequency": "Monthly",
+          |	"paymentPlanFrequency": "Monthly",
           |	"paymentPlanMinLength": 1,
           |	"paymentPlanMaxLength": 6,
           |	"eligibilityStatus": {
