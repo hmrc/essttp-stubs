@@ -42,7 +42,7 @@ class AffordableQuotesService @Inject() (config: Configuration) {
 
   def calculateAffordableQuotes(affordableQuotesRequest: AffordableQuotesRequest): AffordableQuotesResponse = {
     val totalDebt: TotalDebt = TotalDebt(
-      AmountInPence(affordableQuotesRequest.debtItemCharges.map(x => x.outstandingDebtAmount.value.value).sum)
+      AmountInPence(affordableQuotesRequest.debtItemCharges.map(x => x.outstandingDebtAmount.value.value).sum + affordableQuotesRequest.accruedDebtInterest.value.value)
         .-(affordableQuotesRequest.initialPaymentAmount.map(_.value).getOrElse(AmountInPence(0)))
     )
     val interestPerMonthRound = for {

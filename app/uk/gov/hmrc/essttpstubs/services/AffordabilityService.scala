@@ -39,7 +39,7 @@ class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
   private val totalInterestRate: BigDecimal = baseInterestRate + additionalInterestRate
 
   def calculateInstalmentAmounts(request: InstalmentAmountRequest): Either[Error, InstalmentAmounts] = {
-    val totalDebtAmount: Long = request.debtItemCharges.map(_.outstandingDebtAmount.value.value).sum
+    val totalDebtAmount: Long = request.debtItemCharges.map(_.outstandingDebtAmount.value.value).sum + request.accruedDebtInterest.value.value
     val initialPaymentAmount: Long = request.initialPaymentAmount.map(_.value).getOrElse(0L)
     if (totalDebtAmount <= initialPaymentAmount)
       Left(BadRequestError("Total debt amount was less than or equal to the initial payment amount"))
