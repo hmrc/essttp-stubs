@@ -94,6 +94,16 @@ class AffordableQuotesControllerSpec extends ItSpec {
       result.json shouldBe Json.toJson(expectedResult)
       result.json.as[AffordableQuotesResponse].paymentPlans.map(_.collections.regularCollections.size) shouldBe List(1, 2, 3)
     }
+    "allow for interest" in {
+      val affordableAmount: PaymentPlanAffordableAmount = PaymentPlanAffordableAmount(AmountInPence(350000000))
+      val expectedResult = TdAll.AffordabilityJsonBodies.`1-2-3`
+      val interest = AmountInPence(BigDecimal("300"))
+      val request: JsValue = affordableQuotesRequest(TotalDebt(totalDebt6k.value - interest), affordableAmount, interest = interest)
+      val result: HttpResponse = testAffordableQuotesConnector.calculateAffordableQuotes(request).futureValue
+      result.json shouldBe Json.toJson(expectedResult)
+      result.json.as[AffordableQuotesResponse].paymentPlans.map(_.collections.regularCollections.size) shouldBe List(1, 2, 3)
+    }
+
     "not return plan where the collection amount is less than £1" in {
       val affordableAmount: PaymentPlanAffordableAmount = PaymentPlanAffordableAmount(AmountInPence(200))
       val request: JsValue = affordableQuotesRequest(TotalDebt(AmountInPence(240)), affordableAmount)
@@ -103,7 +113,12 @@ class AffordableQuotesControllerSpec extends ItSpec {
     }
   }
 
-  def affordableQuotesRequest(totalDebt: TotalDebt, affordableAmount: PaymentPlanAffordableAmount, upfrontPaymentAmount: Option[UpfrontPaymentAmount] = None): JsObject = {
+  def affordableQuotesRequest(
+      totalDebt:            TotalDebt,
+      affordableAmount:     PaymentPlanAffordableAmount,
+      upfrontPaymentAmount: Option[UpfrontPaymentAmount] = None,
+      interest:             AmountInPence                = AmountInPence.zero
+  ): JsObject = {
     val upfrontPaymentJson: String = upfrontPaymentAmount.fold("")(someValue =>
       s"""
          |"initialPaymentDate":"2022-06-18",
@@ -117,7 +132,7 @@ class AffordableQuotesControllerSpec extends ItSpec {
          |   "paymentPlanFrequency":"Monthly",
          |   "paymentPlanMaxLength":6,
          |   "paymentPlanMinLength":1,
-         |   "accruedDebtInterest":1000,
+         |   "accruedDebtInterest":${interest.value},
          |   "paymentPlanStartDate":"2022-07-08",
          |   $upfrontPaymentJson
          |   "debtItemCharges": [

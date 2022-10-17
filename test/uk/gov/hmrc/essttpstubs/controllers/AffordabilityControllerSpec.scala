@@ -48,13 +48,13 @@ class AffordabilityControllerSpec extends ItSpec {
   "AffordabilityController" - {
 
     ".calculateInstalmentAmounts should return BadRequest when total debt is equal to initial payment amount" in {
-      val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(500, 500)))
+      val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(500, 500), 0))
       val response = testAffordabilityConnector.calculateInstalmentAmounts(request).failed.futureValue
       asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
 
     ".calculateInstalmentAmounts should return BadRequest when total debt is strictly less than the initial payment amount" in {
-      val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(900)))
+      val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(900), 0))
       val response = testAffordabilityConnector.calculateInstalmentAmounts(request).failed.futureValue
       asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
@@ -65,10 +65,11 @@ class AffordabilityControllerSpec extends ItSpec {
 
       val testCases: List[(String, InstalmentAmountsTestCase, InstalmentAmounts)] =
         List(
-          ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1)), instalmentAmounts(55250, 300875)),
-          ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000)), instalmentAmounts(138125, 752188)),
-          ("3", InstalmentAmountsTestCase(1, 6, None, List(2000)), instalmentAmounts(368, 2006)),
-          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200)), instalmentAmounts(18, 100))
+          ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1), 0), instalmentAmounts(55250, 300875)),
+          ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000), 0), instalmentAmounts(138125, 752188)),
+          ("3", InstalmentAmountsTestCase(1, 6, None, List(2000), 0), instalmentAmounts(368, 2006)),
+          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200), 0), instalmentAmounts(18, 100)),
+          ("5", InstalmentAmountsTestCase(1, 6, Some(1900), List(1700, 100), 200), instalmentAmounts(18, 100))
         )
 
       testCases.foreach {
@@ -124,7 +125,7 @@ class AffordabilityControllerSpec extends ItSpec {
          |    "interestAccrued": 500,
          |    "earliestPaymentPlanStartDate": "2022-03-03",
          |    "latestPaymentPlanStartDate": "2022-03-28",
-         |    "accruedDebtInterest": 1326,
+         |    "accruedDebtInterest": ${testCase.interestAmount},
          |    "customerPostcodes": [
          |       {
          |        "addressPostcode": "BN127ER",
@@ -147,7 +148,7 @@ class AffordabilityControllerSpec extends ItSpec {
 object AffordabilityControllerSpec {
 
   final case class InstalmentAmountsTestCase(
-      minPlanLength: Int, maxPlanLength: Int, initialPaymentAmount: Option[Int], outstandingDebtAmounts: List[Int]
+      minPlanLength: Int, maxPlanLength: Int, initialPaymentAmount: Option[Int], outstandingDebtAmounts: List[Int], interestAmount: Int
   )
 
 }
