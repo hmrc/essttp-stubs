@@ -8,8 +8,8 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-backend-play-28"   % boostrapVersion,
     "org.typelevel"     %% "cats-core"                   % "2.9.0",
     "com.beachape"      %% "enumeratum"                  % "1.7.0",
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"          % "0.73.0",
-    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.77.0"
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"          % "0.74.0",
+    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.79.0"
   )
 
   val test: Seq[ModuleID] = Seq(
