@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import essttp.crypto.CryptoFormat.NoOpCryptoFormat
+import essttp.rootmodel.ttp.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.ModelInstances._
@@ -35,8 +37,13 @@ class EligibilityControllerSpec extends ItSpec {
       response.json shouldBe eligibilityResponseJson withClue s"Json was infact: ${response.json}"
     }
 
-    ".retrieveEligibilityData should return 'NotFound/404' when no corresponding record found" in {
-      val result = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest).failed.futureValue
+    ".retrieveEligibilityData should return a default random EligibilityResponse if none were found in  mongo" in {
+      val response: HttpResponse = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest.copy(idValue = "iwontexist")).futureValue
+      response.json.asOpt[EligibilityCheckResult](EligibilityCheckResult.format(NoOpCryptoFormat)).isDefined shouldBe true withClue "No EligibilityCheckResult"
+    }
+
+    ".retrieveEligibilityData should return 'NotFound/404' when idValue is 'NotFound' - just for not found scenario" in {
+      val result = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest.copy(idValue = "NotFound")).failed.futureValue
       asUpstreamErrorResponse(result).getMessage() should include("returned 404")
     }
 

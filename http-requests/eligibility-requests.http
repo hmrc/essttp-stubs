@@ -67,7 +67,7 @@ Content-Type: Application/Json
 {
   "channelIdentifier":"eSSTTP",
   "idType": "test-idType",
-  "idValue": "test-idValue",
+  "idValue": "504Error",
   "regimeType": "test-regimeType",
   "returnFinancialAssessment": true
 }
