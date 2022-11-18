@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import cats.implicits._
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.{EligibilityCheckResult, RegimeType}
 import play.api.Logger
@@ -53,11 +52,15 @@ class EligibilityController @Inject() (
       case Some(validResponse) =>
         LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(validResponse))
         Ok(Json.toJson(validResponse))
-      case None =>
-        if (request.body.idValue === "NotFound") NotFound
-        else {
+      case None => request.body.idValue match {
+        case "NotFound" => NotFound
+        case "500Error" => InternalServerError
+        case "502Error" => BadGateway
+        case "503Error" => ServiceUnavailable
+        case "504Error" => GatewayTimeout
+        case _ =>
           Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue)))
-        }
+      }
     }
   }
 
