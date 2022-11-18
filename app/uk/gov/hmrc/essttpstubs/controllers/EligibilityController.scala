@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import cats.implicits._
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.{EligibilityCheckResult, RegimeType}
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -53,8 +54,10 @@ class EligibilityController @Inject() (
         LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(validResponse))
         Ok(Json.toJson(validResponse))
       case None =>
-        logger.info(s"No entry in mongo for eligibility request: [ ${request.body.toString} ]")
-        NotFound //todo update this to reflect the spec responses maybe
+        if (request.body.idValue === "NotFound") NotFound
+        else {
+          Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue)))
+        }
     }
   }
 

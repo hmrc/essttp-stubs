@@ -16,11 +16,15 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.AmountInPence
+import essttp.rootmodel.ttp.affordablequotes.DueDate
+import essttp.rootmodel.ttp.eligibility.{CustomerDetail, EmailSource, RegimeDigitalCorrespondence}
+import essttp.rootmodel.ttp._
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.repo.{EligibilityEntry, EligibilityRepo}
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,6 +40,74 @@ class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit e
       .map(f => f.map(_.eligibilityCheckResult))
 
   def removeAllRecordsFromEligibilityDb(): Future[Unit] = eligibilityRepo.removeAllRecords().map(_ => ())
+
+}
+
+object EligibilityService {
+  def defaultEligibleResponse(regimeType: RegimeType, taxId: String): EligibilityCheckResult = {
+    val identification: List[Identification] = regimeType match {
+      case RegimeType("PAYE") =>
+        List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
+      case RegimeType("VATC") =>
+        List(Identification(IdType("VRN"), IdValue(taxId)))
+      case _ => // just default to epaye, we don't really care...
+        List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
+    }
+    EligibilityCheckResult(
+      processingDateTime          = ProcessingDateTime(Instant.now().toString),
+      identification              = identification,
+      customerPostcodes           = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate("2022-01-01"))),
+      regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
+      paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
+      paymentPlanMinLength        = PaymentPlanMinLength(1),
+      paymentPlanMaxLength        = PaymentPlanMaxLength(6),
+      eligibilityStatus           = EligibilityStatus(EligibilityPass(true)),
+      eligibilityRules            = EligibilityRules(
+        hasRlsOnAddress                   = false,
+        markedAsInsolvent                 = false,
+        isLessThanMinDebtAllowance        = false,
+        isMoreThanMaxDebtAllowance        = false,
+        disallowedChargeLockTypes         = false,
+        existingTTP                       = false,
+        chargesOverMaxDebtAge             = false,
+        ineligibleChargeTypes             = false,
+        missingFiledReturns               = false,
+        hasInvalidInterestSignals         = Some(false),
+        dmSpecialOfficeProcessingRequired = Some(false)
+      ),
+      chargeTypeAssessment        = List(
+        ChargeTypeAssessment(
+          TaxPeriodFrom("2020-08-13"),
+          TaxPeriodTo("2020-08-14"),
+          DebtTotalAmount(AmountInPence(123456)),
+          List(Charges(
+            chargeType           = ChargeType("InYearRTICharge-Tax"),
+            mainType             = MainType("InYearRTICharge(FPS)"),
+            chargeReference      = ChargeReference(taxId),
+            mainTrans            = MainTrans("mainTrans"),
+            subTrans             = SubTrans("subTrans"),
+            outstandingAmount    = OutstandingAmount(AmountInPence(123456)),
+            interestStartDate    = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
+            dueDate              = DueDate(LocalDate.parse("2017-03-07")),
+            accruedInterest      = AccruedInterest(AmountInPence(123)),
+            ineligibleChargeType = IneligibleChargeType(false),
+            chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
+            locks                = Some(
+              List(
+                Lock(
+                  lockType                 = LockType("Payment"),
+                  lockReason               = LockReason("Risk/Fraud"),
+                  disallowedChargeLockType = DisallowedChargeLockType(false)
+                )
+              )
+            )
+          ))
+        )
+      ),
+      customerDetails             = Some(List(CustomerDetail(Some("bobross@joyofpainting.com"), Some(EmailSource.ETMP)))),
+      regimeDigitalCorrespondence = Some(RegimeDigitalCorrespondence(true))
+    )
+  }
 
 }
 
