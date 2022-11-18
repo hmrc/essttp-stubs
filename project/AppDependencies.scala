@@ -10,6 +10,7 @@ object AppDependencies {
     "com.beachape"      %% "enumeratum"                  % "1.7.0",
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"          % "0.74.0",
     "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.82.0"
+
   )
 
   val test: Seq[ModuleID] = Seq(
