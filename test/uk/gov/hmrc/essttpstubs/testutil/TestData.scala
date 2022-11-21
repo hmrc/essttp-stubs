@@ -46,22 +46,22 @@ object TestData {
       )
 
       val eligibilityResponse: EligibilityCheckResult = EligibilityCheckResult(
-        processingDateTime          = ProcessingDateTime("test-processingDate"),
-        identification              = List(
+        processingDateTime              = ProcessingDateTime("test-processingDate"),
+        identification                  = List(
           Identification(
             idType  = IdType("EMPREF"),
             idValue = IdValue("test-idValue")
           )
         ),
-        customerPostcodes           = List(
+        customerPostcodes               = List(
           CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate("2022-01-01"))
         ),
-        regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
-        paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
-        paymentPlanMinLength        = PaymentPlanMinLength(1),
-        paymentPlanMaxLength        = PaymentPlanMaxLength(6),
-        eligibilityStatus           = EligibilityStatus(EligibilityPass(false)),
-        eligibilityRules            = EligibilityRules(
+        regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
+        paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
+        paymentPlanMinLength            = PaymentPlanMinLength(1),
+        paymentPlanMaxLength            = PaymentPlanMaxLength(6),
+        eligibilityStatus               = EligibilityStatus(EligibilityPass(false)),
+        eligibilityRules                = EligibilityRules(
           hasRlsOnAddress                   = true,
           markedAsInsolvent                 = true,
           isLessThanMinDebtAllowance        = false,
@@ -72,9 +72,10 @@ object TestData {
           ineligibleChargeTypes             = false,
           missingFiledReturns               = false,
           hasInvalidInterestSignals         = None,
-          dmSpecialOfficeProcessingRequired = None
+          dmSpecialOfficeProcessingRequired = None,
+          noDueDatesReached                 = Some(false)
         ),
-        chargeTypeAssessment        = List(
+        chargeTypeAssessment            = List(
           ChargeTypeAssessment(
             taxPeriodFrom   = TaxPeriodFrom("2022-04-27"),
             taxPeriodTo     = TaxPeriodTo("2022-04-27"),
@@ -92,13 +93,15 @@ object TestData {
                 dueDate              = DueDate(LocalDate.parse("2022-04-27")),
                 ineligibleChargeType = IneligibleChargeType(false),
                 chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
-                locks                = Some(List(testLock))
+                locks                = Some(List(testLock)),
+                dueDateNotReached    = Some(false)
               )
             )
           )
         ),
-        customerDetails             = None,
-        regimeDigitalCorrespondence = None
+        customerDetails                 = None,
+        regimeDigitalCorrespondence     = None,
+        futureChargeLiabilitiesExcluded = Some(false)
       )
     }
 
@@ -142,7 +145,8 @@ object TestData {
           |		"existingTTP": false,
           |		"chargesOverMaxDebtAge": false,
           |		"ineligibleChargeTypes": false,
-          |		"missingFiledReturns": false
+          |		"missingFiledReturns": false,
+          |   "noDueDatesReached": false
           |	},
           |	"chargeTypeAssessment": [{
           |		"taxPeriodFrom": "2022-04-27",
@@ -164,9 +168,11 @@ object TestData {
           |				"lockType": "testLockType",
           |				"lockReason": "testLockReason",
           |				"disallowedChargeLockType": false
-          |			}]
-          |		}]
-          |	}]
+          |		  	}],
+          |     "dueDateNotReached": false
+          |	  	}]
+          |	  }],
+          |  "futureChargeLiabilitiesExcluded": false
           |}""".stripMargin
       )
     }

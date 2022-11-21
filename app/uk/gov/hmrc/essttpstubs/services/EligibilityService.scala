@@ -54,15 +54,15 @@ object EligibilityService {
         List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
     }
     EligibilityCheckResult(
-      processingDateTime          = ProcessingDateTime(Instant.now().toString),
-      identification              = identification,
-      customerPostcodes           = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate("2022-01-01"))),
-      regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
-      paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
-      paymentPlanMinLength        = PaymentPlanMinLength(1),
-      paymentPlanMaxLength        = PaymentPlanMaxLength(6),
-      eligibilityStatus           = EligibilityStatus(EligibilityPass(true)),
-      eligibilityRules            = EligibilityRules(
+      processingDateTime              = ProcessingDateTime(Instant.now().toString),
+      identification                  = identification,
+      customerPostcodes               = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate("2022-01-01"))),
+      regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
+      paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
+      paymentPlanMinLength            = PaymentPlanMinLength(1),
+      paymentPlanMaxLength            = PaymentPlanMaxLength(6),
+      eligibilityStatus               = EligibilityStatus(EligibilityPass(true)),
+      eligibilityRules                = EligibilityRules(
         hasRlsOnAddress                   = false,
         markedAsInsolvent                 = false,
         isLessThanMinDebtAllowance        = false,
@@ -73,9 +73,10 @@ object EligibilityService {
         ineligibleChargeTypes             = false,
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = Some(false),
-        dmSpecialOfficeProcessingRequired = Some(false)
+        dmSpecialOfficeProcessingRequired = Some(false),
+        noDueDatesReached                 = Some(false)
       ),
-      chargeTypeAssessment        = List(
+      chargeTypeAssessment            = List(
         ChargeTypeAssessment(
           TaxPeriodFrom("2020-08-13"),
           TaxPeriodTo("2020-08-14"),
@@ -100,12 +101,14 @@ object EligibilityService {
                   disallowedChargeLockType = DisallowedChargeLockType(false)
                 )
               )
-            )
+            ),
+            dueDateNotReached    = Some(false)
           ))
         )
       ),
-      customerDetails             = Some(List(CustomerDetail(Some("bobross@joyofpainting.com"), Some(EmailSource.ETMP)))),
-      regimeDigitalCorrespondence = Some(RegimeDigitalCorrespondence(true))
+      customerDetails                 = Some(List(CustomerDetail(Some("bobross@joyofpainting.com"), Some(EmailSource.ETMP)))),
+      regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(true)),
+      futureChargeLiabilitiesExcluded = Some(false)
     )
   }
 
