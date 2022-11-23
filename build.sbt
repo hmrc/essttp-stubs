@@ -6,14 +6,13 @@ val appName = "essttp-stubs"
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
   "-Xlint:-missing-interpolator,_",
-  "-Yno-adapted-args",
+  "-Xlint:adapted-args",
   "-Ywarn-value-discard",
   "-Ywarn-dead-code",
   "-deprecation",
   "-feature",
   "-unchecked",
   "-language:implicitConversions",
-  "-Ypartial-unification", //required by cats
   // required in place of silencer plugin
   "-Wconf:cat=unused-imports&src=html/.*:s",
   "-Wconf:src=routes/.*:s"
@@ -24,7 +23,7 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
     majorVersion                     := 0,
-    scalaVersion                     := "2.12.15",
+    scalaVersion                     := "2.13.8",
     scalacOptions ++= scalaCompilerOptions,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )

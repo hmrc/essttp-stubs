@@ -122,22 +122,22 @@ class AffordableQuotesControllerSpec extends ItSpec {
     val upfrontPaymentJson: String = upfrontPaymentAmount.fold("")(someValue =>
       s"""
          |"initialPaymentDate":"2022-06-18",
-         |"initialPaymentAmount":${someValue.value.value},
+         |"initialPaymentAmount":${someValue.value.value.toString},
          |""".stripMargin)
     Json.parse(
       s"""
          |{
          |   "channelIdentifier":"eSSTTP",
-         |   "paymentPlanAffordableAmount":${affordableAmount.value.value},
+         |   "paymentPlanAffordableAmount":${affordableAmount.value.value.toString},
          |   "paymentPlanFrequency":"Monthly",
          |   "paymentPlanMaxLength":6,
          |   "paymentPlanMinLength":1,
-         |   "accruedDebtInterest":${interest.value},
+         |   "accruedDebtInterest":${interest.value.toString},
          |   "paymentPlanStartDate":"2022-07-08",
          |   $upfrontPaymentJson
          |   "debtItemCharges": [
          |     {
-         |       "outstandingDebtAmount": ${totalDebt.value.value},
+         |       "outstandingDebtAmount": ${totalDebt.value.value.toString},
          |       "mainTrans": "2000",
          |       "subTrans": "1000",
          |       "debtItemChargeId": "XW006559808862",

@@ -26,7 +26,7 @@ object LoggingHelper {
     logger.info(
       s"$infoMessage " +
         s"[ uri: ${request.uri} ] " +
-        s"[ headers:  ${request.headers} ]" +
+        s"[ headers:  ${request.headers.toString()} ]" +
         s"[body: ${Json.prettyPrint(Json.toJson(request.body))} ]"
     )
 

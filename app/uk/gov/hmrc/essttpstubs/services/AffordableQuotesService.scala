@@ -128,7 +128,7 @@ class AffordableQuotesService @Inject() (config: Configuration) {
       case PlanDuration(3)                   => Right(paymentPlans.filter(_.planDuration.value > 1).filter(_.planDuration.value < 5))
       case PlanDuration(4)                   => Right(paymentPlans.filter(_.planDuration.value > 2).filter(_.planDuration.value < 6))
       case PlanDuration(5) | PlanDuration(6) => Right(paymentPlans.filter(_.planDuration.value > 3).filter(_.planDuration.value < 7))
-      case otherDuration                     => Left(AffordableQuotesService.CalculationError(s"Something went wrong, this match should only be for keeping the compiler happy... PlanDuration: [ $otherDuration ]"))
+      case otherDuration                     => Left(AffordableQuotesService.CalculationError(s"Something went wrong, this match should only be for keeping the compiler happy... PlanDuration: [ ${otherDuration.toString} ]"))
     }
   }
 
