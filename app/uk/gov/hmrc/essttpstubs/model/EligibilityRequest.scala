@@ -27,5 +27,6 @@ final case class EligibilityRequest(
 )
 
 object EligibilityRequest {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: Format[EligibilityRequest] = Json.format[EligibilityRequest]
 }

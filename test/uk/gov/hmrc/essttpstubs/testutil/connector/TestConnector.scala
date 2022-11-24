@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.{HttpReads, HttpReadsInstances, HttpResponse}
 
 trait TestConnector {
 
-  val port = ItSpec.testServerPort
+  val port: String = ItSpec.testServerPort.toString
 
   implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
 

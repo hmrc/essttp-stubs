@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import essttp.rootmodel.AmountInPence
+import essttp.rootmodel.{AmountInPence, Email}
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.eligibility.{CustomerDetail, EmailSource, RegimeDigitalCorrespondence}
 import essttp.rootmodel.ttp._
@@ -106,7 +106,7 @@ object EligibilityService {
           ))
         )
       ),
-      customerDetails                 = Some(List(CustomerDetail(Some("bobross@joyofpainting.com"), Some(EmailSource.ETMP)))),
+      customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(true)),
       futureChargeLiabilitiesExcluded = Some(false)
     )

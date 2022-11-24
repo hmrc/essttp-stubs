@@ -31,6 +31,7 @@ object EligibilityEntry {
 
   implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[EligibilityEntry] = Json.format[EligibilityEntry]
 
 }

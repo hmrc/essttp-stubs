@@ -90,7 +90,7 @@ class AffordabilityControllerSpec extends ItSpec {
         s"""
            |{
            |  "initialPaymentDate": "2022-03-02",
-           |  "initialPaymentAmount": $amount
+           |  "initialPaymentAmount": ${amount.toString}
            |}
            |""".stripMargin
       ).as[JsObject])
@@ -101,10 +101,10 @@ class AffordabilityControllerSpec extends ItSpec {
           Json.parse(
             s"""
                |{
-               |  "outstandingDebtAmount": $amount,
+               |  "outstandingDebtAmount": ${amount.toString},
                |  "mainTrans":"1525",
                |  "subTrans":"1000",
-               |  "debtItemChargeId":"ChargeRef ${Random.nextInt(1000)}",
+               |  "debtItemChargeId":"ChargeRef ${Random.nextInt(1000).toString}",
                |  "interestStartDate":"2021-09-03",
                |  "debtItemOriginalDueDate":"2021-09-03"
                |}
@@ -120,12 +120,12 @@ class AffordabilityControllerSpec extends ItSpec {
          |{
          |    "channelIdentifier": "eSSTTP",
          |    "paymentPlanFrequency": "Monthly",
-         |    "paymentPlanMinLength": ${testCase.minPlanLength},
-         |    "paymentPlanMaxLength": ${testCase.maxPlanLength},
+         |    "paymentPlanMinLength": ${testCase.minPlanLength.toString},
+         |    "paymentPlanMaxLength": ${testCase.maxPlanLength.toString},
          |    "interestAccrued": 500,
          |    "earliestPaymentPlanStartDate": "2022-03-03",
          |    "latestPaymentPlanStartDate": "2022-03-28",
-         |    "accruedDebtInterest": ${testCase.interestAmount},
+         |    "accruedDebtInterest": ${testCase.interestAmount.toString},
          |    "customerPostcodes": [
          |       {
          |        "addressPostcode": "BN127ER",
