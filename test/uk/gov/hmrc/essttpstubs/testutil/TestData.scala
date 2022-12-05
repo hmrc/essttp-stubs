@@ -19,6 +19,7 @@ package uk.gov.hmrc.essttpstubs.testutil
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.AmountInPence
+import essttp.rootmodel.ttp.eligibility._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
@@ -73,7 +74,7 @@ object TestData {
           missingFiledReturns               = false,
           hasInvalidInterestSignals         = None,
           dmSpecialOfficeProcessingRequired = None,
-          noDueDatesReached                 = Some(false)
+          noDueDatesReached                 = false
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(
@@ -94,14 +95,14 @@ object TestData {
                 ineligibleChargeType = IneligibleChargeType(false),
                 chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
                 locks                = Some(List(testLock)),
-                dueDateNotReached    = Some(false)
+                dueDateNotReached    = false
               )
             )
           )
         ),
         customerDetails                 = None,
         regimeDigitalCorrespondence     = None,
-        futureChargeLiabilitiesExcluded = Some(false)
+        futureChargeLiabilitiesExcluded = false
       )
     }
 

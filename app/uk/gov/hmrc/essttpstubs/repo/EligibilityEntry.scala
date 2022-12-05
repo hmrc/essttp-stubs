@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.repo
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 

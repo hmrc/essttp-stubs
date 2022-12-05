@@ -17,8 +17,9 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.eq._
-import essttp.rootmodel.ttp.{CustomerReference, ProcessingDateTime, RegimeType}
+import essttp.rootmodel.ttp.arrangement.{CustomerReference, RegimeType}
 import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse}
+import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
 import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.http.UpstreamErrorResponse
 

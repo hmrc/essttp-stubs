@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import essttp.crypto.CryptoFormat.NoOpCryptoFormat
-import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.ModelInstances._

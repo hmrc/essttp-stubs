@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import cats.implicits._
-import essttp.rootmodel.ttp.InterestAccrued
+import cats.syntax.either._
+import cats.syntax.eq._
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
