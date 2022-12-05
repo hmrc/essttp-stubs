@@ -18,8 +18,9 @@ package uk.gov.hmrc.essttpstubs.services
 
 import essttp.rootmodel.{AmountInPence, Email}
 import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.ttp.eligibility.{CustomerDetail, EmailSource, RegimeDigitalCorrespondence}
+import essttp.rootmodel.ttp.eligibility._
 import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.arrangement.RegimeType
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.repo.{EligibilityEntry, EligibilityRepo}
@@ -74,7 +75,7 @@ object EligibilityService {
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = Some(false),
         dmSpecialOfficeProcessingRequired = Some(false),
-        noDueDatesReached                 = Some(false)
+        noDueDatesReached                 = false
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(
@@ -102,13 +103,13 @@ object EligibilityService {
                 )
               )
             ),
-            dueDateNotReached    = Some(false)
+            dueDateNotReached    = false
           ))
         )
       ),
       customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(true)),
-      futureChargeLiabilitiesExcluded = Some(false)
+      futureChargeLiabilitiesExcluded = false
     )
   }
 

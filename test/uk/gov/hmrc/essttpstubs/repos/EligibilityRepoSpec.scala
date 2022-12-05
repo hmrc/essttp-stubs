@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.repos
 
 import essttp.crypto.CryptoFormat
-import org.mongodb.scala.result.InsertOneResult
+import org.mongodb.scala.result.UpdateResult
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.repo.EligibilityEntry
 import uk.gov.hmrc.essttpstubs.testutil.{ItSpec, TestData}
@@ -31,11 +31,19 @@ class EligibilityRepoSpec extends ItSpec {
   "insert a record into mongodb" in {
     collectionSize shouldBe 0
 
-    val dbOperation: InsertOneResult = eligibilityRepo
+    val updateResult1: UpdateResult = eligibilityRepo
       .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
       .futureValue
 
-    dbOperation.wasAcknowledged() shouldBe true
+    updateResult1.wasAcknowledged() shouldBe true
+    collectionSize shouldBe 1
+
+    // check multiple inserts for same tax id doesn't generate multiple records
+    val updateResult2: UpdateResult = eligibilityRepo
+      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
+      .futureValue
+
+    updateResult2.wasAcknowledged() shouldBe true
     collectionSize shouldBe 1
 
     val findResult: Option[EligibilityEntry] = eligibilityRepo
@@ -48,7 +56,7 @@ class EligibilityRepoSpec extends ItSpec {
   "drop the records from mongodb" in {
     collectionSize shouldBe 0
 
-    val dbOperationInsert: InsertOneResult = eligibilityRepo
+    val dbOperationInsert: UpdateResult = eligibilityRepo
       .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
       .futureValue
 

@@ -17,7 +17,8 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.{EligibilityCheckResult, RegimeType}
+import essttp.rootmodel.ttp.arrangement.RegimeType
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}

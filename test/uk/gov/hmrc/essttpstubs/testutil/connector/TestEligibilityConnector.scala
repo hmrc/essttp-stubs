@@ -17,7 +17,7 @@
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 

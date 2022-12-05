@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import essttp.rootmodel.ttp.arrangement.ArrangementResponse
-import essttp.rootmodel.ttp.{CustomerReference, ProcessingDateTime}
+import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
+import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
