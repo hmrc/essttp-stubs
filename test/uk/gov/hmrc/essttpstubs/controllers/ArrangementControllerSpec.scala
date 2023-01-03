@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ class ArrangementControllerSpec extends ItSpec {
             |	"regimeType": "${if (identificationKey == "VRN") "VATC" else "BROCS"}",
             |	"regimePaymentFrequency": "Monthly",
             |	"arrangementAgreedDate": "2022-06-08",
+            |	"lockFromDate": "2022-06-08",
             |	"directDebitInstruction": {
             |		"sortCode": "123456",
             |		"accountNumber": "12345678",
