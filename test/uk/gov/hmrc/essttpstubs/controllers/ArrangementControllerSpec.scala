@@ -56,7 +56,6 @@ class ArrangementControllerSpec extends ItSpec {
             |	"regimeType": "${if (identificationKey == "VRN") "VATC" else "BROCS"}",
             |	"regimePaymentFrequency": "Monthly",
             |	"arrangementAgreedDate": "2022-06-08",
-            |	"lockFromDate": "2022-06-08",
             |	"directDebitInstruction": {
             |		"sortCode": "123456",
             |		"accountNumber": "12345678",
