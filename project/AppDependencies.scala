@@ -9,7 +9,7 @@ object AppDependencies {
     "org.typelevel"     %% "cats-core"                   % "2.9.0",
     "com.beachape"      %% "enumeratum"                  % "1.7.2",
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"          % "0.74.0",
-    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.100.0"
+    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.102.0"
   )
 
   val test: Seq[ModuleID] = Seq(
