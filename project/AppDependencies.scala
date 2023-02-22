@@ -2,14 +2,13 @@ import sbt._
 
 object AppDependencies {
 
-  val boostrapVersion = "7.12.0"
+  val boostrapVersion = "7.13.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"       %% "bootstrap-backend-play-28"   % boostrapVersion,
     "org.typelevel"     %% "cats-core"                   % "2.9.0",
     "com.beachape"      %% "enumeratum"                  % "1.7.2",
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"          % "0.74.0",
-    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.102.0"
+    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.103.0"
   )
 
   val test: Seq[ModuleID] = Seq(
