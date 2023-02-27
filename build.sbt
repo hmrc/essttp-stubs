@@ -28,7 +28,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )
   .settings(WartRemoverSettings.wartRemoverSettings)
-  .settings(ScalariformSettings.scalariformSettings)
+  .settings(ScalariformSettings.scalariformSettings: _*)
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)

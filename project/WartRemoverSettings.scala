@@ -27,8 +27,8 @@ object WartRemoverSettings {
       ),
       wartremoverExcluded ++= (
         (baseDirectory.value ** "*.sc").get ++
-          (Compile / routes).value
-        )
+        (Compile / routes).value
+      )
     )
 
 }
