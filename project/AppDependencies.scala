@@ -9,7 +9,7 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-backend-play-28"   % boostrapVersion,
     "org.typelevel"     %% "cats-core"                   % "2.9.0",
     "com.beachape"      %% "enumeratum"                  % "1.7.2",
-    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.109.0"
+    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "1.110.0"
   // format: ON
   )
 
@@ -17,7 +17,7 @@ object AppDependencies {
     // format: OFF
     "uk.gov.hmrc"            %% "bootstrap-test-play-28" % boostrapVersion,
     "com.vladsch.flexmark"   %  "flexmark-all"           % "0.62.2",
-    "org.scalatest"          %% "scalatest"              % "3.2.15" ,
+    "org.scalatest"          %% "scalatest"              % "3.2.16" ,
     "org.pegdown"            %  "pegdown"                % "1.6.0" ,
     "org.scalatestplus.play" %% "scalatestplus-play"     % "5.1.0"
   // format: ON
