@@ -75,7 +75,8 @@ object TestData {
           hasInvalidInterestSignals         = None,
           dmSpecialOfficeProcessingRequired = None,
           noDueDatesReached                 = false,
-          cannotFindLockReason              = None
+          cannotFindLockReason              = None,
+          creditsNotAllowed                 = None
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(

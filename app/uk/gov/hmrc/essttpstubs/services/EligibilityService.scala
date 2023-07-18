@@ -76,7 +76,8 @@ object EligibilityService {
         hasInvalidInterestSignals         = Some(false),
         dmSpecialOfficeProcessingRequired = Some(false),
         noDueDatesReached                 = false,
-        cannotFindLockReason              = Some(false)
+        cannotFindLockReason              = Some(false),
+        creditsNotAllowed                 = Some(false),
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(
