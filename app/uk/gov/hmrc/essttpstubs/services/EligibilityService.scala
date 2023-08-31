@@ -78,6 +78,7 @@ object EligibilityService {
         noDueDatesReached                 = false,
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
+        isMoreThanMaxPaymentReference     = Some(false)
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(
