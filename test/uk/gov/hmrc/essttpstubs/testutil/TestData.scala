@@ -76,7 +76,8 @@ object TestData {
           dmSpecialOfficeProcessingRequired = None,
           noDueDatesReached                 = false,
           cannotFindLockReason              = None,
-          creditsNotAllowed                 = None
+          creditsNotAllowed                 = None,
+          isMoreThanMaxPaymentReference     = None
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(
