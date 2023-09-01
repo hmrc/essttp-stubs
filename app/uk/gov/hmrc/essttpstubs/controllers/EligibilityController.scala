@@ -28,7 +28,7 @@ import uk.gov.hmrc.essttpstubs.util.LoggingHelper
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class EligibilityController @Inject() (
@@ -47,24 +47,25 @@ class EligibilityController @Inject() (
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
     LoggingHelper.logRequestInfo(logger  = logger, request = request)
-    for {
-      eligibilityResponse: Option[EligibilityCheckResult] <- eligibilityService.eligibilityData(request.body)
-    } yield eligibilityResponse match {
-      case Some(validResponse) =>
-        LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(validResponse))
-        Ok(Json.toJson(validResponse))
-      case None => request.body.idValue match {
-        case "NotFound" => NotFound
-        case "500Error" => InternalServerError
-        case "502Error" => BadGateway
-        case "503Error" => ServiceUnavailable
-        case "504Error" => GatewayTimeout
-        case "422Error" => UnprocessableEntity
-        case "499Error" => new Status(499) // we see some 499's in prod, as far as we can tell they're similar to 502
-        case _ =>
-          Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue)))
-      }
+    val maybeResponse: Option[Status] = request.body.idValue match {
+      case "NotFound" => Some(NotFound)
+      case "500Error" => Some(InternalServerError)
+      case "502Error" => Some(BadGateway)
+      case "503Error" => Some(ServiceUnavailable)
+      case "504Error" => Some(GatewayTimeout)
+      case "422Error" => Some(UnprocessableEntity) // de-registered user response from ttp
+      case "499Error" => Some(new Status(499)) // we see some 499's in prod, as far as we can tell they're similar to 502
+      case _          => None
     }
+    maybeResponse.fold {
+      eligibilityService.eligibilityData(request.body).flatMap {
+        case Some(value) =>
+          LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(value))
+          Future.successful(Ok(Json.toJson(value)))
+        case None =>
+          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue))))
+      }
+    }(Future.successful)
   }
 
   val removeAllRecordsFromEligibilityDb: Action[AnyContent] = Action.async { _ =>
