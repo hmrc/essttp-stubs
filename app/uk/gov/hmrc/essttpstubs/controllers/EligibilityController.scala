@@ -59,6 +59,8 @@ class EligibilityController @Inject() (
         case "502Error" => BadGateway
         case "503Error" => ServiceUnavailable
         case "504Error" => GatewayTimeout
+        case "422Error" => UnprocessableEntity
+        case "499Error" => new Status(499) // we see some 499's in prod, as far as we can tell they're similar to 502
         case _ =>
           Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue)))
       }
