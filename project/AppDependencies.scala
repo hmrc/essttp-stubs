@@ -2,7 +2,7 @@ import sbt._
 
 object AppDependencies {
 
-  val boostrapVersion = "7.21.0"
+  val boostrapVersion = "7.22.0"
 
   val compile: Seq[ModuleID] = Seq(
     // format: OFF
@@ -17,7 +17,7 @@ object AppDependencies {
     // format: OFF
     "uk.gov.hmrc"            %% "bootstrap-test-play-28" % boostrapVersion,
     "com.vladsch.flexmark"   %  "flexmark-all"           % "0.62.2",
-    "org.scalatest"          %% "scalatest"              % "3.2.16" ,
+    "org.scalatest"          %% "scalatest"              % "3.2.17" ,
     "org.pegdown"            %  "pegdown"                % "1.6.0" ,
     "org.scalatestplus.play" %% "scalatestplus-play"     % "5.1.0"
   // format: ON

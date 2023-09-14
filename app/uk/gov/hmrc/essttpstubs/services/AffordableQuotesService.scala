@@ -58,9 +58,8 @@ class AffordableQuotesService @Inject() (config: Configuration) {
           affordableQuotesRequest.initialPaymentDate
             .map(someUpfrontPaymentDate => InitialCollection(DueDate(someUpfrontPaymentDate.value), AmountDue(someUpfrontPaymentAmount.value)))
         }
-    val allPossiblePlans: List[PaymentPlan] =
-      computeAllPossiblePlans(affordableQuotesRequest, totalDebt, interestPerMonth, initialCollection)
-        .filterNot(_.collections.regularCollections.exists(_.amountDue.value.inPounds < 1))
+    val allPossiblePlans: List[PaymentPlan] = computeAllPossiblePlans(affordableQuotesRequest, totalDebt, interestPerMonth, initialCollection)
+      .filterNot(_.collections.regularCollections.exists(_.amountDue.value.inPounds < 1))
     val optimumPlan: PaymentPlan = optimumPaymentPlan(affordableQuotesRequest.paymentPlanAffordableAmount, allPossiblePlans) match {
       case Some(value) => value
       case None        => allPossiblePlans.find(p => p.planDuration.value === 1).getOrElse(throw new RuntimeException("There was no optimum plan, investigate..."))
@@ -73,7 +72,7 @@ class AffordableQuotesService @Inject() (config: Configuration) {
   }
 
   private def computeAllPossiblePlans(affordableQuotesRequest: AffordableQuotesRequest, totalDebt: TotalDebt, interestPerMonth: AmountInPence, initialCollection: Option[InitialCollection]): List[PaymentPlan] =
-    (1 to 6).map { numberOfInstalments =>
+    (1 to affordableQuotesRequest.paymentPlanMaxLength.value).map { numberOfInstalments =>
       computeAPlan(numberOfInstalments, totalDebt, interestPerMonth, affordableQuotesRequest.paymentPlanStartDate, initialCollection, affordableQuotesRequest)
     }.toList
 
@@ -106,7 +105,7 @@ class AffordableQuotesService @Inject() (config: Configuration) {
   }
 
   //optimum is the one with closest monthly amount from collection, which is less than or equal to affordable amount
-  def optimumPaymentPlan(paymentPlanAffordableAmount: PaymentPlanAffordableAmount, paymentPlans: List[PaymentPlan]): Option[PaymentPlan] = {
+  private def optimumPaymentPlan(paymentPlanAffordableAmount: PaymentPlanAffordableAmount, paymentPlans: List[PaymentPlan]): Option[PaymentPlan] = {
     val collectionsLessThanAffordableAmount: List[PaymentPlan] =
       paymentPlans.filter(_.collections.regularCollections.headOption.getOrElse(noRegularCollectionsRuntimeError).amountDue.value.value <= paymentPlanAffordableAmount.value.value)
 
@@ -122,13 +121,18 @@ class AffordableQuotesService @Inject() (config: Configuration) {
     getClosest(collectionsLessThanAffordableAmount)
   }
 
-  def deriveCollectionsToReturnBasedOnOptimum(optimum: PaymentPlan, paymentPlans: List[PaymentPlan]): Either[AffordableQuotesService.CalculationError, List[PaymentPlan]] = {
+  private def deriveCollectionsToReturnBasedOnOptimum(optimum: PaymentPlan, paymentPlans: List[PaymentPlan]): Either[AffordableQuotesService.CalculationError, List[PaymentPlan]] = {
     optimum.planDuration match {
-      case PlanDuration(1) | PlanDuration(2) => Right(paymentPlans.filter(_.planDuration.value < 4))
-      case PlanDuration(3)                   => Right(paymentPlans.filter(_.planDuration.value > 1).filter(_.planDuration.value < 5))
-      case PlanDuration(4)                   => Right(paymentPlans.filter(_.planDuration.value > 2).filter(_.planDuration.value < 6))
-      case PlanDuration(5) | PlanDuration(6) => Right(paymentPlans.filter(_.planDuration.value > 3).filter(_.planDuration.value < 7))
-      case otherDuration                     => Left(AffordableQuotesService.CalculationError(s"Something went wrong, this match should only be for keeping the compiler happy... PlanDuration: [ ${otherDuration.toString} ]"))
+      case PlanDuration(1) | PlanDuration(2)   => Right(paymentPlans.filter(_.planDuration.value < 4))
+      case PlanDuration(3)                     => Right(paymentPlans.filter(_.planDuration.value > 1).filter(_.planDuration.value < 5))
+      case PlanDuration(4)                     => Right(paymentPlans.filter(_.planDuration.value > 2).filter(_.planDuration.value < 6))
+      case PlanDuration(5) | PlanDuration(6)   => Right(paymentPlans.filter(_.planDuration.value > 3).filter(_.planDuration.value < 7))
+      case PlanDuration(7)                     => Right(paymentPlans.filter(_.planDuration.value > 5).filter(_.planDuration.value < 9))
+      case PlanDuration(8)                     => Right(paymentPlans.filter(_.planDuration.value > 6).filter(_.planDuration.value < 10))
+      case PlanDuration(9)                     => Right(paymentPlans.filter(_.planDuration.value > 7).filter(_.planDuration.value < 11))
+      case PlanDuration(10)                    => Right(paymentPlans.filter(_.planDuration.value > 8).filter(_.planDuration.value < 12))
+      case PlanDuration(11) | PlanDuration(12) => Right(paymentPlans.filter(_.planDuration.value > 10).filter(_.planDuration.value < 13))
+      case otherDuration                       => Left(AffordableQuotesService.CalculationError(s"Something went wrong, this match should only be for keeping the compiler happy... PlanDuration: [ ${otherDuration.toString} ]"))
     }
   }
 
