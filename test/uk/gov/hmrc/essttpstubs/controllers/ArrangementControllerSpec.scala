@@ -98,7 +98,18 @@ class ArrangementControllerSpec extends ItSpec {
             |			"debtItemChargeId": "XW006559808862",
             |			"amountDue": 1000,
             |			"debtItemOriginalDueDate": "2022-05-22"
-            |		}]
+            |		}],
+            |   "debtItemCharges": [{
+            |     "outstandingDebtAmount": 148781,
+            |     "debtItemChargeId": "XW006559808862",
+            |     "debtItemOriginalDueDate": "2022-05-22",
+            |     "accruedInterest": 3
+            |   }, {
+            |     "outstandingDebtAmount": 148781,
+            |     "debtItemChargeId": "XW006559808862",
+            |     "debtItemOriginalDueDate": "2022-05-22",
+            |     "accruedInterest": 3
+            |	  }]
             |	}
             |}
             |""".stripMargin
