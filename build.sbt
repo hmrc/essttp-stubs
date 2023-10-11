@@ -1,5 +1,4 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+
 
 val appName = "essttp-stubs"
 
@@ -28,7 +27,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )
   .settings(WartRemoverSettings.wartRemoverSettings)
-  .settings(ScalariformSettings.scalariformSettings: _*)
+  .settings(ScalariformSettings.scalariformSettings *)
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(PlayKeys.playDefaultPort := 9218)
