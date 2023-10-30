@@ -86,18 +86,18 @@ object EligibilityService {
           TaxPeriodTo("2020-08-14"),
           DebtTotalAmount(AmountInPence(123456)),
           List(Charges(
-            chargeType           = ChargeType("InYearRTICharge-Tax"),
-            mainType             = MainType("InYearRTICharge(FPS)"),
-            chargeReference      = ChargeReference(taxId),
-            mainTrans            = MainTrans("mainTrans"),
-            subTrans             = SubTrans("subTrans"),
-            outstandingAmount    = OutstandingAmount(AmountInPence(123456)),
-            interestStartDate    = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
-            dueDate              = DueDate(LocalDate.parse("2017-03-07")),
-            accruedInterest      = AccruedInterest(AmountInPence(123)),
-            ineligibleChargeType = IneligibleChargeType(false),
-            chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
-            locks                = Some(
+            chargeType              = ChargeType("InYearRTICharge-Tax"),
+            mainType                = MainType("InYearRTICharge(FPS)"),
+            chargeReference         = ChargeReference(taxId),
+            mainTrans               = MainTrans("mainTrans"),
+            subTrans                = SubTrans("subTrans"),
+            outstandingAmount       = OutstandingAmount(AmountInPence(123456)),
+            interestStartDate       = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
+            dueDate                 = DueDate(LocalDate.parse("2017-03-07")),
+            accruedInterest         = AccruedInterest(AmountInPence(123)),
+            ineligibleChargeType    = IneligibleChargeType(false),
+            chargeOverMaxDebtAge    = ChargeOverMaxDebtAge(false),
+            locks                   = Some(
               List(
                 Lock(
                   lockType                 = LockType("Payment"),
@@ -106,7 +106,9 @@ object EligibilityService {
                 )
               )
             ),
-            dueDateNotReached    = false
+            dueDateNotReached       = false,
+            isInterestBearingCharge = None,
+            useChargeReference      = None
           ))
         )
       ),

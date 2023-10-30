@@ -18,7 +18,9 @@ object SbtUpdatesSettings {
     // ---
     dependencyUpdatesFilter -= moduleFilter("com.vladsch.flexmark", "flexmark-all"),
     // locked to the version of play
-    dependencyUpdatesFilter -= moduleFilter("org.julienrf", "play-json-derived-codecs")
+    dependencyUpdatesFilter -= moduleFilter("org.julienrf", "play-json-derived-codecs"),
+    // locked by version of play
+    dependencyUpdatesFilter -= moduleFilter("org.scalatestplus.play", "scalatestplus-play")
   )
 
 }
