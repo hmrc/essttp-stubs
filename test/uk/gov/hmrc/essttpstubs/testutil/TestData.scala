@@ -69,7 +69,7 @@ object TestData {
           isMoreThanMaxDebtAllowance        = false,
           disallowedChargeLockTypes         = false,
           existingTTP                       = false,
-          chargesOverMaxDebtAge             = false,
+          chargesOverMaxDebtAge             = None,
           ineligibleChargeTypes             = false,
           missingFiledReturns               = false,
           hasInvalidInterestSignals         = None,
@@ -77,7 +77,8 @@ object TestData {
           noDueDatesReached                 = false,
           cannotFindLockReason              = None,
           creditsNotAllowed                 = None,
-          isMoreThanMaxPaymentReference     = None
+          isMoreThanMaxPaymentReference     = None,
+          chargesBeforeMaxAccountingDate    = None
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(
@@ -149,7 +150,6 @@ object TestData {
           |		"isMoreThanMaxDebtAllowance": false,
           |		"disallowedChargeLockTypes": false,
           |		"existingTTP": false,
-          |		"chargesOverMaxDebtAge": false,
           |		"ineligibleChargeTypes": false,
           |		"missingFiledReturns": false,
           |   "noDueDatesReached": false
