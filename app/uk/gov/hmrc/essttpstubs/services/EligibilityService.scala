@@ -70,7 +70,7 @@ object EligibilityService {
         isMoreThanMaxDebtAllowance        = false,
         disallowedChargeLockTypes         = false,
         existingTTP                       = false,
-        chargesOverMaxDebtAge             = false,
+        chargesOverMaxDebtAge             = Some(false),
         ineligibleChargeTypes             = false,
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = Some(false),
@@ -78,7 +78,8 @@ object EligibilityService {
         noDueDatesReached                 = false,
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
-        isMoreThanMaxPaymentReference     = Some(false)
+        isMoreThanMaxPaymentReference     = Some(false),
+        chargesBeforeMaxAccountingDate    = Some(false)
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(

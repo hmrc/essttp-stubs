@@ -50,7 +50,7 @@ class EligibilityRepoSpec extends ItSpec {
       .findEligibilityDataByTaxRef(TestData.EligibilityApi.ModelInstances.eligibilityResponse.identification(0).idValue.value)
       .futureValue
 
-    Json.toJson(findResult.value.eligibilityCheckResult) shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson withClue s"Json was infact: ${findResult.toString}"
+    Json.toJson(findResult.value.eligibilityCheckResult) shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson withClue s"Json was in fact: ${findResult.toString}"
   }
 
   "drop the records from mongodb" in {
