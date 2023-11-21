@@ -87,21 +87,22 @@ object TestData {
             debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
             charges         = List(
               Charges(
-                chargeType              = ChargeType("test-chargeId"),
-                mainTrans               = MainTrans("test-mainTrans"),
-                subTrans                = SubTrans("test-subTrans"),
-                outstandingAmount       = OutstandingAmount(AmountInPence(10)),
-                interestStartDate       = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
-                accruedInterest         = AccruedInterest(AmountInPence(1)),
-                mainType                = MainType("test-mainType"),
-                chargeReference         = ChargeReference("test-chargeReference"),
-                dueDate                 = DueDate(LocalDate.parse("2022-04-27")),
-                ineligibleChargeType    = IneligibleChargeType(false),
-                chargeOverMaxDebtAge    = ChargeOverMaxDebtAge(false),
-                locks                   = Some(List(testLock)),
-                dueDateNotReached       = false,
-                isInterestBearingCharge = None,
-                useChargeReference      = None
+                chargeType                    = ChargeType("test-chargeId"),
+                mainTrans                     = MainTrans("test-mainTrans"),
+                subTrans                      = SubTrans("test-subTrans"),
+                outstandingAmount             = OutstandingAmount(AmountInPence(10)),
+                interestStartDate             = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
+                accruedInterest               = AccruedInterest(AmountInPence(1)),
+                mainType                      = MainType("test-mainType"),
+                chargeReference               = ChargeReference("test-chargeReference"),
+                dueDate                       = DueDate(LocalDate.parse("2022-04-27")),
+                ineligibleChargeType          = IneligibleChargeType(false),
+                chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(false)),
+                locks                         = Some(List(testLock)),
+                dueDateNotReached             = false,
+                isInterestBearingCharge       = None,
+                useChargeReference            = None,
+                chargeBeforeMaxAccountingDate = None
               )
             )
           )
