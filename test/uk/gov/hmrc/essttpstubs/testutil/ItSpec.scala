@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
-import akka.util.Timeout
 import com.google.inject.{AbstractModule, Provides}
 import com.typesafe.config.ConfigFactory
+import org.apache.pekko.util.Timeout
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Millis, Seconds, Span}

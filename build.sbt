@@ -1,5 +1,3 @@
-
-
 val appName = "essttp-stubs"
 
 lazy val scalaCompilerOptions = Seq(
@@ -22,7 +20,7 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
     majorVersion                     := 0,
-    scalaVersion                     := "2.13.8",
+    scalaVersion                     := "2.13.12",
     scalacOptions ++= scalaCompilerOptions,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )
