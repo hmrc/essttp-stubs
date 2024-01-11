@@ -51,6 +51,8 @@ object EligibilityService {
         List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
       case RegimeType("VATC") =>
         List(Identification(IdType("VRN"), IdValue(taxId)))
+      case RegimeType("SA") =>
+        List(Identification(IdType("UTR"), IdValue(taxId)))
       case _ => // just default to epaye, we don't really care...
         List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
     }
