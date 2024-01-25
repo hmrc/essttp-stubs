@@ -85,6 +85,7 @@ object TestData {
             taxPeriodFrom   = TaxPeriodFrom("2022-04-27"),
             taxPeriodTo     = TaxPeriodTo("2022-04-27"),
             debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
+            chargeReference = Some(ChargeReference("test-chargeReference")),
             charges         = List(
               Charges(
                 chargeType                    = ChargeType("test-chargeId"),
@@ -94,7 +95,7 @@ object TestData {
                 interestStartDate             = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
                 accruedInterest               = AccruedInterest(AmountInPence(1)),
                 mainType                      = MainType("test-mainType"),
-                chargeReference               = ChargeReference("test-chargeReference"),
+                chargeReference               = None,
                 dueDate                       = DueDate(LocalDate.parse("2022-04-27")),
                 ineligibleChargeType          = IneligibleChargeType(false),
                 chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(false)),
@@ -159,10 +160,10 @@ object TestData {
           |		"taxPeriodFrom": "2022-04-27",
           |		"taxPeriodTo": "2022-04-27",
           |		"debtTotalAmount": 100,
+          |   "chargeReference": "test-chargeReference",
           |		"charges": [{
           |			"chargeType": "test-chargeId",
           |			"mainType": "test-mainType",
-          |			"chargeReference": "test-chargeReference",
           |			"mainTrans": "test-mainTrans",
           |			"subTrans": "test-subTrans",
           |			"outstandingAmount": 10,
