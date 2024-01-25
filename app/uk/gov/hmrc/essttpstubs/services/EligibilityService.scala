@@ -88,10 +88,11 @@ object EligibilityService {
           TaxPeriodFrom("2020-08-13"),
           TaxPeriodTo("2020-08-14"),
           DebtTotalAmount(AmountInPence(123456)),
+          chargeReference = Some(ChargeReference(taxId)),
           List(Charges(
             chargeType                    = ChargeType("InYearRTICharge-Tax"),
             mainType                      = MainType("InYearRTICharge(FPS)"),
-            chargeReference               = ChargeReference(taxId),
+            chargeReference               = None,
             mainTrans                     = MainTrans("mainTrans"),
             subTrans                      = SubTrans("subTrans"),
             outstandingAmount             = OutstandingAmount(AmountInPence(123456)),
