@@ -52,8 +52,8 @@ class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
       val minInterest = request.paymentPlanMinLength.value * interestPerMonth
       val maxInterest = request.paymentPlanMaxLength.value * interestPerMonth
 
-      val minInstalmentAmount = residualDebtAmount / request.paymentPlanMaxLength.value + maxInterest
-      val maxInstalmentAmount = residualDebtAmount / request.paymentPlanMinLength.value + minInterest
+      val minInstalmentAmount = residualDebtAmount / request.paymentPlanMaxLength.value + minInterest
+      val maxInstalmentAmount = residualDebtAmount / request.paymentPlanMinLength.value + maxInterest
 
       for {
         min <- toLong(minInstalmentAmount)

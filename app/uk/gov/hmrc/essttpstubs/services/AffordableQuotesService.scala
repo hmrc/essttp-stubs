@@ -21,6 +21,7 @@ import cats.syntax.eq._
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
+import essttp.rootmodel.ttp.{PaymentPlanMaxLength, PaymentPlanMinLength}
 import play.api.Configuration
 import uk.gov.hmrc.essttpstubs.services.AffordableQuotesService.noRegularCollectionsRuntimeError
 
@@ -64,7 +65,13 @@ class AffordableQuotesService @Inject() (config: Configuration) {
       case Some(value) => value
       case None        => allPossiblePlans.find(p => p.planDuration.value === 1).getOrElse(throw new RuntimeException("There was no optimum plan, investigate..."))
     }
-    val paymentPlans = deriveCollectionsToReturnBasedOnOptimum(optimumPlan, allPossiblePlans)
+    val paymentPlans = deriveCollectionsToReturnBasedOnOptimum(
+      optimumPlan,
+      affordableQuotesRequest.paymentPlanMinLength,
+      affordableQuotesRequest.paymentPlanMaxLength,
+      allPossiblePlans
+    )
+
     paymentPlans match {
       case Right(valid)    => AffordableQuotesResponse(valid)
       case Left(someError) => throw new RuntimeException(someError.message)
@@ -121,18 +128,29 @@ class AffordableQuotesService @Inject() (config: Configuration) {
     getClosest(collectionsLessThanAffordableAmount)
   }
 
-  private def deriveCollectionsToReturnBasedOnOptimum(optimum: PaymentPlan, paymentPlans: List[PaymentPlan]): Either[AffordableQuotesService.CalculationError, List[PaymentPlan]] = {
-    optimum.planDuration match {
-      case PlanDuration(1) | PlanDuration(2)   => Right(paymentPlans.filter(_.planDuration.value < 4))
-      case PlanDuration(3)                     => Right(paymentPlans.filter(_.planDuration.value > 1).filter(_.planDuration.value < 5))
-      case PlanDuration(4)                     => Right(paymentPlans.filter(_.planDuration.value > 2).filter(_.planDuration.value < 6))
-      case PlanDuration(5) | PlanDuration(6)   => Right(paymentPlans.filter(_.planDuration.value > 3).filter(_.planDuration.value < 7))
-      case PlanDuration(7)                     => Right(paymentPlans.filter(_.planDuration.value > 5).filter(_.planDuration.value < 9))
-      case PlanDuration(8)                     => Right(paymentPlans.filter(_.planDuration.value > 6).filter(_.planDuration.value < 10))
-      case PlanDuration(9)                     => Right(paymentPlans.filter(_.planDuration.value > 7).filter(_.planDuration.value < 11))
-      case PlanDuration(10)                    => Right(paymentPlans.filter(_.planDuration.value > 8).filter(_.planDuration.value < 12))
-      case PlanDuration(11) | PlanDuration(12) => Right(paymentPlans.filter(_.planDuration.value > 10).filter(_.planDuration.value < 13))
-      case otherDuration                       => Left(AffordableQuotesService.CalculationError(s"Something went wrong, this match should only be for keeping the compiler happy... PlanDuration: [ ${otherDuration.toString} ]"))
+  private def deriveCollectionsToReturnBasedOnOptimum(
+      optimum:       PaymentPlan,
+      minPlanLength: PaymentPlanMinLength,
+      maxPlanLength: PaymentPlanMaxLength,
+      paymentPlans:  List[PaymentPlan]
+  ): Either[AffordableQuotesService.CalculationError, List[PaymentPlan]] = {
+    val optimumDuration = optimum.planDuration.value
+    val minDuration = minPlanLength.value
+    val maxDuration = maxPlanLength.value
+
+    if (minDuration < 1)
+      Left(AffordableQuotesService.CalculationError(s"PaymentPlanMinLength was ${minDuration.toString} - expected it to be >= 1"))
+    else if (maxDuration < 3)
+      Left(AffordableQuotesService.CalculationError(s"PaymentPlanMaxLength was ${maxDuration.toString} - expected it to be >= 3"))
+    else {
+      val result = if (optimumDuration <= (minDuration + 1))
+        paymentPlans.filter(_.planDuration.value <= (minDuration + 2))
+      else if (optimumDuration >= (maxDuration - 1))
+        paymentPlans.filter(_.planDuration.value >= (maxDuration - 2)).filter(_.planDuration.value <= maxDuration)
+      else
+        paymentPlans.filter(_.planDuration.value >= (optimumDuration - 1)).filter(_.planDuration.value <= (optimumDuration + 1))
+
+      Right(result)
     }
   }
 

@@ -65,11 +65,11 @@ class AffordabilityControllerSpec extends ItSpec {
 
       val testCases: List[(String, InstalmentAmountsTestCase, InstalmentAmounts)] =
         List(
-          ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1), 0), instalmentAmounts(55250, 300875)),
-          ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000), 0), instalmentAmounts(138125, 752188)),
-          ("3", InstalmentAmountsTestCase(1, 6, None, List(2000), 0), instalmentAmounts(368, 2006)),
-          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200), 0), instalmentAmounts(18, 100)),
-          ("5", InstalmentAmountsTestCase(1, 6, Some(1900), List(1700, 100), 200), instalmentAmounts(18, 100))
+          ("1", InstalmentAmountsTestCase(1, 6, None, List(300000 - 1, 1), 0), instalmentAmounts(50875, 305250)),
+          ("2", InstalmentAmountsTestCase(1, 6, Some(150000), List(900000), 0), instalmentAmounts(127188, 763125)),
+          ("3", InstalmentAmountsTestCase(1, 6, None, List(2000), 0), instalmentAmounts(339, 2035)),
+          ("4", InstalmentAmountsTestCase(1, 6, Some(1900), List(1800, 200), 0), instalmentAmounts(17, 102)),
+          ("5", InstalmentAmountsTestCase(1, 6, Some(1900), List(1700, 100), 200), instalmentAmounts(17, 102))
         )
 
       testCases.foreach {
