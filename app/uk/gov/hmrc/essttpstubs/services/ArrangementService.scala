@@ -34,7 +34,8 @@ class ArrangementService @Inject() (clock: Clock) {
     val identificationKey = request.regimeType match {
       case RegimeType.PAYE => "BROCS"
       case RegimeType.VAT  => "VRN"
-      case _               => "BROCS"
+      case RegimeType.SA   => "UTR"
+      case other           => sys.error(s"Unknown regime ${other.value}")
     }
     request.identification.find(_.idType.value === identificationKey) match {
       case None =>
