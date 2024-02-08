@@ -28,32 +28,36 @@ class ArrangementControllerSpec extends ItSpec {
   lazy val testArrangementConnector: TestArrangementConnector = injector.instanceOf[TestArrangementConnector]
 
   "ArrangementController" - {
-    Seq("BROCS", "VRN").foreach { identificationKey =>
-      s".enactArrangement should return BadRequest when no ID with ID type $identificationKey can be found in the request" in {
-        val request = Json.parse(
-          """{
+
+    ".enactArrangement should return BadRequest when no ID type can be found in the request" in {
+      val request = Json.parse(
+        """{
             |  "identification" : [
             |  ]
             |}
             |""".stripMargin
-        )
+      )
 
-        val response = testArrangementConnector.enactArrangement(request).failed.futureValue
-        asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
-      }
+      val response = testArrangementConnector.enactArrangement(request).failed.futureValue
+      asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
 
-    Seq("BROCS", "VRN").foreach { identificationKey =>
-      s".enactArrangement should return Ok when an ID with ID type $identificationKey can be found in the request" in {
-        val request = Json.parse(
-          s"""
+    Seq(
+      ("PAYE", "BROCS"),
+      ("VATC", "VRN"),
+      ("SA", "UTR")
+    ).foreach {
+        case (regimeType, identificationKey) =>
+          s".enactArrangement should return Ok when an ID with ID type $identificationKey can be found for the regimeType $regimeType in the request" in {
+            val request = Json.parse(
+              s"""
             |{
             |	"identification": [{
             |		"idType": "$identificationKey",
             |		"idValue": "id"
             |	}],
             |	"channelIdentifier": "eSSTTP",
-            |	"regimeType": "${if (identificationKey == "VRN") "VATC" else "BROCS"}",
+            |	"regimeType": "$regimeType",
             |	"regimePaymentFrequency": "Monthly",
             |	"arrangementAgreedDate": "2022-06-08",
             |	"directDebitInstruction": {
@@ -113,17 +117,17 @@ class ArrangementControllerSpec extends ItSpec {
             |	}
             |}
             |""".stripMargin
-        )
+            )
 
-        val response = testArrangementConnector.enactArrangement(request).futureValue
-        response.json.validate[ArrangementResponse] shouldBe JsSuccess(
-          ArrangementResponse(
-            ProcessingDateTime("2057-08-02T15:28:55.185Z"),
-            CustomerReference("id")
-          )
-        )
+            val response = testArrangementConnector.enactArrangement(request).futureValue
+            response.json.validate[ArrangementResponse] shouldBe JsSuccess(
+              ArrangementResponse(
+                ProcessingDateTime("2057-08-02T15:28:55.185Z"),
+                CustomerReference("id")
+              )
+            )
+          }
       }
-    }
 
   }
 
