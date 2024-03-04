@@ -81,7 +81,10 @@ object EligibilityService {
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
         isMoreThanMaxPaymentReference     = Some(false),
-        chargesBeforeMaxAccountingDate    = Some(false)
+        chargesBeforeMaxAccountingDate    = Some(false),
+        hasInvalidInterestSignalsCESA     = Some(false),
+        hasDisguisedRemuneration          = Some(false),
+        hasCapacitor                      = Some(false)
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(
@@ -119,7 +122,9 @@ object EligibilityService {
       ),
       customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(true)),
-      futureChargeLiabilitiesExcluded = false
+      futureChargeLiabilitiesExcluded = false,
+      invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
+      customerType                    = Some(CustomerTypes.MTDITSA),
     )
   }
 
