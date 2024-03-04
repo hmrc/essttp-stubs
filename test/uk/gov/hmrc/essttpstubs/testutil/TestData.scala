@@ -78,7 +78,10 @@ object TestData {
           cannotFindLockReason              = None,
           creditsNotAllowed                 = None,
           isMoreThanMaxPaymentReference     = None,
-          chargesBeforeMaxAccountingDate    = None
+          chargesBeforeMaxAccountingDate    = None,
+          hasInvalidInterestSignalsCESA     = None,
+          hasDisguisedRemuneration          = None,
+          hasCapacitor                      = None
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(
@@ -110,7 +113,9 @@ object TestData {
         ),
         customerDetails                 = None,
         regimeDigitalCorrespondence     = None,
-        futureChargeLiabilitiesExcluded = false
+        futureChargeLiabilitiesExcluded = false,
+        invalidSignals                  = None,
+        customerType                    = None
       )
     }
 
