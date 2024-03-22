@@ -91,11 +91,10 @@ object EligibilityService {
           TaxPeriodFrom("2020-08-13"),
           TaxPeriodTo("2020-08-14"),
           DebtTotalAmount(AmountInPence(123456)),
-          chargeReference = Some(ChargeReference(taxId)),
+          chargeReference = ChargeReference(taxId),
           List(Charges(
             chargeType                    = ChargeType("InYearRTICharge-Tax"),
             mainType                      = MainType("InYearRTICharge(FPS)"),
-            chargeReference               = None,
             mainTrans                     = MainTrans("mainTrans"),
             subTrans                      = SubTrans("subTrans"),
             outstandingAmount             = OutstandingAmount(AmountInPence(123456)),
@@ -124,7 +123,7 @@ object EligibilityService {
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(true)),
       futureChargeLiabilitiesExcluded = false,
       invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
-      customerType                    = Some(CustomerTypes.MTDITSA),
+      customerType                    = Some(CustomerTypes.MTDITSA)
     )
   }
 
