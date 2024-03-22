@@ -165,7 +165,7 @@ class AffordableQuotesService @Inject() (config: Configuration) {
             dueDate                   = DueDate(affordableQuotesRequest.paymentPlanStartDate.value.plusMonths(acc)),
             instalmentInterestAccrued = InterestAccrued(monthlyInterest),
             instalmentBalance         = InstalmentBalance(totalDebt.value.-(AmountInPence(monthlyAmount.value * (acc - 1)))),
-            debtItemChargeId          = affordableQuotesRequest.debtItemCharges.flatMap(_.debtItemChargeId).headOption.getOrElse(throw new RuntimeException("There was no charge id in request...")),
+            debtItemChargeId          = affordableQuotesRequest.debtItemCharges.map(_.debtItemChargeId).headOption.getOrElse(throw new RuntimeException("There was no charge id in request...")),
             amountDue                 = AmountDue(monthlyAmount),
             debtItemOriginalDueDate   = DebtItemOriginalDueDate(affordableQuotesRequest.paymentPlanStartDate.value.minusYears(1)) // just made up
           )
