@@ -64,7 +64,7 @@ object EligibilityService {
       paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
       paymentPlanMinLength            = PaymentPlanMinLength(1),
       paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-      eligibilityStatus               = EligibilityStatus(EligibilityPass(true)),
+      eligibilityStatus               = EligibilityStatus(EligibilityPass(value = true)),
       eligibilityRules                = EligibilityRules(
         hasRlsOnAddress                       = false,
         markedAsInsolvent                     = false,
@@ -102,14 +102,14 @@ object EligibilityService {
             interestStartDate             = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
             dueDate                       = DueDate(LocalDate.parse("2017-03-07")),
             accruedInterest               = AccruedInterest(AmountInPence(123)),
-            ineligibleChargeType          = IneligibleChargeType(false),
-            chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(false)),
+            ineligibleChargeType          = IneligibleChargeType(value = false),
+            chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(value = false)),
             locks                         = Some(
               List(
                 Lock(
                   lockType                 = LockType("Payment"),
                   lockReason               = LockReason("Risk/Fraud"),
-                  disallowedChargeLockType = DisallowedChargeLockType(false)
+                  disallowedChargeLockType = DisallowedChargeLockType(value = false)
                 )
               )
             ),
@@ -122,7 +122,7 @@ object EligibilityService {
         )
       ),
       customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
-      regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(true)),
+      regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(value = true)),
       futureChargeLiabilitiesExcluded = false,
       invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
       customerType                    = Some(CustomerTypes.MTDITSA)
