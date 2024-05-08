@@ -35,7 +35,7 @@ object TestData {
       val testLock: Lock = Lock(
         lockType                 = LockType("testLockType"),
         lockReason               = LockReason("testLockReason"),
-        disallowedChargeLockType = DisallowedChargeLockType(false)
+        disallowedChargeLockType = DisallowedChargeLockType(value = false)
       )
 
       val eligibilityRequest: EligibilityRequest = EligibilityRequest(
@@ -61,7 +61,7 @@ object TestData {
         paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
         paymentPlanMinLength            = PaymentPlanMinLength(1),
         paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-        eligibilityStatus               = EligibilityStatus(EligibilityPass(false)),
+        eligibilityStatus               = EligibilityStatus(EligibilityPass(value = false)),
         eligibilityRules                = EligibilityRules(
           hasRlsOnAddress                       = true,
           markedAsInsolvent                     = true,
@@ -100,8 +100,8 @@ object TestData {
                 accruedInterest               = AccruedInterest(AmountInPence(1)),
                 mainType                      = MainType("test-mainType"),
                 dueDate                       = DueDate(LocalDate.parse("2022-04-27")),
-                ineligibleChargeType          = IneligibleChargeType(false),
-                chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(false)),
+                ineligibleChargeType          = IneligibleChargeType(value = false),
+                chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(value = false)),
                 locks                         = Some(List(testLock)),
                 dueDateNotReached             = false,
                 isInterestBearingCharge       = None,
