@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
+import essttp.rootmodel.ttp.eligibility.Identification
 import play.api.libs.json.{Format, Json}
 
 final case class EligibilityRequest(
     channelIdentifier:         String,
-    idType:                    String,
-    idValue:                   String,
+    identification:            List[Identification],
     regimeType:                String,
     returnFinancialAssessment: Boolean
 )

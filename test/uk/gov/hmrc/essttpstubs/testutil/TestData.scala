@@ -40,8 +40,7 @@ object TestData {
 
       val eligibilityRequest: EligibilityRequest = EligibilityRequest(
         channelIdentifier         = "eSSTTP",
-        idType                    = "EMPREF",
-        idValue                   = "test-idValue",
+        identification            = List(Identification(IdType("EMPREF"), IdValue("test-idValue"))),
         regimeType                = "test-regimeType",
         returnFinancialAssessment = true
       )
@@ -115,6 +114,7 @@ object TestData {
         customerDetails                 = None,
         regimeDigitalCorrespondence     = None,
         futureChargeLiabilitiesExcluded = false,
+        chargeTypesExcluded             = None,
         invalidSignals                  = None,
         customerType                    = None
       )

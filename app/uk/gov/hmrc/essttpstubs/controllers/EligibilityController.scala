@@ -47,15 +47,15 @@ class EligibilityController @Inject() (
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
     LoggingHelper.logRequestInfo(logger  = logger, request = request)
-    val maybeResponse: Option[Status] = request.body.idValue match {
-      case "NotFound" => Some(NotFound)
-      case "500Error" => Some(InternalServerError)
-      case "502Error" => Some(BadGateway)
-      case "503Error" => Some(ServiceUnavailable)
-      case "504Error" => Some(GatewayTimeout)
-      case "422Error" => Some(UnprocessableEntity) // de-registered user response from ttp
-      case "499Error" => Some(new Status(499)) // we see some 499's in prod, as far as we can tell they're similar to 502
-      case _          => None
+    val maybeResponse: Option[Status] = request.body.identification.headOption.map(_.idValue.value) match {
+      case Some("NotFound") => Some(NotFound)
+      case Some("500Error") => Some(InternalServerError)
+      case Some("502Error") => Some(BadGateway)
+      case Some("503Error") => Some(ServiceUnavailable)
+      case Some("504Error") => Some(GatewayTimeout)
+      case Some("422Error") => Some(UnprocessableEntity) // de-registered user response from ttp
+      case Some("499Error") => Some(new Status(499)) // we see some 499's in prod, as far as we can tell they're similar to 502
+      case _                => None
     }
     maybeResponse.fold {
       eligibilityService.eligibilityData(request.body).flatMap {
@@ -63,7 +63,7 @@ class EligibilityController @Inject() (
           LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(value))
           Future.successful(Ok(Json.toJson(value)))
         case None =>
-          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue))))
+          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.identification.headOption.map(_.idValue.value).getOrElse("")))))
       }
     }(Future.successful)
   }

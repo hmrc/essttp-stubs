@@ -37,7 +37,7 @@ class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit e
   }
 
   def eligibilityData(eligibilityRequest: EligibilityRequest): Future[Option[EligibilityCheckResult]] =
-    eligibilityRepo.findEligibilityDataByTaxRef(eligibilityRequest.idValue)
+    eligibilityRepo.findEligibilityDataByTaxRef(eligibilityRequest.identification.headOption.map(_.idValue.value).getOrElse(""))
       .map(f => f.map(_.eligibilityCheckResult))
 
   def removeAllRecordsFromEligibilityDb(): Future[Unit] = eligibilityRepo.removeAllRecords().map(_ => ())
@@ -124,6 +124,7 @@ object EligibilityService {
       customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(value = true)),
       futureChargeLiabilitiesExcluded = false,
+      chargeTypesExcluded             = None,
       invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
       customerType                    = Some(CustomerTypes.MTDITSA)
     )
