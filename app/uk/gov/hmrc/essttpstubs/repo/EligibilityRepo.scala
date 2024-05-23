@@ -17,9 +17,10 @@
 package uk.gov.hmrc.essttpstubs.repo
 
 import com.google.inject.{Inject, Singleton}
-import com.mongodb.client.model.ReplaceOptions
-import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
+import com.mongodb.client.model.{Filters, ReplaceOptions}
+import essttp.rootmodel.ttp.eligibility.Identification
+import org.bson.conversions.Bson
+import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.UpdateResult
 import uk.gov.hmrc.essttpstubs.config.EligibilityRepoConfig
 import uk.gov.hmrc.mongo.MongoComponent
@@ -46,18 +47,19 @@ final class EligibilityRepo @Inject() (
   def insertEligibilityData(eligibilityEntry: EligibilityEntry): Future[UpdateResult] =
 
     collection.replaceOne(
-      Filters.and(eligibilityEntry.eligibilityCheckResult.identification.map(_.idValue.value).map(taxIdFilter): _*),
+      taxIdFilter(eligibilityEntry.eligibilityCheckResult.identification),
       eligibilityEntry,
       new ReplaceOptions().upsert(true)
     ).toFuture()
 
-  def findEligibilityDataByTaxRef(taxRef: String): Future[Option[EligibilityEntry]] =
-    collection.find(taxIdFilter(taxRef)).headOption()
+  def findEligibilityDataByTaxRef(identificationList: List[Identification]): Future[Option[EligibilityEntry]] =
+    collection.find(taxIdFilter(identificationList)).headOption()
 
   def removeAllRecords(): Future[Unit] = collection.drop().toFuture().map(_ => ())
 
-  private def taxIdFilter(taxRef: String): Bson =
-    Filters.eq("eligibilityCheckResult.identification.idValue", taxRef)
+  private def taxIdFilter(identifications: List[Identification]): Bson = {
+    Filters.and(identifications.map(id => Filters.eq("eligibilityCheckResult.identification.idValue", id.idValue.value)): _*)
+  }
 }
 
 object EligibilityRepo {

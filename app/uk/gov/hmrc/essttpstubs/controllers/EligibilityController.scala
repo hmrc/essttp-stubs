@@ -47,15 +47,25 @@ class EligibilityController @Inject() (
 
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
     LoggingHelper.logRequestInfo(logger  = logger, request = request)
-    val maybeResponse: Option[Status] = request.body.idValue match {
-      case "NotFound" => Some(NotFound)
-      case "500Error" => Some(InternalServerError)
-      case "502Error" => Some(BadGateway)
-      case "503Error" => Some(ServiceUnavailable)
-      case "504Error" => Some(GatewayTimeout)
-      case "422Error" => Some(UnprocessableEntity) // de-registered user response from ttp
-      case "499Error" => Some(new Status(499)) // we see some 499's in prod, as far as we can tell they're similar to 502
-      case _          => None
+
+    val ids: List[String] = request.body.identification.map(_.idValue.value)
+    val idsWithMatchedStatus: List[(String, Option[Status])] = ids.map {
+      case id @ "NotFound" => (id, Some(NotFound))
+      case id @ "500Error" => (id, Some(InternalServerError))
+      case id @ "502Error" => (id, Some(BadGateway))
+      case id @ "503Error" => (id, Some(ServiceUnavailable))
+      case id @ "504Error" => (id, Some(GatewayTimeout))
+      case id @ "422Error" => (id, Some(UnprocessableEntity)) // de-registered user response from ttp
+      case id @ "499Error" => (id, Some(new Status(499))) // we see some 499's in prod, they're similar to 502
+      case id              => (id, None)
+    }
+
+    val maybeResponse: Option[Status] = idsWithMatchedStatus match {
+      case head :: Nil => head._2
+      case Nil         => sys.error("Impossible that there was no List")
+      case head :: _ =>
+        logger.warn("We did not expect more than one matched id. Investigate")
+        head._2
     }
     maybeResponse.fold {
       eligibilityService.eligibilityData(request.body).flatMap {
@@ -63,7 +73,7 @@ class EligibilityController @Inject() (
           LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(value))
           Future.successful(Ok(Json.toJson(value)))
         case None =>
-          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.idValue))))
+          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.identification))))
       }
     }(Future.successful)
   }

@@ -16,17 +16,31 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
-import play.api.libs.json.{Format, Json}
+import essttp.rootmodel.ttp.eligibility.{IdType, IdValue, Identification}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 final case class EligibilityRequest(
     channelIdentifier:         String,
-    idType:                    String,
-    idValue:                   String,
+    identification:            List[Identification],
     regimeType:                String,
     returnFinancialAssessment: Boolean
 )
 
 object EligibilityRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[EligibilityRequest] = Json.format[EligibilityRequest]
+  implicit val reads: Reads[EligibilityRequest] =
+    Json.reads[EligibilityRequest] orElse
+      (
+        (__ \ "channelIdentifier").read[String] and
+        (__ \ "idType").read[String] and
+        (__ \ "idValue").read[String] and
+        (__ \ "regimeType").read[String] and
+        (__ \ "returnFinancialAssessment").read[Boolean]
+      )((channelIdentifier, idType, idValue, regimeType, returnFinancialAssessment) =>
+          EligibilityRequest(channelIdentifier, List(Identification(IdType(idType), IdValue(idValue))), regimeType, returnFinancialAssessment))
+
+  implicit val writes: Writes[EligibilityRequest] = Json.writes[EligibilityRequest]
+
+  implicit val format: Format[EligibilityRequest] = Format(reads, writes)
 }
