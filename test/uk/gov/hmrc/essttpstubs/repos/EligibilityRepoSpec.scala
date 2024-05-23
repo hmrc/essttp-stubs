@@ -46,10 +46,10 @@ class EligibilityRepoSpec extends ItSpec {
     updateResult2.wasAcknowledged() shouldBe true
     collectionSize shouldBe 1
 
-    val id = TestData.EligibilityApi.ModelInstances.eligibilityResponse.identification.headOption.getOrElse(sys.error("Could not find id field"))
+    val identificationList = TestData.EligibilityApi.ModelInstances.eligibilityResponse.identification
 
     val findResult: Option[EligibilityEntry] = eligibilityRepo
-      .findEligibilityDataByTaxRef(id.idValue.value)
+      .findEligibilityDataByTaxRef(identificationList)
       .futureValue
 
     Json.toJson(findResult.value.eligibilityCheckResult) shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson withClue s"Json was in fact: ${findResult.toString}"

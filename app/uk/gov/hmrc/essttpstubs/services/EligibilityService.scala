@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
+import cats.implicits.catsSyntaxEq
 import essttp.rootmodel.{AmountInPence, Email}
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.eligibility._
@@ -37,7 +38,7 @@ class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit e
   }
 
   def eligibilityData(eligibilityRequest: EligibilityRequest): Future[Option[EligibilityCheckResult]] =
-    eligibilityRepo.findEligibilityDataByTaxRef(eligibilityRequest.identification.headOption.map(_.idValue.value).getOrElse(""))
+    eligibilityRepo.findEligibilityDataByTaxRef(eligibilityRequest.identification)
       .map(f => f.map(_.eligibilityCheckResult))
 
   def removeAllRecordsFromEligibilityDb(): Future[Unit] = eligibilityRepo.removeAllRecords().map(_ => ())
@@ -45,16 +46,18 @@ class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit e
 }
 
 object EligibilityService {
-  def defaultEligibleResponse(regimeType: RegimeType, taxId: String): EligibilityCheckResult = {
+  def defaultEligibleResponse(regimeType: RegimeType, identificationList: List[Identification]): EligibilityCheckResult = {
     val identification: List[Identification] = regimeType match {
-      case RegimeType("PAYE") =>
-        List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
-      case RegimeType("VATC") =>
-        List(Identification(IdType("VRN"), IdValue(taxId)))
+      case RegimeType("PAYE") => if (identificationList.length === 1) {
+        identificationList ++ List(Identification(IdType("BROCS"), IdValue("someValue")))
+      } else { sys.error("there should only be one item in the list for PAYE") }
+      case RegimeType("VATC") => if (identificationList.length === 1) {
+        identificationList
+      } else { sys.error("there should only be one item in the list for VAT") }
       case RegimeType("SA") =>
-        List(Identification(IdType("UTR"), IdValue(taxId)))
+        identificationList
       case _ => // just default to epaye, we don't really care...
-        List(Identification(IdType("EMPREF"), IdValue(taxId)), Identification(IdType("BROCS"), IdValue(taxId)))
+        identificationList ++ List(Identification(IdType("BROCS"), IdValue("someValue")))
     }
     EligibilityCheckResult(
       processingDateTime              = ProcessingDateTime(Instant.now().toString),
@@ -92,7 +95,7 @@ object EligibilityService {
           TaxPeriodFrom("2020-08-13"),
           TaxPeriodTo("2020-08-14"),
           DebtTotalAmount(AmountInPence(123456)),
-          chargeReference = ChargeReference(taxId),
+          chargeReference = ChargeReference("someValue"),
           List(Charges(
             chargeType                    = ChargeType("InYearRTICharge-Tax"),
             mainType                      = MainType("InYearRTICharge(FPS)"),
