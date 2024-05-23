@@ -47,8 +47,7 @@ final class EligibilityRepo @Inject() (
   def insertEligibilityData(eligibilityEntry: EligibilityEntry): Future[UpdateResult] =
 
     collection.replaceOne(
-      Filters.and(eligibilityEntry.eligibilityCheckResult.identification.map(_.idValue.value)
-        .map(idValue => Filters.eq("eligibilityCheckResult.identification.idValue", idValue)): _*),
+      taxIdFilter(eligibilityEntry.eligibilityCheckResult.identification),
       eligibilityEntry,
       new ReplaceOptions().upsert(true)
     ).toFuture()
