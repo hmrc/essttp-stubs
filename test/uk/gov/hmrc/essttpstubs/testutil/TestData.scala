@@ -81,7 +81,8 @@ object TestData {
           hasInvalidInterestSignalsCESA         = None,
           hasDisguisedRemuneration              = None,
           hasCapacitor                          = None,
-          dmSpecialOfficeProcessingRequiredCDCS = None
+          dmSpecialOfficeProcessingRequiredCDCS = None,
+          isAnMtdCustomer                       = None
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(

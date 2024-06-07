@@ -18,26 +18,33 @@ package uk.gov.hmrc.essttpstubs.testutil.connector
 
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
+import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestEligibilityConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
+class TestEligibilityConnector @Inject() (httpClient: HttpClientV2)(implicit executionContext: ExecutionContext) extends TestConnector {
 
   implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val eligibilityApiBaseUrl = s"http://localhost:$port/debts/time-to-pay/eligibility"
 
   def insertEligibilityData(eligibilityResponse: EligibilityCheckResult)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.POST[EligibilityCheckResult, HttpResponse](s"$eligibilityApiBaseUrl/insert", eligibilityResponse)
+    httpClient.post(url"$eligibilityApiBaseUrl/insert")
+      .withBody(Json.toJson(eligibilityResponse))
+      .execute[HttpResponse]
 
   def retrieveEligibilityData(eligibilityRequest: EligibilityRequest)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.POST[EligibilityRequest, HttpResponse](s"$eligibilityApiBaseUrl", eligibilityRequest)
+    httpClient.post(url"$eligibilityApiBaseUrl")
+      .withBody(Json.toJson(eligibilityRequest))
+      .execute[HttpResponse]
 
   def removeAllRecordsFromEligibilityDb()(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.DELETE[HttpResponse](s"$eligibilityApiBaseUrl/drop")
+    httpClient.delete(url"$eligibilityApiBaseUrl/drop")
+      .execute[HttpResponse]
 
 }
