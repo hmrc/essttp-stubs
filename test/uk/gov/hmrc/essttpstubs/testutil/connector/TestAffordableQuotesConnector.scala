@@ -16,18 +16,21 @@
 
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestAffordableQuotesConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) extends TestConnector {
+class TestAffordableQuotesConnector @Inject() (httpClient: HttpClientV2)(implicit executionContext: ExecutionContext) extends TestConnector {
 
   private val affordableQuotesApiUrl: String = s"http://localhost:$port/debts/time-to-pay/affordability/affordable-quotes"
 
   def calculateAffordableQuotes(request: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.POST[JsValue, HttpResponse](affordableQuotesApiUrl, request)
+    httpClient.post(url"$affordableQuotesApiUrl")
+      .withBody(Json.toJson(request))
+      .execute[HttpResponse]
 
 }
