@@ -89,7 +89,8 @@ object EligibilityService {
         hasDisguisedRemuneration              = Some(false),
         hasCapacitor                          = Some(false),
         dmSpecialOfficeProcessingRequiredCDCS = Some(false),
-        isAnMtdCustomer                       = Some(false)
+        isAnMtdCustomer                       = Some(false),
+        dmSpecialOfficeProcessingRequiredCESA = Some(false)
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(
