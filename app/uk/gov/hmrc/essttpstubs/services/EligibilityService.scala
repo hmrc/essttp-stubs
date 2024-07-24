@@ -122,16 +122,18 @@ object EligibilityService {
             isInterestBearingCharge       = None,
             useChargeReference            = None,
             chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = None
+            ddInProgress                  = None,
+            chargeSource                  = None
           ))
         )
       ),
       customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(value = true)),
       futureChargeLiabilitiesExcluded = false,
-      chargeTypesExcluded             = None,
       invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
-      customerType                    = Some(CustomerTypes.MTDITSA)
+      customerType                    = Some(CustomerTypes.MTDITSA),
+      chargeTypesExcluded             = None,
+      transitionToCDCS                = None
     )
   }
 
