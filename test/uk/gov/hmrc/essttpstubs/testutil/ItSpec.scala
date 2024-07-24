@@ -19,16 +19,16 @@ package uk.gov.hmrc.essttpstubs.testutil
 import com.google.inject.{AbstractModule, Provides}
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.util.Timeout
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.{Application, Configuration, Mode}
 import play.api.inject.Injector
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.Result
 import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.{Application, Configuration, Mode}
 import play.core.server.ServerConfig
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestEligibilityConnector

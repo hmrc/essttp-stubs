@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
+import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.ttp.eligibility._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString

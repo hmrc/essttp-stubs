@@ -17,11 +17,11 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.implicits.catsSyntaxEq
-import essttp.rootmodel.{AmountInPence, Email}
-import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.ttp.eligibility._
 import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.RegimeType
+import essttp.rootmodel.ttp.eligibility._
+import essttp.rootmodel.{AmountInPence, Email}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.repo.{EligibilityEntry, EligibilityRepo}

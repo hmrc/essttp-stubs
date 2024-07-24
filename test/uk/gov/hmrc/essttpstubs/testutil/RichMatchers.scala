@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
-import org.scalatest.{AppendedClues, EitherValues, Inside, OptionValues, StreamlinedXml, TryValues}
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest._
 
 trait RichMatchers
   extends Matchers
