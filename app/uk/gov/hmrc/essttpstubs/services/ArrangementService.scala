@@ -17,14 +17,13 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.eq._
-import essttp.rootmodel.ttp.arrangement.{CustomerReference, RegimeType}
-import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse}
+import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse, CustomerReference, RegimeType}
 import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
 import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
-import java.time.{Clock, Instant}
 import java.time.format.DateTimeFormatter
+import java.time.{Clock, Instant}
 import javax.inject.{Inject, Singleton}
 
 @Singleton

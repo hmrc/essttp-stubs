@@ -17,11 +17,11 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.implicits.catsSyntaxEq
-import essttp.rootmodel.{AmountInPence, Email}
-import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.ttp.eligibility._
 import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.RegimeType
+import essttp.rootmodel.ttp.eligibility._
+import essttp.rootmodel.{AmountInPence, Email}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.essttpstubs.model.EligibilityRequest
 import uk.gov.hmrc.essttpstubs.repo.{EligibilityEntry, EligibilityRepo}
@@ -89,7 +89,8 @@ object EligibilityService {
         hasDisguisedRemuneration              = Some(false),
         hasCapacitor                          = Some(false),
         dmSpecialOfficeProcessingRequiredCDCS = Some(false),
-        isAnMtdCustomer                       = Some(false)
+        isAnMtdCustomer                       = Some(false),
+        dmSpecialOfficeProcessingRequiredCESA = Some(false)
       ),
       chargeTypeAssessment            = List(
         ChargeTypeAssessment(
@@ -121,16 +122,18 @@ object EligibilityService {
             isInterestBearingCharge       = None,
             useChargeReference            = None,
             chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = None
+            ddInProgress                  = None,
+            chargeSource                  = None
           ))
         )
       ),
       customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(value = true)),
       futureChargeLiabilitiesExcluded = false,
-      chargeTypesExcluded             = None,
       invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
-      customerType                    = Some(CustomerTypes.MTDITSA)
+      customerType                    = Some(CustomerTypes.MTDITSA),
+      chargeTypesExcluded             = None,
+      transitionToCDCS                = None
     )
   }
 

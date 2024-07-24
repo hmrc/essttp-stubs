@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
+import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.ttp.eligibility._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -82,7 +82,8 @@ object TestData {
           hasDisguisedRemuneration              = None,
           hasCapacitor                          = None,
           dmSpecialOfficeProcessingRequiredCDCS = None,
-          isAnMtdCustomer                       = None
+          isAnMtdCustomer                       = None,
+          dmSpecialOfficeProcessingRequiredCESA = None
         ),
         chargeTypeAssessment            = List(
           ChargeTypeAssessment(
@@ -107,7 +108,8 @@ object TestData {
                 isInterestBearingCharge       = None,
                 useChargeReference            = None,
                 chargeBeforeMaxAccountingDate = None,
-                ddInProgress                  = None
+                ddInProgress                  = None,
+                chargeSource                  = None
               )
             )
           )
@@ -117,7 +119,8 @@ object TestData {
         futureChargeLiabilitiesExcluded = false,
         chargeTypesExcluded             = None,
         invalidSignals                  = None,
-        customerType                    = None
+        customerType                    = None,
+        transitionToCDCS                = None
       )
     }
 

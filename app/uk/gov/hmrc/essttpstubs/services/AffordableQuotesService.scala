@@ -18,10 +18,10 @@ package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.either._
 import cats.syntax.eq._
-import essttp.rootmodel.ttp.affordablequotes._
-import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
+import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.{PaymentPlanMaxLength, PaymentPlanMinLength}
+import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import play.api.Configuration
 import uk.gov.hmrc.essttpstubs.services.AffordableQuotesService.noRegularCollectionsRuntimeError
 
