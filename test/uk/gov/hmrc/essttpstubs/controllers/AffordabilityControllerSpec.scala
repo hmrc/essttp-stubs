@@ -119,6 +119,7 @@ class AffordabilityControllerSpec extends ItSpec {
       s"""
          |{
          |    "channelIdentifier": "eSSTTP",
+         |    "regimeType": "PAYE",
          |    "paymentPlanFrequency": "Monthly",
          |    "paymentPlanMinLength": ${testCase.minPlanLength.toString},
          |    "paymentPlanMaxLength": ${testCase.maxPlanLength.toString},

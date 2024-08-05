@@ -17,7 +17,6 @@
 package uk.gov.hmrc.essttpstubs.controllers
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.arrangement.RegimeType
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
@@ -73,7 +72,7 @@ class EligibilityController @Inject() (
           LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(value))
           Future.successful(Ok(Json.toJson(value)))
         case None =>
-          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse(RegimeType(request.body.regimeType), request.body.identification))))
+          Future.successful(Ok(Json.toJson(EligibilityService.defaultEligibleResponse (request.body.regimeType, request.body.identification))))
       }
     }(Future.successful)
   }

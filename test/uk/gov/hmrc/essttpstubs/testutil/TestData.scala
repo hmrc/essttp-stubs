@@ -41,7 +41,7 @@ object TestData {
       val eligibilityRequest: EligibilityRequest = EligibilityRequest(
         channelIdentifier         = "eSSTTP",
         identification            = List(Identification(IdType("EMPREF"), IdValue("test-idValue"))),
-        regimeType                = "test-regimeType",
+        regimeType                = RegimeType.EPAYE,
         returnFinancialAssessment = true
       )
 
