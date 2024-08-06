@@ -17,7 +17,8 @@
 package uk.gov.hmrc.essttpstubs.services
 
 import cats.syntax.eq._
-import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse, CustomerReference, RegimeType}
+import essttp.rootmodel.ttp.RegimeType
+import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse, CustomerReference}
 import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
 import play.api.http.Status.BAD_REQUEST
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -31,10 +32,9 @@ class ArrangementService @Inject() (clock: Clock) {
 
   def enactArrangement(request: ArrangementRequest): ArrangementResponse = {
     val identificationKey = request.regimeType match {
-      case RegimeType.PAYE => "BROCS"
-      case RegimeType.VAT  => "VRN"
-      case RegimeType.SA   => "UTR"
-      case other           => sys.error(s"Unknown regime ${other.value}")
+      case RegimeType.EPAYE => "BROCS"
+      case RegimeType.VAT   => "VRN"
+      case RegimeType.SA    => "UTR"
     }
     request.identification.find(_.idType.value === identificationKey) match {
       case None =>

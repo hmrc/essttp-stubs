@@ -19,7 +19,6 @@ package uk.gov.hmrc.essttpstubs.services
 import cats.implicits.catsSyntaxEq
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.ttp.arrangement.RegimeType
 import essttp.rootmodel.ttp.eligibility._
 import essttp.rootmodel.{AmountInPence, Email}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -48,13 +47,13 @@ class EligibilityService @Inject() (eligibilityRepo: EligibilityRepo)(implicit e
 object EligibilityService {
   def defaultEligibleResponse(regimeType: RegimeType, identificationList: List[Identification]): EligibilityCheckResult = {
     val identification: List[Identification] = regimeType match {
-      case RegimeType("PAYE") => if (identificationList.length === 1) {
+      case RegimeType.EPAYE => if (identificationList.length === 1) {
         identificationList ++ List(Identification(IdType("BROCS"), IdValue("someValue")))
       } else { sys.error("there should only be one item in the list for PAYE") }
-      case RegimeType("VATC") => if (identificationList.length === 1) {
+      case RegimeType.VAT => if (identificationList.length === 1) {
         identificationList
       } else { sys.error("there should only be one item in the list for VAT") }
-      case RegimeType("SA") =>
+      case RegimeType.SA =>
         identificationList
       case _ => // just default to epaye, we don't really care...
         identificationList ++ List(Identification(IdType("BROCS"), IdValue("someValue")))

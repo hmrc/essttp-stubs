@@ -128,6 +128,7 @@ class AffordableQuotesControllerSpec extends ItSpec {
       s"""
          |{
          |   "channelIdentifier":"eSSTTP",
+         |   "regimeType": "PAYE",
          |   "paymentPlanAffordableAmount":${affordableAmount.value.value.toString},
          |   "paymentPlanFrequency":"Monthly",
          |   "paymentPlanMaxLength":6,

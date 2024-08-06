@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.model
 
+import essttp.rootmodel.ttp.RegimeType
 import essttp.rootmodel.ttp.eligibility.{IdType, IdValue, Identification}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -23,7 +24,7 @@ import play.api.libs.json._
 final case class EligibilityRequest(
     channelIdentifier:         String,
     identification:            List[Identification],
-    regimeType:                String,
+    regimeType:                RegimeType,
     returnFinancialAssessment: Boolean
 )
 
@@ -35,7 +36,7 @@ object EligibilityRequest {
         (__ \ "channelIdentifier").read[String] and
         (__ \ "idType").read[String] and
         (__ \ "idValue").read[String] and
-        (__ \ "regimeType").read[String] and
+        (__ \ "regimeType").read[RegimeType] and
         (__ \ "returnFinancialAssessment").read[Boolean]
       )((channelIdentifier, idType, idValue, regimeType, returnFinancialAssessment) =>
           EligibilityRequest(channelIdentifier, List(Identification(IdType(idType), IdValue(idValue))), regimeType, returnFinancialAssessment))
