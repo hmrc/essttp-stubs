@@ -54,7 +54,7 @@ object TestData {
           )
         ),
         customerPostcodes               = List(
-          CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate("2022-01-01"))
+          CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))
         ),
         regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
         paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
