@@ -61,7 +61,7 @@ object EligibilityService {
     EligibilityCheckResult(
       processingDateTime              = ProcessingDateTime(Instant.now().toString),
       identification                  = identification,
-      customerPostcodes               = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate("2022-01-01"))),
+      customerPostcodes               = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))),
       regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
       paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
       paymentPlanMinLength            = PaymentPlanMinLength(1),
