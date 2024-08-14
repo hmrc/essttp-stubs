@@ -8,3 +8,7 @@ POST    /debts/time-to-pay/self-serve/affordability             uk.gov.hmrc.esst
 POST    /debts/time-to-pay/affordability/affordable-quotes      uk.gov.hmrc.essttpstubs.controllers.AffordableQuotesController.affordableQuotes
 
 POST    /debts/time-to-pay/self-serve/arrangement               uk.gov.hmrc.essttpstubs.controllers.ArrangementController.enactArrangement
+
+
+POST    /prweb/PRRestService/oauth2/v1/token                    uk.gov.hmrc.essttpstubs.controllers.PegaController.token
+POST    /prweb/api/payments/v1/aa/createorupdatecase            uk.gov.hmrc.essttpstubs.controllers.PegaController.startCase
