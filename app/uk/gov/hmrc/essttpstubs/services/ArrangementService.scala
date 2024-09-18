@@ -35,6 +35,7 @@ class ArrangementService @Inject() (clock: Clock) {
       case RegimeType.EPAYE => "BROCS"
       case RegimeType.VAT   => "VRN"
       case RegimeType.SA    => "UTR"
+      case RegimeType.SIA   => "NINO"
     }
     request.identification.find(_.idType.value === identificationKey) match {
       case None =>

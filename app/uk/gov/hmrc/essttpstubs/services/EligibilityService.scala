@@ -55,6 +55,8 @@ object EligibilityService {
       } else { sys.error("there should only be one item in the list for VAT") }
       case RegimeType.SA =>
         identificationList
+      case RegimeType.SIA =>
+        identificationList
       case _ => // just default to epaye, we don't really care...
         identificationList ++ List(Identification(IdType("BROCS"), IdValue("someValue")))
     }
