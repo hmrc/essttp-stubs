@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.matching.Regex
 
 @Singleton()
 class EligibilityController @Inject() (
@@ -44,19 +45,22 @@ class EligibilityController @Inject() (
       .map(_ => Created(s"Inserted eligibility record into MongoDb: [ ${request.body.toString} ]"))
   }
 
+  private val ninoStatusRegex: Regex = "ST(\\d\\d\\d)000A".r
+
   def retrieveEligibilityData: Action[EligibilityRequest] = Action.async(parse.json[EligibilityRequest]) { implicit request =>
     LoggingHelper.logRequestInfo(logger  = logger, request = request)
 
     val ids: List[String] = request.body.identification.map(_.idValue.value)
     val idsWithMatchedStatus: List[(String, Option[Status])] = ids.map {
-      case id @ "NotFound" => (id, Some(NotFound))
-      case id @ "500Error" => (id, Some(InternalServerError))
-      case id @ "502Error" => (id, Some(BadGateway))
-      case id @ "503Error" => (id, Some(ServiceUnavailable))
-      case id @ "504Error" => (id, Some(GatewayTimeout))
-      case id @ "422Error" => (id, Some(UnprocessableEntity)) // de-registered user response from ttp
-      case id @ "499Error" => (id, Some(new Status(499))) // we see some 499's in prod, they're similar to 502
-      case id              => (id, None)
+      case id @ "NotFound"              => (id, Some(NotFound))
+      case id @ "500Error"              => (id, Some(InternalServerError))
+      case id @ "502Error"              => (id, Some(BadGateway))
+      case id @ "503Error"              => (id, Some(ServiceUnavailable))
+      case id @ "504Error"              => (id, Some(GatewayTimeout))
+      case id @ "422Error"              => (id, Some(UnprocessableEntity)) // de-registered user response from ttp
+      case id @ "499Error"              => (id, Some(new Status(499))) // we see some 499's in prod, they're similar to 502
+      case id @ ninoStatusRegex(status) => (id, Some(new Status(status.toInt)))
+      case id                           => (id, None)
     }
 
     val maybeResponse: Option[Status] = idsWithMatchedStatus match {
