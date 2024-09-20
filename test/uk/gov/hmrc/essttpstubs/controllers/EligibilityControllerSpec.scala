@@ -47,6 +47,15 @@ class EligibilityControllerSpec extends ItSpec {
       asUpstreamErrorResponse(result).getMessage() should include("returned 404")
     }
 
+    ".retrieveEligibilityData should return a status of XXX' when idValue is 'STXXX000A'" in {
+      List(400, 401, 422, 500, 503).foreach{ status =>
+        val id = s"ST${status.toString}000A"
+        val result = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest.copy(identification = List(Identification(IdType("NINO"), IdValue(id))))).failed.futureValue
+        asUpstreamErrorResponse(result).getMessage() should include(s"returned ${status.toString}")
+      }
+
+    }
+
     ".removeAllRecordsFromEligibilityDb return 'Accepted/202'" in {
       testEligibilityConnector.removeAllRecordsFromEligibilityDb().futureValue.status shouldBe 202
     }
