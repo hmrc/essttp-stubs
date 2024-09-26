@@ -19,11 +19,23 @@ package uk.gov.hmrc.essttpstubs.controllers
 import play.api.libs.json.{JsObject, JsSuccess, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
+import uk.gov.hmrc.essttpstubs.repo.PegaTokenRepo
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
+
+import java.time.LocalDateTime
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 class PegaControllerSpec extends ItSpec {
 
   val controller = app.injector.instanceOf[PegaController]
+  val repo = app.injector.instanceOf[PegaTokenRepo]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    Await.result(repo.dropAll(), 2.seconds)
+  }
 
   "PegaController" - {
 
@@ -34,7 +46,17 @@ class PegaControllerSpec extends ItSpec {
         val json = contentAsJson(result).as[JsObject]
 
         (json \ "token_type").as[String] shouldBe "bearer"
-        (json \ "expires_in").as[Long] shouldBe 360000
+        (json \ "expires_in").as[Long] shouldBe 120
+        (json \ "access_token").validate[String] shouldBe a[JsSuccess[_]]
+      }
+
+      "respond with a token with remainingTime" in {
+        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now.minusSeconds(40))), 2.seconds)
+        val result = controller.token(FakeRequest())
+        val json = contentAsJson(result).as[JsObject]
+
+        (json \ "token_type").as[String] shouldBe "bearer"
+        (json \ "expires_in").as[Long] shouldBe 40
         (json \ "access_token").validate[String] shouldBe a[JsSuccess[_]]
       }
 
@@ -43,7 +65,8 @@ class PegaControllerSpec extends ItSpec {
     "when handling requests to start a case must" - {
 
       "respond successfully" in {
-        val result = controller.startCase(FakeRequest())
+        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         val json = contentAsJson(result).as[JsObject]
 
         (json \ "ID").validate[String] shouldBe a[JsSuccess[_]]
@@ -51,6 +74,38 @@ class PegaControllerSpec extends ItSpec {
         assignments.map(a => (a \ "ID").validate[String]).foreach(_ shouldBe a[JsSuccess[_]])
       }
 
+      "return 401 with 'Token expired'" in {
+        val expiredDateTime = LocalDateTime.now.minusSeconds(61)
+        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
+
+        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Token expired"
+      }
+
+      "return 401 with 'Token doesn't match'" in {
+        Await.result(repo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
+
+        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Token doesn't match"
+      }
+
+      "return 401 with 'Token not found in mongo'" in {
+        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Token not found in mongo"
+      }
+
+      "return 401 with 'Authorization header missing or invalid format'" in {
+        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Authorization header missing or invalid format"
+      }
     }
 
     "when handling requests to get a case must" - {
@@ -133,12 +188,44 @@ class PegaControllerSpec extends ItSpec {
               |""".stripMargin
           )
 
-        val result = controller.getCase("case")(FakeRequest())
+        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         contentAsJson(result) shouldBe expectedJson
       }
 
-    }
+      "return 401 with 'Token expired'" in {
+        val expiredDateTime = LocalDateTime.now.minusSeconds(61)
+        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
 
+        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Token expired"
+      }
+
+      "return 401 with 'Token doesn't match'" in {
+        Await.result(repo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
+
+        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Token doesn't match"
+      }
+
+      "return 401 with 'Token not found in mongo'" in {
+        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Token not found in mongo"
+      }
+
+      "return 401 with 'Authorization header missing or invalid format'" in {
+        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
+        status(result) shouldBe UNAUTHORIZED
+        val errorMessage: String = contentAsString(result)
+        errorMessage shouldBe "Authorization header missing or invalid format"
+      }
+    }
   }
 
 }
