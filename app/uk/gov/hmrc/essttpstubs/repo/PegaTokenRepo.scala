@@ -19,24 +19,25 @@ package uk.gov.hmrc.essttpstubs.repo
 import com.google.inject.{Inject, Singleton}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.InsertOneResult
+import uk.gov.hmrc.essttpstubs.config.AppConfig
 import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import java.util.concurrent.TimeUnit
-import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 final class PegaTokenRepo @Inject() (
-    mongoComponent: MongoComponent
+    mongoComponent: MongoComponent,
+    appConfig: AppConfig
 )(implicit ec: ExecutionContext)
   extends PlayMongoRepository[PegaOauthToken](
     mongoComponent = mongoComponent,
     collectionName = "essttp-stubs-pega-token",
     domainFormat   = PegaOauthToken.pegaFormat,
-    indexes        = PegaTokenRepo.indexes(30.minutes.toSeconds),
+    indexes        = PegaTokenRepo.indexes(appConfig.pegaTokenExpiryTime.toSeconds * 2),
     replaceIndexes = true
   ) {
 

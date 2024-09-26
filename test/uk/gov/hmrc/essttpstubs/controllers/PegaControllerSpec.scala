@@ -42,12 +42,11 @@ class PegaControllerSpec extends ItSpec {
     "when handling requests to the token endpoint must" - {
 
       "respond with a token" in {
-        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
         val result = controller.token(FakeRequest())
         val json = contentAsJson(result).as[JsObject]
 
         (json \ "token_type").as[String] shouldBe "bearer"
-        (json \ "expires_in").as[Long] shouldBe 60
+        (json \ "expires_in").as[Long] shouldBe 120
         (json \ "access_token").validate[String] shouldBe a[JsSuccess[_]]
       }
 
@@ -57,7 +56,7 @@ class PegaControllerSpec extends ItSpec {
         val json = contentAsJson(result).as[JsObject]
 
         (json \ "token_type").as[String] shouldBe "bearer"
-        (json \ "expires_in").as[Long] shouldBe 20
+        (json \ "expires_in").as[Long] shouldBe 40
         (json \ "access_token").validate[String] shouldBe a[JsSuccess[_]]
       }
 

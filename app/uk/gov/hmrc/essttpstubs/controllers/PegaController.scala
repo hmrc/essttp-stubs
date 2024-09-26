@@ -50,7 +50,7 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
           generateAndSaveToken()
         } else {
           val remainingTime = expirationTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
-          val response = generateTokenResponse(pegaToken.accessToken, remainingTime.toInt)
+          val response = generateTokenResponse(pegaToken.accessToken, remainingTime.toInt * 2) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
           logRequest(request, response)
           Future.successful(Ok(response))
         }
@@ -60,7 +60,7 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
   private def generateAndSaveToken()(implicit request: Request[AnyContent]): Future[Result] = {
     val newToken = PegaOauthToken(nextAlphanumericString(20), LocalDateTime.now())
     repo.insertPegaToken(newToken).map { _ =>
-      val response = generateTokenResponse(newToken.accessToken, pegaTokenExpiryTime.toSeconds * 2)
+      val response = generateTokenResponse(newToken.accessToken, pegaTokenExpiryTime.toSeconds * 2) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
       logRequest(request, response)
       Ok(response)
     }
@@ -85,15 +85,12 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
   }
 
   val startCase: Action[AnyContent] = Action.async { implicit request =>
-    val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
-
-    validateToken(maybeAuthToken).flatMap {
-      case Left(errorResult) =>
-        Future.successful(errorResult)
+    validateToken().map {
+      case Left(errorResult) => errorResult
       case Right(_) =>
         val response = generateStartCaseResponse
         logRequest(request, response)
-        Future.successful(Created(Json.toJson(response)))
+        Created(Json.toJson(response))
     }
   }
 
@@ -120,19 +117,17 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
   }
 
   def getCase(caseId: String): Action[AnyContent] = Action.async { implicit request =>
-    val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
-
-    validateToken(maybeAuthToken).flatMap {
-      case Left(errorResult) =>
-        Future.successful(errorResult)
+    validateToken().map {
+      case Left(errorResult) => errorResult
       case Right(_) =>
         val response = generateGetCaseResponse
         logRequest(request, response)
-        Future.successful(Created(Json.toJson(response)))
+        Created(Json.toJson(response))
     }
   }
 
-  private def validateToken(maybeAuthToken: Option[String])(implicit request: Request[AnyContent]): Future[Either[Result, Unit]] = {
+  private def validateToken()(implicit request: Request[AnyContent]): Future[Either[Result, Unit]] = {
+    val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
     maybeAuthToken match {
       case Some(authToken) =>
         repo.findPegaToken().flatMap {
