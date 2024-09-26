@@ -16,37 +16,89 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
+import cats.implicits.catsSyntaxEq
 import play.api.Logger
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc._
+import uk.gov.hmrc.essttpstubs.config.AppConfig
+import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
+import uk.gov.hmrc.essttpstubs.repo.PegaTokenRepo
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import java.time.{LocalDateTime, ZoneOffset}
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 @Singleton
-class PegaController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
+class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, appConfig: AppConfig)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
-  val token: Action[AnyContent] = Action { implicit request =>
-    val response = Json.parse(
+  private val pegaTokenExpiryTime: FiniteDuration = appConfig.pegaTokenExpiryTime
+
+  val token: Action[AnyContent] = Action.async { implicit request =>
+
+    repo.findPegaToken().flatMap {
+      case None =>
+        generateAndSaveToken()
+
+      case Some(pegaToken) =>
+        val expirationTime = pegaToken.validFrom.plusSeconds(pegaTokenExpiryTime.toSeconds)
+        if (LocalDateTime.now().isAfter(expirationTime)) {
+          generateAndSaveToken()
+        } else {
+          val remainingTime = expirationTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+          val response = generateTokenResponse(pegaToken.accessToken, remainingTime.toInt)
+          logRequest(request, response)
+          Future.successful(Ok(response))
+        }
+    }
+  }
+
+  private def generateAndSaveToken()(implicit request: Request[AnyContent]): Future[Result] = {
+    val newToken = PegaOauthToken(nextAlphanumericString(20), LocalDateTime.now())
+    repo.insertPegaToken(newToken).map { _ =>
+      val response = generateTokenResponse(newToken.accessToken, pegaTokenExpiryTime.toSeconds * 2)
+      logRequest(request, response)
+      Ok(response)
+    }
+  }
+
+  private def generateTokenResponse(accessToken: String, expiresIn: Long): JsValue = {
+    Json.parse(
       s"""{
-        |  "access_token": "${nextAlphanumericString(20)}",
-        |  "token_type": "bearer",
-        |  "expires_in": 360000
-        |}
-        |""".stripMargin
+         |  "access_token": "$accessToken",
+         |  "token_type": "bearer",
+         |  "expires_in": ${expiresIn.toString}
+         |}
+         |""".stripMargin
     )
+  }
+
+  private def logRequest(request: Request[AnyContent], response: JsValue): Unit = {
     logger.info(
       s"Got request for PEGA token with headers ${request.headers.headers.toString} and " +
         s"body ${request.body.toString}. Responding with ${response.toString}"
     )
-    Ok(response)
   }
 
-  val startCase: Action[AnyContent] = Action { implicit request =>
-    val response = Json.parse(
+  val startCase: Action[AnyContent] = Action.async { implicit request =>
+    val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
+
+    validateToken(maybeAuthToken).flatMap {
+      case Left(errorResult) =>
+        Future.successful(errorResult)
+      case Right(_) =>
+        val response = generateStartCaseResponse
+        logRequest(request, response)
+        Future.successful(Created(Json.toJson(response)))
+    }
+  }
+
+  private val generateStartCaseResponse: JsValue = {
+    Json.parse(
       s"""{
          |  "ID": "${nextAlphanumericString(20)}",
          |  "data": {
@@ -60,96 +112,121 @@ class PegaController @Inject() (cc: ControllerComponents) extends BackendControl
          |}
          |""".stripMargin
     )
-
-    logger.info(
-      s"Got request for PEGA start case headers ${request.headers.headers.toString} and " +
-        s"body ${request.body.toString}. Responding with ${response.toString}"
-    )
-    Created(response)
   }
 
-  def getCase(caseId: String): Action[AnyContent] = Action { implicit request =>
-    val response = Json.parse(
-      """{
-         |  "paymentPlan": {
-         |    "numberOfInstalments": 4,
-         |    "planDuration": 4,
-         |    "totalDebt": 997700,
-         |    "totalDebtIncInt": 997816,
-         |    "planInterest": 116,
-         |    "collections": {
-         |      "initialCollection": {
-         |        "dueDate": "2024-08-27",
-         |        "amountDue": 2300
-         |      },
-         |      "regularCollections": [
-         |        {
-         |          "dueDate": "2024-10-28",
-         |          "amountDue": 249454
-         |        },
-         |        {
-         |          "dueDate": "2024-11-28",
-         |          "amountDue": 249454
-         |        },
-         |        {
-         |          "dueDate": "2024-12-28",
-         |          "amountDue": 249454
-         |        },
-         |        {
-         |          "dueDate": "2025-01-28",
-         |          "amountDue": 249454
-         |        }
-         |      ]
-         |    },
-         |    "instalments": [
-         |      {
-         |        "instalmentNumber": 4,
-         |        "dueDate": "2025-01-28",
-         |        "instalmentInterestAccrued": 29,
-         |        "instalmentBalance": 249425,
-         |        "debtItemChargeId": "A00000000001",
-         |        "amountDue": 249425,
-         |        "debtItemOriginalDueDate": "2023-09-28"
-         |      },
-         |      {
-         |        "instalmentNumber": 3,
-         |        "dueDate": "2024-12-28",
-         |        "instalmentInterestAccrued": 29,
-         |        "instalmentBalance": 498850,
-         |        "debtItemChargeId": "A00000000001",
-         |        "amountDue": 249425,
-         |        "debtItemOriginalDueDate": "2023-09-28"
-         |      },
-         |      {
-         |        "instalmentNumber": 2,
-         |        "dueDate": "2024-11-28",
-         |        "instalmentInterestAccrued": 29,
-         |        "instalmentBalance": 748275,
-         |        "debtItemChargeId": "A00000000001",
-         |        "amountDue": 249425,
-         |        "debtItemOriginalDueDate": "2023-09-28"
-         |      },
-         |      {
-         |        "instalmentNumber": 1,
-         |        "dueDate": "2024-10-28",
-         |        "instalmentInterestAccrued": 29,
-         |        "instalmentBalance": 997700,
-         |        "debtItemChargeId": "A00000000001",
-         |        "amountDue": 249425,
-         |        "debtItemOriginalDueDate": "2023-09-28"
-         |      }
-         |    ]
-         |  }
-         |}
-         |""".stripMargin
-    )
-
-    logger.info(
-      s"Got request for PEGA get case for case ID ${caseId} with headers ${request.headers.headers.toString} and " +
-        s"body ${request.body.toString}. Responding with ${response.toString}"
-    )
-    Ok(response)
+  private def parseBearerToken(header: String): Option[String] = {
+    if (header.startsWith("Bearer ")) Some(header.substring(7))
+    else None
   }
+
+  def getCase(caseId: String): Action[AnyContent] = Action.async { implicit request =>
+    val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
+
+    validateToken(maybeAuthToken).flatMap {
+      case Left(errorResult) =>
+        Future.successful(errorResult)
+      case Right(_) =>
+        val response = generateGetCaseResponse
+        logRequest(request, response)
+        Future.successful(Created(Json.toJson(response)))
+    }
+  }
+
+  private def validateToken(maybeAuthToken: Option[String])(implicit request: Request[AnyContent]): Future[Either[Result, Unit]] = {
+    maybeAuthToken match {
+      case Some(authToken) =>
+        repo.findPegaToken().flatMap {
+          case Some(pegaToken) =>
+            val expirationTime = pegaToken.validFrom.plusSeconds(pegaTokenExpiryTime.toSeconds)
+            if (LocalDateTime.now().isAfter(expirationTime)) {
+              Future.successful(Left(Unauthorized("Token expired")))
+            } else if (pegaToken.accessToken =!= authToken) {
+              Future.successful(Left(Unauthorized("Token doesn't match")))
+            } else {
+              Future.successful(Right(()))
+            }
+          case None =>
+            generateAndSaveToken().map(_ => Left(Unauthorized("Token not found in mongo")))
+        }
+      case None =>
+        Future.successful(Left(Unauthorized("Authorization header missing or invalid format")))
+    }
+  }
+
+  private val generateGetCaseResponse = Json.parse(
+    """{
+      |  "paymentPlan": {
+      |    "numberOfInstalments": 4,
+      |    "planDuration": 4,
+      |    "totalDebt": 997700,
+      |    "totalDebtIncInt": 997816,
+      |    "planInterest": 116,
+      |    "collections": {
+      |      "initialCollection": {
+      |        "dueDate": "2024-08-27",
+      |        "amountDue": 2300
+      |      },
+      |      "regularCollections": [
+      |        {
+      |          "dueDate": "2024-10-28",
+      |          "amountDue": 249454
+      |        },
+      |        {
+      |          "dueDate": "2024-11-28",
+      |          "amountDue": 249454
+      |        },
+      |        {
+      |          "dueDate": "2024-12-28",
+      |          "amountDue": 249454
+      |        },
+      |        {
+      |          "dueDate": "2025-01-28",
+      |          "amountDue": 249454
+      |        }
+      |      ]
+      |    },
+      |    "instalments": [
+      |      {
+      |        "instalmentNumber": 4,
+      |        "dueDate": "2025-01-28",
+      |        "instalmentInterestAccrued": 29,
+      |        "instalmentBalance": 249425,
+      |        "debtItemChargeId": "A00000000001",
+      |        "amountDue": 249425,
+      |        "debtItemOriginalDueDate": "2023-09-28"
+      |      },
+      |      {
+      |        "instalmentNumber": 3,
+      |        "dueDate": "2024-12-28",
+      |        "instalmentInterestAccrued": 29,
+      |        "instalmentBalance": 498850,
+      |        "debtItemChargeId": "A00000000001",
+      |        "amountDue": 249425,
+      |        "debtItemOriginalDueDate": "2023-09-28"
+      |      },
+      |      {
+      |        "instalmentNumber": 2,
+      |        "dueDate": "2024-11-28",
+      |        "instalmentInterestAccrued": 29,
+      |        "instalmentBalance": 748275,
+      |        "debtItemChargeId": "A00000000001",
+      |        "amountDue": 249425,
+      |        "debtItemOriginalDueDate": "2023-09-28"
+      |      },
+      |      {
+      |        "instalmentNumber": 1,
+      |        "dueDate": "2024-10-28",
+      |        "instalmentInterestAccrued": 29,
+      |        "instalmentBalance": 997700,
+      |        "debtItemChargeId": "A00000000001",
+      |        "amountDue": 249425,
+      |        "debtItemOriginalDueDate": "2023-09-28"
+      |      }
+      |    ]
+      |  }
+      |}
+      |""".stripMargin
+  )
 
   private def nextAlphanumericString(length: Int) = Random.alphanumeric.take(length).mkString("")
 
