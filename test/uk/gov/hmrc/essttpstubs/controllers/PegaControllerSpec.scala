@@ -113,76 +113,93 @@ class PegaControllerSpec extends ItSpec {
       "respond successfully" in {
         val expectedJson =
           Json.parse(
-            """
-              |{
-              |  "paymentPlan": {
-              |    "numberOfInstalments": 4,
-              |    "planDuration": 4,
-              |    "totalDebt": 997700,
-              |    "totalDebtIncInt": 997816,
-              |    "planInterest": 116,
-              |    "collections": {
-              |      "initialCollection": {
-              |        "dueDate": "2024-08-27",
-              |        "amountDue": 2300
-              |      },
-              |      "regularCollections": [
-              |        {
-              |          "dueDate": "2024-10-28",
-              |          "amountDue": 249454
-              |        },
-              |        {
-              |          "dueDate": "2024-11-28",
-              |          "amountDue": 249454
-              |        },
-              |        {
-              |          "dueDate": "2024-12-28",
-              |          "amountDue": 249454
-              |        },
-              |        {
-              |          "dueDate": "2025-01-28",
-              |          "amountDue": 249454
-              |        }
-              |      ]
-              |    },
-              |    "instalments": [
-              |      {
-              |        "instalmentNumber": 4,
-              |        "dueDate": "2025-01-28",
-              |        "instalmentInterestAccrued": 29,
-              |        "instalmentBalance": 249425,
-              |        "debtItemChargeId": "A00000000001",
-              |        "amountDue": 249425,
-              |        "debtItemOriginalDueDate": "2023-09-28"
-              |      },
-              |      {
-              |        "instalmentNumber": 3,
-              |        "dueDate": "2024-12-28",
-              |        "instalmentInterestAccrued": 29,
-              |        "instalmentBalance": 498850,
-              |        "debtItemChargeId": "A00000000001",
-              |        "amountDue": 249425,
-              |        "debtItemOriginalDueDate": "2023-09-28"
-              |      },
-              |      {
-              |        "instalmentNumber": 2,
-              |        "dueDate": "2024-11-28",
-              |        "instalmentInterestAccrued": 29,
-              |        "instalmentBalance": 748275,
-              |        "debtItemChargeId": "A00000000001",
-              |        "amountDue": 249425,
-              |        "debtItemOriginalDueDate": "2023-09-28"
-              |      },
-              |      {
-              |        "instalmentNumber": 1,
-              |        "dueDate": "2024-10-28",
-              |        "instalmentInterestAccrued": 29,
-              |        "instalmentBalance": 997700,
-              |        "debtItemChargeId": "A00000000001",
-              |        "amountDue": 249425,
-              |        "debtItemOriginalDueDate": "2023-09-28"
-              |      }
-              |    ]
+            """{
+              |  "AA": {
+              |   "paymentDay": "28",
+              |   "paymentPlan": [
+              |     {
+              |       "planSelected": true,
+              |       "numberOfInstalments": 4,
+              |       "planDuration": 4,
+              |       "totalDebt": 997700,
+              |       "totalDebtIncInt": 997816,
+              |       "planInterest": 116,
+              |       "collections": {
+              |         "initialCollection": {
+              |           "dueDate": "2024-08-27",
+              |           "amountDue": 2300
+              |         },
+              |         "regularCollections": [
+              |           {
+              |             "dueDate": "2024-10-28",
+              |             "amountDue": 249454
+              |           },
+              |           {
+              |             "dueDate": "2024-11-28",
+              |             "amountDue": 249454
+              |           },
+              |           {
+              |             "dueDate": "2024-12-28",
+              |             "amountDue": 249454
+              |           },
+              |           {
+              |             "dueDate": "2025-01-28",
+              |             "amountDue": 249454
+              |           }
+              |         ]
+              |       },
+              |       "instalments": [
+              |         {
+              |           "instalmentNumber": 4,
+              |           "dueDate": "2025-01-28",
+              |           "instalmentInterestAccrued": 29,
+              |           "instalmentBalance": 249425,
+              |           "debtItemChargeId": "A00000000001",
+              |           "amountDue": 249425,
+              |           "debtItemOriginalDueDate": "2023-09-28"
+              |         },
+              |         {
+              |           "instalmentNumber": 3,
+              |           "dueDate": "2024-12-28",
+              |           "instalmentInterestAccrued": 29,
+              |           "instalmentBalance": 498850,
+              |           "debtItemChargeId": "A00000000001",
+              |           "amountDue": 249425,
+              |           "debtItemOriginalDueDate": "2023-09-28"
+              |         },
+              |         {
+              |           "instalmentNumber": 2,
+              |           "dueDate": "2024-11-28",
+              |           "instalmentInterestAccrued": 29,
+              |           "instalmentBalance": 748275,
+              |           "debtItemChargeId": "A00000000001",
+              |           "amountDue": 249425,
+              |           "debtItemOriginalDueDate": "2023-09-28"
+              |         },
+              |         {
+              |           "instalmentNumber": 1,
+              |           "dueDate": "2024-10-28",
+              |           "instalmentInterestAccrued": 29,
+              |           "instalmentBalance": 997700,
+              |           "debtItemChargeId": "A00000000001",
+              |           "amountDue": 249425,
+              |           "debtItemOriginalDueDate": "2023-09-28"
+              |         }
+              |       ]
+              |     },
+              |     {
+              |       "planSelected": false,
+              |       "planDuration": 0,
+              |       "numberOfInstalments": 0,
+              |       "totalDebt": 0,
+              |       "totalDebtIncInt": 0,
+              |       "planInterest": 0,
+              |       "collections": {
+              |         "regularCollections": []
+              |       },
+              |       "instalments": []
+              |     }
+              |   ]
               |  }
               |}
               |""".stripMargin

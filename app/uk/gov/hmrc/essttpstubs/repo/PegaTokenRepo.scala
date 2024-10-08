@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 final class PegaTokenRepo @Inject() (
     mongoComponent: MongoComponent,
-    appConfig: AppConfig
+    appConfig:      AppConfig
 )(implicit ec: ExecutionContext)
   extends PlayMongoRepository[PegaOauthToken](
     mongoComponent = mongoComponent,
