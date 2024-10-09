@@ -12,4 +12,4 @@ POST    /debts/time-to-pay/self-serve/arrangement               uk.gov.hmrc.esst
 
 POST    /prweb/PRRestService/oauth2/v1/token                    uk.gov.hmrc.essttpstubs.controllers.PegaController.token
 POST    /prweb/api/payments/v1/aa/createorupdatecase            uk.gov.hmrc.essttpstubs.controllers.PegaController.startCase
-GET     /prweb/api/payments/v1/aa/getcase/:caseId    uk.gov.hmrc.essttpstubs.controllers.PegaController.getCase(caseId)
+GET     /prweb/api/payments/v1/cases/:caseId               uk.gov.hmrc.essttpstubs.controllers.PegaController.getCase(caseId: String, viewType: String, pageName: String, getBusinessDataOnly: Boolean)
