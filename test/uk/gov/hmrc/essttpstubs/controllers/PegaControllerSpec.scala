@@ -206,7 +206,7 @@ class PegaControllerSpec extends ItSpec {
           )
 
         Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
-        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         contentAsJson(result) shouldBe expectedJson
       }
 
@@ -214,7 +214,7 @@ class PegaControllerSpec extends ItSpec {
         val expiredDateTime = LocalDateTime.now.minusSeconds(61)
         Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
 
-        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token expired"
@@ -223,21 +223,21 @@ class PegaControllerSpec extends ItSpec {
       "return 401 with 'Token doesn't match'" in {
         Await.result(repo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
 
-        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token doesn't match"
       }
 
       "return 401 with 'Token not found in mongo'" in {
-        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token not found in mongo"
       }
 
       "return 401 with 'Authorization header missing or invalid format'" in {
-        val result = controller.getCase("case")(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
+        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Authorization header missing or invalid format"

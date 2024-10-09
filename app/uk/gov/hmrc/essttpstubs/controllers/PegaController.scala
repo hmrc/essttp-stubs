@@ -116,15 +116,16 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
     else None
   }
 
-  def getCase(caseId: String): Action[AnyContent] = Action.async { implicit request =>
-    validateToken().map {
-      case Left(errorResult) => errorResult
-      case Right(_) =>
-        val response = generateGetCaseResponse
-        logRequest(request, response)
-        Created(Json.toJson(response))
+  def getCase(caseId: String, viewType: String, pageName: String, getBusinessDataOnly: Boolean): Action[AnyContent] =
+    Action.async { implicit request =>
+      validateToken().map {
+        case Left(errorResult) => errorResult
+        case Right(_) =>
+          val response = generateGetCaseResponse
+          logRequest(request, response)
+          Created(Json.toJson(response))
+      }
     }
-  }
 
   private def validateToken()(implicit request: Request[AnyContent]): Future[Either[Result, Unit]] = {
     val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
