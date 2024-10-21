@@ -53,9 +53,9 @@ object TestData {
             idValue = IdValue("test-idValue")
           )
         ),
-        customerPostcodes               = List(
+        customerPostcodes               = Some(List(
           CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))
-        ),
+        )),
         regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
         paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
         paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -93,23 +93,35 @@ object TestData {
             chargeReference = ChargeReference("test-chargeReference"),
             charges         = List(
               Charges(
-                chargeType                    = ChargeType("test-chargeId"),
-                mainTrans                     = MainTrans("test-mainTrans"),
-                subTrans                      = SubTrans("test-subTrans"),
-                outstandingAmount             = OutstandingAmount(AmountInPence(10)),
-                interestStartDate             = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
-                accruedInterest               = AccruedInterest(AmountInPence(1)),
-                mainType                      = MainType("test-mainType"),
-                dueDate                       = DueDate(LocalDate.parse("2022-04-27")),
-                ineligibleChargeType          = IneligibleChargeType(value = false),
-                chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(value = false)),
-                locks                         = Some(List(testLock)),
-                dueDateNotReached             = false,
-                isInterestBearingCharge       = None,
-                useChargeReference            = None,
-                chargeBeforeMaxAccountingDate = None,
-                ddInProgress                  = None,
-                chargeSource                  = None
+                Charges1(
+                  chargeType              = ChargeType("test-chargeId"),
+                  mainTrans               = MainTrans("test-mainTrans"),
+                  subTrans                = SubTrans("test-subTrans"),
+                  outstandingAmount       = OutstandingAmount(AmountInPence(10)),
+                  interestStartDate       = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
+                  accruedInterest         = AccruedInterest(AmountInPence(1)),
+                  mainType                = MainType("test-mainType"),
+                  dueDate                 = DueDate(LocalDate.parse("2022-04-27")),
+                  ineligibleChargeType    = IneligibleChargeType(value = false),
+                  chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
+                  locks                   = Some(List(testLock)),
+                  dueDateNotReached       = false,
+                  isInterestBearingCharge = None
+                ),
+                Charges2(
+                  useChargeReference            = None,
+                  chargeBeforeMaxAccountingDate = None,
+                  ddInProgress                  = None,
+                  chargeSource                  = None,
+                  parentChargeReference         = None,
+                  parentMainTrans               = None,
+                  originalCreationDate          = None,
+                  tieBreaker                    = None,
+                  originalTieBreaker            = None,
+                  saTaxYearEnd                  = None,
+                  creationDate                  = None,
+                  originalChargeType            = None
+                )
               )
             )
           )
@@ -188,7 +200,20 @@ object TestData {
           |				"lockReason": "testLockReason",
           |				"disallowedChargeLockType": false
           |		  	}],
-          |     "dueDateNotReached": false
+          |     "dueDateNotReached": false,
+          |     "isInterestBearingCharge": null,
+          |     "useChargeReference": null,
+          |     "chargeBeforeMaxAccountingDate": null,
+          |     "ddInProgress": null,
+          |     "chargeSource": null,
+          |     "parentChargeReference": null,
+          |     "parentMainTrans": null,
+          |     "originalCreationDate": null,
+          |     "tieBreaker": null,
+          |     "originalTieBreaker": null,
+          |     "saTaxYearEnd": null,
+          |     "creationDate": null,
+          |     "originalChargeType": null
           |	  	}]
           |	  }],
           |  "futureChargeLiabilitiesExcluded": false

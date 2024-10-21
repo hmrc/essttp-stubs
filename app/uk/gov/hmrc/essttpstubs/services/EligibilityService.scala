@@ -63,7 +63,7 @@ object EligibilityService {
     EligibilityCheckResult(
       processingDateTime              = ProcessingDateTime(Instant.now().toString),
       identification                  = identification,
-      customerPostcodes               = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))),
+      customerPostcodes               = Some(List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1))))),
       regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
       paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
       paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -100,31 +100,43 @@ object EligibilityService {
           DebtTotalAmount(AmountInPence(123456)),
           chargeReference = ChargeReference("someValue"),
           List(Charges(
-            chargeType                    = ChargeType("InYearRTICharge-Tax"),
-            mainType                      = MainType("InYearRTICharge(FPS)"),
-            mainTrans                     = MainTrans("mainTrans"),
-            subTrans                      = SubTrans("subTrans"),
-            outstandingAmount             = OutstandingAmount(AmountInPence(123456)),
-            interestStartDate             = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
-            dueDate                       = DueDate(LocalDate.parse("2017-03-07")),
-            accruedInterest               = AccruedInterest(AmountInPence(123)),
-            ineligibleChargeType          = IneligibleChargeType(value = false),
-            chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(value = false)),
-            locks                         = Some(
-              List(
-                Lock(
-                  lockType                 = LockType("Payment"),
-                  lockReason               = LockReason("Risk/Fraud"),
-                  disallowedChargeLockType = DisallowedChargeLockType(value = false)
+            Charges1(
+              chargeType              = ChargeType("InYearRTICharge-Tax"),
+              mainType                = MainType("InYearRTICharge(FPS)"),
+              mainTrans               = MainTrans("mainTrans"),
+              subTrans                = SubTrans("subTrans"),
+              outstandingAmount       = OutstandingAmount(AmountInPence(123456)),
+              interestStartDate       = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
+              dueDate                 = DueDate(LocalDate.parse("2017-03-07")),
+              accruedInterest         = AccruedInterest(AmountInPence(123)),
+              ineligibleChargeType    = IneligibleChargeType(value = false),
+              chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
+              locks                   = Some(
+                List(
+                  Lock(
+                    lockType                 = LockType("Payment"),
+                    lockReason               = LockReason("Risk/Fraud"),
+                    disallowedChargeLockType = DisallowedChargeLockType(value = false)
+                  )
                 )
-              )
+              ),
+              dueDateNotReached       = false,
+              isInterestBearingCharge = None
             ),
-            dueDateNotReached             = false,
-            isInterestBearingCharge       = None,
-            useChargeReference            = None,
-            chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = None,
-            chargeSource                  = None
+            Charges2(
+              useChargeReference            = None,
+              chargeBeforeMaxAccountingDate = None,
+              ddInProgress                  = None,
+              chargeSource                  = None,
+              parentChargeReference         = None,
+              parentMainTrans               = None,
+              originalCreationDate          = None,
+              tieBreaker                    = None,
+              originalTieBreaker            = None,
+              saTaxYearEnd                  = None,
+              creationDate                  = None,
+              originalChargeType            = None
+            )
           ))
         )
       ),
