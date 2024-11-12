@@ -127,6 +127,7 @@ object TestData {
           )
         ),
         customerDetails                 = None,
+        individualDetails               = None,
         addresses                       = None,
         regimeDigitalCorrespondence     = None,
         futureChargeLiabilitiesExcluded = false,
