@@ -199,7 +199,79 @@ class PegaControllerSpec extends ItSpec {
               |       },
               |       "instalments": []
               |     }
-              |   ]
+              |   ],
+              |       "expenditure": [
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "200.00",
+              |        "selected": true,
+              |        "pyLabel": "Wages and salaries",
+              |        "placeHolderText": ""
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "100.00",
+              |        "selected": true,
+              |        "pyLabel": "Mortgage and rental payments on business premises",
+              |        "placeHolderText": ""
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "",
+              |        "selected": false,
+              |        "pyLabel": "Bills for business premises",
+              |        "placeHolderText": "For example, fuel, water, Council Tax or business rates."
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "",
+              |        "selected": false,
+              |        "pyLabel": "Material and stock costs",
+              |        "placeHolderText": ""
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "",
+              |        "selected": false,
+              |        "pyLabel": "Business travel",
+              |        "placeHolderText": "For example, vehicles, fuel."
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "",
+              |        "selected": false,
+              |        "pyLabel": "Employee benefits",
+              |        "placeHolderText": "For example, childcare, travel, pension, healthcare"
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "",
+              |        "selected": false,
+              |        "pyLabel": "Other regular monthly spending",
+              |        "placeHolderText": "For example, business insurance, other debt repayments."
+              |      },
+              |      {
+              |        "checkBoxExclusiveOption": false,
+              |        "amountValue": "",
+              |        "selected": false,
+              |        "pyLabel": "My company or partnership does not have any expenditure",
+              |        "placeHolderText": ""
+              |      }
+              |    ],
+              |    "income": [
+              |      {
+              |        "amountValue": "2,000.00",
+              |        "placeHolderText": "For example, income from selling goods or services.",
+              |        "regime": "",
+              |        "pyLabel": "Income from your main business"
+              |      },
+              |      {
+              |        "amountValue": "20.00",
+              |        "placeHolderText": "For example, income from property rental, interest on business bank accounts, profits from capital investments.",
+              |        "regime": "",
+              |        "pyLabel": "Other income"
+              |      }
+              |    ]
               |  }
               |}
               |""".stripMargin
