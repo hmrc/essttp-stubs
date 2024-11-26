@@ -97,15 +97,7 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
   private val generateStartCaseResponse: JsValue = {
     Json.parse(
       s"""{
-         |  "ID": "${nextAlphanumericString(20)}",
-         |  "data": {
-         |    "caseInfo": {
-         |      "assignments": [
-         |        { "ID": "${nextAlphanumericString(20)}" },
-         |        { "ID": "${nextAlphanumericString(20)}" }
-         |      ]
-         |    }
-         |  }
+         |  "ID": "${nextAlphanumericString(20)}"
          |}
          |""".stripMargin
     )

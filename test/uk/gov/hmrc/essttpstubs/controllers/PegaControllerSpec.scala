@@ -70,8 +70,6 @@ class PegaControllerSpec extends ItSpec {
         val json = contentAsJson(result).as[JsObject]
 
         (json \ "ID").validate[String] shouldBe a[JsSuccess[_]]
-        val assignments = (json \ "data" \ "caseInfo" \ "assignments").as[Seq[JsObject]]
-        assignments.map(a => (a \ "ID").validate[String]).foreach(_ shouldBe a[JsSuccess[_]])
       }
 
       "return 401 with 'Token expired'" in {
