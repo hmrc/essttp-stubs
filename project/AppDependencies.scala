@@ -2,7 +2,7 @@ import sbt.*
 
 object AppDependencies {
 
-  val boostrapVersion = "9.5.0"
+  val boostrapVersion = "9.6.0"
 
   val compile: Seq[ModuleID] = Seq(
     // format: OFF

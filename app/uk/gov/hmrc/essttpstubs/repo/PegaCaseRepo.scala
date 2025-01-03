@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,54 +17,69 @@
 package uk.gov.hmrc.essttpstubs.repo
 
 import com.google.inject.{Inject, Singleton}
-import com.mongodb.client.model.{Filters, ReplaceOptions}
-import essttp.rootmodel.ttp.eligibility.Identification
-import org.bson.conversions.Bson
-import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
+import com.mongodb.client.model.ReplaceOptions
+import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.UpdateResult
+import play.api.libs.json.{Format, JsValue, Json, OFormat}
+import uk.gov.hmrc.essttpstubs.repo.PegaCaseRepo.PegaCaseEntry
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-import java.util.concurrent.TimeUnit
+import java.time.Instant
 import scala.concurrent.duration.DurationInt
+import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
-final class EligibilityRepo @Inject() (
+class PegaCaseRepo @Inject() (
     mongoComponent: MongoComponent
 )(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[EligibilityEntry](
+  extends PlayMongoRepository[PegaCaseEntry](
     mongoComponent = mongoComponent,
-    collectionName = "essttp-stubs-eligibility",
-    domainFormat   = EligibilityEntry.format,
-    indexes        = EligibilityRepo.indexes(30.minutes.toSeconds),
+    collectionName = "essttp-stubs-pega-get-case",
+    domainFormat   = PegaCaseEntry.format,
+    indexes        = PegaCaseRepo.indexes(30.minutes.toSeconds),
     replaceIndexes = true
   ) {
 
-  def insertEligibilityData(eligibilityEntry: EligibilityEntry): Future[UpdateResult] =
+  def insert(pegaCaseEntry: PegaCaseEntry): Future[UpdateResult] =
     collection.replaceOne(
-      taxIdFilter(eligibilityEntry.eligibilityCheckResult.identification),
-      eligibilityEntry,
+      Filters.equal("caseId", pegaCaseEntry.caseId),
+      pegaCaseEntry,
       new ReplaceOptions().upsert(true)
     ).toFuture()
 
-  def findEligibilityDataByTaxRef(identificationList: List[Identification]): Future[Option[EligibilityEntry]] =
-    collection.find(taxIdFilter(identificationList)).headOption()
+  def find(caseId: String): Future[Option[PegaCaseEntry]] =
+    collection.find(Filters.equal("caseId", caseId)).headOption()
 
-  def removeAllRecords(): Future[Unit] = collection.drop().toFuture().map(_ => ())
+  def dropAll(): Future[Unit] =
+    collection.drop().toFuture()
 
-  private def taxIdFilter(identifications: List[Identification]): Bson = {
-    Filters.and(identifications.map(id => Filters.eq("eligibilityCheckResult.identification.idValue", id.idValue.value)): _*)
-  }
 }
 
-object EligibilityRepo {
+object PegaCaseRepo {
+
+  final case class PegaCaseEntry(caseId: String, getCaseResponse: JsValue, createdAt: Instant)
+
+  object PegaCaseEntry {
+
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val format: OFormat[PegaCaseEntry] = {
+      implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+      Json.format
+    }
+  }
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
+    IndexModel(
+      keys = Indexes.ascending("caseId")
+    ),
     IndexModel(
       keys         = Indexes.ascending("createdAt"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("createdAtIdx")
     )
   )
+
 }

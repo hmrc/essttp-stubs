@@ -9,7 +9,8 @@ POST    /debts/time-to-pay/affordability/affordable-quotes      uk.gov.hmrc.esst
 
 POST    /debts/time-to-pay/self-serve/arrangement               uk.gov.hmrc.essttpstubs.controllers.ArrangementController.enactArrangement
 
+POST    /pega/case/:caseId                                      uk.gov.hmrc.essttpstubs.controllers.PegaController.putCase(caseId: String)
 
 POST    /prweb/PRRestService/oauth2/v1/token                    uk.gov.hmrc.essttpstubs.controllers.PegaController.token
 POST    /prweb/api/payments/v1/aa/createorupdatecase            uk.gov.hmrc.essttpstubs.controllers.PegaController.startCase
-GET     /prweb/api/payments/v1/cases/:caseId               uk.gov.hmrc.essttpstubs.controllers.PegaController.getCase(caseId: String, viewType: String, pageName: String, getBusinessDataOnly: Boolean)
+GET     /prweb/api/payments/v1/cases/:caseId                    uk.gov.hmrc.essttpstubs.controllers.PegaController.getCase(caseId: String, viewType: String, pageName: String, getBusinessDataOnly: Boolean)

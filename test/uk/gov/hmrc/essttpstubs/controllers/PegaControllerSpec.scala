@@ -20,21 +20,24 @@ import play.api.libs.json.{JsObject, JsSuccess, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
-import uk.gov.hmrc.essttpstubs.repo.PegaTokenRepo
+import uk.gov.hmrc.essttpstubs.repo.PegaCaseRepo.PegaCaseEntry
+import uk.gov.hmrc.essttpstubs.repo.{PegaCaseRepo, PegaTokenRepo}
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 
-import java.time.LocalDateTime
+import java.time.{Instant, LocalDateTime}
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class PegaControllerSpec extends ItSpec {
 
   val controller = app.injector.instanceOf[PegaController]
-  val repo = app.injector.instanceOf[PegaTokenRepo]
+  val pegaTokenRepo = app.injector.instanceOf[PegaTokenRepo]
+  val pegaCaseRepo = app.injector.instanceOf[PegaCaseRepo]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    Await.result(repo.dropAll(), 2.seconds)
+    Await.result(pegaTokenRepo.dropAll(), 2.seconds)
+    Await.result(pegaCaseRepo.dropAll(), 2.seconds)
   }
 
   "PegaController" - {
@@ -51,7 +54,7 @@ class PegaControllerSpec extends ItSpec {
       }
 
       "respond with a token with remainingTime" in {
-        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now.minusSeconds(40))), 2.seconds)
+        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now.minusSeconds(40))), 2.seconds)
         val result = controller.token(FakeRequest())
         val json = contentAsJson(result).as[JsObject]
 
@@ -65,7 +68,7 @@ class PegaControllerSpec extends ItSpec {
     "when handling requests to start a case must" - {
 
       "respond successfully" in {
-        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
         val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         val json = contentAsJson(result).as[JsObject]
 
@@ -74,7 +77,7 @@ class PegaControllerSpec extends ItSpec {
 
       "return 401 with 'Token expired'" in {
         val expiredDateTime = LocalDateTime.now.minusSeconds(61)
-        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
+        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
 
         val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
@@ -83,7 +86,7 @@ class PegaControllerSpec extends ItSpec {
       }
 
       "return 401 with 'Token doesn't match'" in {
-        Await.result(repo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
+        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
 
         val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
@@ -108,181 +111,362 @@ class PegaControllerSpec extends ItSpec {
 
     "when handling requests to get a case must" - {
 
-      "respond successfully" in {
-        val expectedJson =
-          Json.parse(
-            """{
-              |  "AA": {
-              |   "paymentDay": "28",
-              |   "paymentPlan": [
-              |     {
-              |       "planSelected": true,
-              |       "numberOfInstalments": 4,
-              |       "planDuration": 4,
-              |       "totalDebt": 997700,
-              |       "totalDebtIncInt": 997816,
-              |       "planInterest": 116,
-              |       "collections": {
-              |         "initialCollection": {
-              |           "dueDate": "2024-08-27",
-              |           "amountDue": 2300
-              |         },
-              |         "regularCollections": [
-              |           {
-              |             "dueDate": "2024-10-28",
-              |             "amountDue": 249454
-              |           },
-              |           {
-              |             "dueDate": "2024-11-28",
-              |             "amountDue": 249454
-              |           },
-              |           {
-              |             "dueDate": "2024-12-28",
-              |             "amountDue": 249454
-              |           },
-              |           {
-              |             "dueDate": "2025-01-28",
-              |             "amountDue": 249454
-              |           }
-              |         ]
-              |       },
-              |       "instalments": [
-              |         {
-              |           "instalmentNumber": 4,
-              |           "dueDate": "2025-01-28",
-              |           "instalmentInterestAccrued": 29,
-              |           "instalmentBalance": 249425,
-              |           "debtItemChargeId": "A00000000001",
-              |           "amountDue": 249425,
-              |           "debtItemOriginalDueDate": "2023-09-28"
-              |         },
-              |         {
-              |           "instalmentNumber": 3,
-              |           "dueDate": "2024-12-28",
-              |           "instalmentInterestAccrued": 29,
-              |           "instalmentBalance": 498850,
-              |           "debtItemChargeId": "A00000000001",
-              |           "amountDue": 249425,
-              |           "debtItemOriginalDueDate": "2023-09-28"
-              |         },
-              |         {
-              |           "instalmentNumber": 2,
-              |           "dueDate": "2024-11-28",
-              |           "instalmentInterestAccrued": 29,
-              |           "instalmentBalance": 748275,
-              |           "debtItemChargeId": "A00000000001",
-              |           "amountDue": 249425,
-              |           "debtItemOriginalDueDate": "2023-09-28"
-              |         },
-              |         {
-              |           "instalmentNumber": 1,
-              |           "dueDate": "2024-10-28",
-              |           "instalmentInterestAccrued": 29,
-              |           "instalmentBalance": 997700,
-              |           "debtItemChargeId": "A00000000001",
-              |           "amountDue": 249425,
-              |           "debtItemOriginalDueDate": "2023-09-28"
-              |         }
-              |       ]
-              |     },
-              |     {
-              |       "planSelected": false,
-              |       "planDuration": 0,
-              |       "numberOfInstalments": 0,
-              |       "totalDebt": 0,
-              |       "totalDebtIncInt": 0,
-              |       "planInterest": 0,
-              |       "collections": {
-              |         "regularCollections": []
-              |       },
-              |       "instalments": []
-              |     }
-              |   ],
-              |       "expenditure": [
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "200.00",
-              |        "selected": true,
-              |        "pyLabel": "Wages and salaries",
-              |        "placeHolderText": ""
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "100.00",
-              |        "selected": true,
-              |        "pyLabel": "Mortgage and rental payments on business premises",
-              |        "placeHolderText": ""
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "",
-              |        "selected": false,
-              |        "pyLabel": "Bills for business premises",
-              |        "placeHolderText": "For example, fuel, water, Council Tax or business rates."
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "",
-              |        "selected": false,
-              |        "pyLabel": "Material and stock costs",
-              |        "placeHolderText": ""
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "",
-              |        "selected": false,
-              |        "pyLabel": "Business travel",
-              |        "placeHolderText": "For example, vehicles, fuel."
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "",
-              |        "selected": false,
-              |        "pyLabel": "Employee benefits",
-              |        "placeHolderText": "For example, childcare, travel, pension, healthcare"
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "",
-              |        "selected": false,
-              |        "pyLabel": "Other regular monthly spending",
-              |        "placeHolderText": "For example, business insurance, other debt repayments."
-              |      },
-              |      {
-              |        "checkBoxExclusiveOption": false,
-              |        "amountValue": "",
-              |        "selected": false,
-              |        "pyLabel": "My company or partnership does not have any expenditure",
-              |        "placeHolderText": ""
-              |      }
-              |    ],
-              |    "income": [
-              |      {
-              |        "amountValue": "2,000.00",
-              |        "placeHolderText": "For example, income from selling goods or services.",
-              |        "regime": "",
-              |        "pyLabel": "Income from your main business"
-              |      },
-              |      {
-              |        "amountValue": "20.00",
-              |        "placeHolderText": "For example, income from property rental, interest on business bank accounts, profits from capital investments.",
-              |        "regime": "",
-              |        "pyLabel": "Other income"
-              |      }
-              |    ]
-              |  }
-              |}
-              |""".stripMargin
-          )
+      "respond successfully when" - {
 
-        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
-        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
-        contentAsJson(result) shouldBe expectedJson
+        "no case is found in the PEGA case repo" in {
+          val expectedJson =
+            Json.parse(
+              """{
+                |  "AA": {
+                |   "paymentDay": "28",
+                |   "paymentPlan": [
+                |     {
+                |       "planSelected": true,
+                |       "numberOfInstalments": 4,
+                |       "planDuration": 4,
+                |       "totalDebt": 997700,
+                |       "totalDebtIncInt": 997816,
+                |       "planInterest": 116,
+                |       "collections": {
+                |         "initialCollection": {
+                |           "dueDate": "2024-08-27",
+                |           "amountDue": 2300
+                |         },
+                |         "regularCollections": [
+                |           {
+                |             "dueDate": "2024-10-28",
+                |             "amountDue": 249454
+                |           },
+                |           {
+                |             "dueDate": "2024-11-28",
+                |             "amountDue": 249454
+                |           },
+                |           {
+                |             "dueDate": "2024-12-28",
+                |             "amountDue": 249454
+                |           },
+                |           {
+                |             "dueDate": "2025-01-28",
+                |             "amountDue": 249454
+                |           }
+                |         ]
+                |       },
+                |       "instalments": [
+                |         {
+                |           "instalmentNumber": 4,
+                |           "dueDate": "2025-01-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 249425,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         },
+                |         {
+                |           "instalmentNumber": 3,
+                |           "dueDate": "2024-12-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 498850,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         },
+                |         {
+                |           "instalmentNumber": 2,
+                |           "dueDate": "2024-11-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 748275,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         },
+                |         {
+                |           "instalmentNumber": 1,
+                |           "dueDate": "2024-10-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 997700,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         }
+                |       ]
+                |     },
+                |     {
+                |       "planSelected": false,
+                |       "planDuration": 0,
+                |       "numberOfInstalments": 0,
+                |       "totalDebt": 0,
+                |       "totalDebtIncInt": 0,
+                |       "planInterest": 0,
+                |       "collections": {
+                |         "regularCollections": []
+                |       },
+                |       "instalments": []
+                |     }
+                |   ],
+                |       "expenditure": [
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "200.00",
+                |        "selected": true,
+                |        "pyLabel": "Wages and salaries",
+                |        "placeHolderText": ""
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "100.00",
+                |        "selected": true,
+                |        "pyLabel": "Mortgage and rental payments on business premises",
+                |        "placeHolderText": ""
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Bills for business premises",
+                |        "placeHolderText": "For example, fuel, water, Council Tax or business rates."
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Material and stock costs",
+                |        "placeHolderText": ""
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Business travel",
+                |        "placeHolderText": "For example, vehicles, fuel."
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Employee benefits",
+                |        "placeHolderText": "For example, childcare, travel, pension, healthcare"
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Other regular monthly spending",
+                |        "placeHolderText": "For example, business insurance, other debt repayments."
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "My company or partnership does not have any expenditure",
+                |        "placeHolderText": ""
+                |      }
+                |    ],
+                |    "income": [
+                |      {
+                |        "amountValue": "2,000.00",
+                |        "placeHolderText": "For example, income from selling goods or services.",
+                |        "regime": "",
+                |        "pyLabel": "Income from your main business"
+                |      },
+                |      {
+                |        "amountValue": "20.00",
+                |        "placeHolderText": "For example, income from property rental, interest on business bank accounts, profits from capital investments.",
+                |        "regime": "",
+                |        "pyLabel": "Other income"
+                |      }
+                |    ]
+                |  }
+                |}
+                |""".stripMargin
+            )
+
+          Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+          val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+          contentAsJson(result) shouldBe expectedJson
+        }
+
+        "a case is found in the PEGA case repo" in {
+          val expectedJson =
+            Json.parse(
+              """{
+                |  "AA": {
+                |   "paymentDay": "29",
+                |   "paymentPlan": [
+                |     {
+                |       "planSelected": true,
+                |       "numberOfInstalments": 4,
+                |       "planDuration": 4,
+                |       "totalDebt": 997700,
+                |       "totalDebtIncInt": 997816,
+                |       "planInterest": 116,
+                |       "collections": {
+                |         "initialCollection": {
+                |           "dueDate": "2024-08-27",
+                |           "amountDue": 2300
+                |         },
+                |         "regularCollections": [
+                |           {
+                |             "dueDate": "2024-10-28",
+                |             "amountDue": 249454
+                |           },
+                |           {
+                |             "dueDate": "2024-11-28",
+                |             "amountDue": 249454
+                |           },
+                |           {
+                |             "dueDate": "2024-12-28",
+                |             "amountDue": 249454
+                |           },
+                |           {
+                |             "dueDate": "2025-01-28",
+                |             "amountDue": 249454
+                |           }
+                |         ]
+                |       },
+                |       "instalments": [
+                |         {
+                |           "instalmentNumber": 4,
+                |           "dueDate": "2025-01-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 249425,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         },
+                |         {
+                |           "instalmentNumber": 3,
+                |           "dueDate": "2024-12-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 498850,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         },
+                |         {
+                |           "instalmentNumber": 2,
+                |           "dueDate": "2024-11-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 748275,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         },
+                |         {
+                |           "instalmentNumber": 1,
+                |           "dueDate": "2024-10-28",
+                |           "instalmentInterestAccrued": 29,
+                |           "instalmentBalance": 997700,
+                |           "debtItemChargeId": "A00000000001",
+                |           "amountDue": 249425,
+                |           "debtItemOriginalDueDate": "2023-09-28"
+                |         }
+                |       ]
+                |     },
+                |     {
+                |       "planSelected": false,
+                |       "planDuration": 0,
+                |       "numberOfInstalments": 0,
+                |       "totalDebt": 0,
+                |       "totalDebtIncInt": 0,
+                |       "planInterest": 0,
+                |       "collections": {
+                |         "regularCollections": []
+                |       },
+                |       "instalments": []
+                |     }
+                |   ],
+                |       "expenditure": [
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "200.00",
+                |        "selected": true,
+                |        "pyLabel": "Wages and salaries",
+                |        "placeHolderText": ""
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "100.00",
+                |        "selected": true,
+                |        "pyLabel": "Mortgage and rental payments on business premises",
+                |        "placeHolderText": ""
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Bills for business premises",
+                |        "placeHolderText": "For example, fuel, water, Council Tax or business rates."
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Material and stock costs",
+                |        "placeHolderText": ""
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Business travel",
+                |        "placeHolderText": "For example, vehicles, fuel."
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Employee benefits",
+                |        "placeHolderText": "For example, childcare, travel, pension, healthcare"
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "Other regular monthly spending",
+                |        "placeHolderText": "For example, business insurance, other debt repayments."
+                |      },
+                |      {
+                |        "checkBoxExclusiveOption": false,
+                |        "amountValue": "",
+                |        "selected": false,
+                |        "pyLabel": "My company or partnership does not have any expenditure",
+                |        "placeHolderText": ""
+                |      }
+                |    ],
+                |    "income": [
+                |      {
+                |        "amountValue": "2,000.00",
+                |        "placeHolderText": "For example, income from selling goods or services.",
+                |        "regime": "",
+                |        "pyLabel": "Income from your main business"
+                |      },
+                |      {
+                |        "amountValue": "20.00",
+                |        "placeHolderText": "For example, income from property rental, interest on business bank accounts, profits from capital investments.",
+                |        "regime": "",
+                |        "pyLabel": "Other income"
+                |      }
+                |    ]
+                |  }
+                |}
+                |""".stripMargin
+            )
+
+          val insertResult = pegaCaseRepo.insert(
+            PegaCaseEntry("case", expectedJson, Instant.now())
+          )
+          insertResult.futureValue.wasAcknowledged() shouldBe true
+
+          Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+
+          val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+          contentAsJson(result) shouldBe expectedJson
+        }
       }
 
       "return 401 with 'Token expired'" in {
         val expiredDateTime = LocalDateTime.now.minusSeconds(61)
-        Await.result(repo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
+        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
 
         val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
@@ -291,7 +475,7 @@ class PegaControllerSpec extends ItSpec {
       }
 
       "return 401 with 'Token doesn't match'" in {
-        Await.result(repo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
+        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
 
         val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
@@ -313,6 +497,24 @@ class PegaControllerSpec extends ItSpec {
         errorMessage shouldBe "Authorization header missing or invalid format"
       }
     }
+
+    "when handling requests to store a case must" - {
+
+      "respond successfully and store the case in mongo" in {
+        val json = Json.parse("""{ "abc": 123  }""")
+        val caseId = "case-id"
+
+        val result = controller.putCase(caseId)(FakeRequest().withBody(json))
+
+        status(result) shouldBe CREATED
+
+        val findResult = Await.result(pegaCaseRepo.find(caseId), 2.seconds)
+        findResult.map(_.getCaseResponse) shouldBe Some(json)
+        findResult.map(_.caseId) shouldBe Some(caseId)
+      }
+
+    }
+
   }
 
 }
