@@ -22,17 +22,23 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.essttpstubs.config.AppConfig
 import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
-import uk.gov.hmrc.essttpstubs.repo.PegaTokenRepo
+import uk.gov.hmrc.essttpstubs.repo.PegaCaseRepo.PegaCaseEntry
+import uk.gov.hmrc.essttpstubs.repo.{PegaCaseRepo, PegaTokenRepo}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 @Singleton
-class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, appConfig: AppConfig)(implicit ec: ExecutionContext) extends BackendController(cc) {
+class PegaController @Inject() (
+    cc:            ControllerComponents,
+    pegaTokenRepo: PegaTokenRepo,
+    pegaCaseRepo:  PegaCaseRepo,
+    appConfig:     AppConfig
+)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
@@ -40,7 +46,7 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
 
   val token: Action[AnyContent] = Action.async { implicit request =>
 
-    repo.findPegaToken().flatMap {
+    pegaTokenRepo.findPegaToken().flatMap {
       case None =>
         generateAndSaveToken()
 
@@ -59,7 +65,7 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
 
   private def generateAndSaveToken()(implicit request: Request[AnyContent]): Future[Result] = {
     val newToken = PegaOauthToken(nextAlphanumericString(20), LocalDateTime.now())
-    repo.insertPegaToken(newToken).map { _ =>
+    pegaTokenRepo.insertPegaToken(newToken).map { _ =>
       val response = generateTokenResponse(newToken.accessToken, pegaTokenExpiryTime.toSeconds * 2) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
       logRequest(request, response)
       Ok(response)
@@ -108,14 +114,30 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
     else None
   }
 
+  def putCase(caseId: String): Action[JsValue] = Action.async(parse.json){ request =>
+    pegaCaseRepo.insert(
+      PegaCaseEntry(caseId, request.body, Instant.now())
+    ).map{ updateResult =>
+        if (updateResult.wasAcknowledged()) Created
+        else InternalServerError
+      }
+  }
+
   def getCase(caseId: String, viewType: String, pageName: String, getBusinessDataOnly: Boolean): Action[AnyContent] =
     Action.async { implicit request =>
-      validateToken().map {
-        case Left(errorResult) => errorResult
+      validateToken().flatMap {
+        case Left(errorResult) =>
+          Future.successful(errorResult)
+
         case Right(_) =>
-          val response = generateGetCaseResponse
-          logRequest(request, response)
-          Created(Json.toJson(response))
+          pegaCaseRepo.find(caseId).map { result =>
+            val response = result match {
+              case Some(entry) => entry.getCaseResponse
+              case None        => generateGetCaseResponse
+            }
+            logRequest(request, response)
+            Ok(Json.toJson(response))
+          }
       }
     }
 
@@ -123,7 +145,7 @@ class PegaController @Inject() (cc: ControllerComponents, repo: PegaTokenRepo, a
     val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
     maybeAuthToken match {
       case Some(authToken) =>
-        repo.findPegaToken().flatMap {
+        pegaTokenRepo.findPegaToken().flatMap {
           case Some(pegaToken) =>
             val expirationTime = pegaToken.validFrom.plusSeconds(pegaTokenExpiryTime.toSeconds)
             if (LocalDateTime.now().isAfter(expirationTime)) {
