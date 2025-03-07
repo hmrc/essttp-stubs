@@ -63,7 +63,7 @@ object EligibilityService {
     EligibilityCheckResult(
       processingDateTime              = ProcessingDateTime(Instant.now().toString),
       identification                  = identification,
-      customerPostcodes               = Some(List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1))))),
+      customerPostcodes               = List(CustomerPostcode(addressPostcode = Postcode(SensitiveString("AA11AA")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))),
       regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
       paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
       paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -145,15 +145,38 @@ object EligibilityService {
           ))
         )
       ),
-      customerDetails                 = Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
+      customerDetails                 = List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP))),
       individualDetails               = None,
-      addresses                       = None,
-      regimeDigitalCorrespondence     = Some(RegimeDigitalCorrespondence(value = true)),
+      addresses                       = List(
+        Address(
+          addressType     = AddressType("Residential"),
+          addressLine1    = None,
+          addressLine2    = None,
+          addressLine3    = None,
+          addressLine4    = None,
+          rls             = None,
+          contactDetails  = Some(ContactDetail(
+            telephoneNumber = None,
+            fax             = None,
+            mobile          = None,
+            emailAddress    = Some(Email(SensitiveString("some@email"))),
+            emailSource     = None,
+            altFormat       = None
+          )),
+          postCode        = None,
+          country         = None,
+          postcodeHistory = List(
+            PostcodeHistory(
+              addressPostcode = Postcode(SensitiveString("POSTCODE")),
+              postcodeDate    = PostcodeDate(LocalDate.now())
+            )
+          )
+        )
+      ),
+      regimeDigitalCorrespondence     = RegimeDigitalCorrespondence(value = true),
       futureChargeLiabilitiesExcluded = false,
       invalidSignals                  = Some(List(InvalidSignals(signalType        = "xyz", signalValue = "123", signalDescription = "Description"))),
-      customerType                    = Some(CustomerTypes.MTDITSA),
-      chargeTypesExcluded             = None,
-      transitionToCDCS                = None
+      chargeTypesExcluded             = None
     )
   }
 

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
-import essttp.rootmodel.AmountInPence
+import essttp.rootmodel.{AmountInPence, Email}
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.eligibility._
@@ -53,9 +53,9 @@ object TestData {
             idValue = IdValue("test-idValue")
           )
         ),
-        customerPostcodes               = Some(List(
+        customerPostcodes               = List(
           CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))
-        )),
+        ),
         regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
         paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
         paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -131,15 +131,43 @@ object TestData {
             )
           )
         ),
-        customerDetails                 = None,
+        customerDetails                 = List(
+          CustomerDetail(
+            emailAddress = None,
+            emailSource  = None
+          )
+        ),
         individualDetails               = None,
-        addresses                       = None,
-        regimeDigitalCorrespondence     = None,
+        addresses                       = List(
+          Address(
+            addressType     = AddressType("Residential"),
+            addressLine1    = None,
+            addressLine2    = None,
+            addressLine3    = None,
+            addressLine4    = None,
+            rls             = None,
+            contactDetails  = Some(ContactDetail(
+              telephoneNumber = None,
+              fax             = None,
+              mobile          = None,
+              emailAddress    = Some(Email(SensitiveString("some@email"))),
+              emailSource     = None,
+              altFormat       = None
+            )),
+            postCode        = None,
+            country         = None,
+            postcodeHistory = List(
+              PostcodeHistory(
+                addressPostcode = Postcode(SensitiveString("POSTCODE")),
+                postcodeDate    = PostcodeDate(LocalDate.now())
+              )
+            )
+          )
+        ),
+        regimeDigitalCorrespondence     = RegimeDigitalCorrespondence(value = false),
         futureChargeLiabilitiesExcluded = false,
         chargeTypesExcluded             = None,
-        invalidSignals                  = None,
-        customerType                    = None,
-        transitionToCDCS                = None
+        invalidSignals                  = None
       )
     }
 
@@ -167,6 +195,12 @@ object TestData {
           |		"addressPostcode": "test-postcode",
           |		"postcodeDate": "2022-01-01"
           |	}],
+          | "customerDetails":[{}],
+          | "addresses": [{
+          |		"addressType": "Residential",
+          |		"contactDetails": {"emailAddress":"some@email"},
+          |   "postcodeHistory":[{"addressPostcode":"POSTCODE","postcodeDate":"2025-03-07"}]
+          }],
           |	"regimePaymentFrequency": "Monthly",
           |	"paymentPlanFrequency": "Monthly",
           |	"paymentPlanMinLength": 1,
@@ -222,7 +256,8 @@ object TestData {
           |     "originalChargeType": null
           |	  	}]
           |	  }],
-          |  "futureChargeLiabilitiesExcluded": false
+          |  "futureChargeLiabilitiesExcluded": false,
+          |  "regimeDigitalCorrespondence":false
           |}""".stripMargin
       )
     }
