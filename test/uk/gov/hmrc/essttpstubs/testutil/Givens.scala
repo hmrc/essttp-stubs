@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,18 @@
 
 package uk.gov.hmrc.essttpstubs.testutil
 
-import org.scalatest.freespec.AnyFreeSpecLike
+import play.api.libs.json.{JsResult, JsValue}
 
-/** This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
-  */
-trait UnitSpec extends AnyFreeSpecLike with RichMatchers
+import java.time.Instant
+
+object Givens {
+
+  given canEqualUnit: CanEqual[Unit, Unit] = CanEqual.derived
+
+  given canEqualInstant: CanEqual[Instant, Instant] = CanEqual.derived
+
+  given canEqualJsValue: CanEqual[JsValue, JsValue] = CanEqual.derived
+
+  given canEqualJsResult[A]: CanEqual[JsResult[A], JsResult[A]] = CanEqual.derived
+
+}

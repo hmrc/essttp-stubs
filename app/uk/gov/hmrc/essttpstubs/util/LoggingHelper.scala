@@ -22,7 +22,7 @@ import play.api.mvc.Request
 
 object LoggingHelper {
 
-  def logRequestInfo[A](infoMessage: String = "Request info for: ", logger: Logger, request: Request[A])(implicit format: Format[A]): Unit =
+  def logRequestInfo[A: Format](infoMessage: String = "Request info for: ", logger: Logger, request: Request[A]): Unit =
     logger.info(
       s"$infoMessage " +
         s"[ uri: ${request.uri} ] " +

@@ -19,6 +19,7 @@ package uk.gov.hmrc.essttpstubs.repo
 import com.google.inject.{Inject, Singleton}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.InsertOneResult
+import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.essttpstubs.config.AppConfig
 import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
 import uk.gov.hmrc.mongo.MongoComponent
@@ -30,25 +31,24 @@ import scala.concurrent.{ExecutionContext, Future}
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 final class PegaTokenRepo @Inject() (
-    mongoComponent: MongoComponent,
-    appConfig:      AppConfig
-)(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[PegaOauthToken](
-    mongoComponent = mongoComponent,
-    collectionName = "essttp-stubs-pega-token",
-    domainFormat   = PegaOauthToken.pegaFormat,
-    indexes        = PegaTokenRepo.indexes(appConfig.pegaTokenExpiryTime.toSeconds * 2),
-    replaceIndexes = true
-  ) {
+  mongoComponent: MongoComponent,
+  appConfig:      AppConfig
+)(using ExecutionContext)
+    extends PlayMongoRepository[PegaOauthToken](
+      mongoComponent = mongoComponent,
+      collectionName = "essttp-stubs-pega-token",
+      domainFormat = PegaOauthToken.pegaFormat,
+      indexes = PegaTokenRepo.indexes(appConfig.pegaTokenExpiryTime.toSeconds * 2),
+      replaceIndexes = true
+    ) {
 
-  def insertPegaToken(pegaToken: PegaOauthToken): Future[InsertOneResult] = {
+  def insertPegaToken(pegaToken: PegaOauthToken): Future[InsertOneResult] =
     collection
       .drop()
       .toFuture()
       .flatMap { _ =>
         collection.insertOne(pegaToken).toFuture()
       }
-  }
 
   def findPegaToken(): Future[Option[PegaOauthToken]] =
     collection.find().headOption()
@@ -62,7 +62,7 @@ object PegaTokenRepo {
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("createdAt"),
+      keys = Indexes.ascending("createdAt"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("createdAtIdx")
     )
   )

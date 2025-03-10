@@ -29,32 +29,39 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton()
 class AffordabilityController @Inject() (
-    affordabilityService: AffordabilityService,
-    cc:                   ControllerComponents
+  affordabilityService: AffordabilityService,
+  cc:                   ControllerComponents
 ) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
-  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+  given CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val calculateInstalmentAmounts: Action[InstalmentAmountRequest] =
     Action(parse.json[InstalmentAmountRequest]) { implicit request =>
-      LoggingHelper.logRequestInfo(logger  = logger, request = request)
-      affordabilityService.calculateInstalmentAmounts(request.body).fold(
-        {
-          case AffordabilityService.BadRequestError(message) =>
-            logger.info(s"Returning bad request response for request body ${Json.toJson(request.body).toString()}: $message")
-            BadRequest
+      LoggingHelper.logRequestInfo(logger = logger, request = request)
+      affordabilityService
+        .calculateInstalmentAmounts(request.body)
+        .fold(
+          {
+            case AffordabilityService.BadRequestError(message) =>
+              logger.info(
+                s"Returning bad request response for request body ${Json.toJson(request.body).toString()}: $message"
+              )
+              BadRequest
 
-          case AffordabilityService.CalculationError(message) =>
-            logger.info(s"Returning internal server error response for request body ${Json.toJson(request.body).toString()}: $message")
-            InternalServerError
-        },
-        instalmentAmounts => {
-          LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(instalmentAmounts))
-          Ok(Json.toJson(instalmentAmounts))
-        }
-      )
+            case AffordabilityService.CalculationError(message) =>
+              logger.info(
+                s"Returning internal server error response for request body ${Json.toJson(request.body).toString()}: $message"
+              )
+              InternalServerError
+          },
+          instalmentAmounts => {
+            LoggingHelper
+              .logResponseInfo(uri = request.uri, logger = logger, responseBody = Json.toJson(instalmentAmounts))
+            Ok(Json.toJson(instalmentAmounts))
+          }
+        )
 
     }
 

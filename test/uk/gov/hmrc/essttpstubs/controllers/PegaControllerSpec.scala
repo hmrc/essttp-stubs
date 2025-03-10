@@ -22,6 +22,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
 import uk.gov.hmrc.essttpstubs.repo.PegaCaseRepo.PegaCaseEntry
 import uk.gov.hmrc.essttpstubs.repo.{PegaCaseRepo, PegaTokenRepo}
+import uk.gov.hmrc.essttpstubs.testutil.Givens.canEqualJsValue
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 
 import java.time.{Instant, LocalDateTime}
@@ -30,9 +31,9 @@ import scala.concurrent.duration.DurationInt
 
 class PegaControllerSpec extends ItSpec {
 
-  val controller = app.injector.instanceOf[PegaController]
+  val controller    = app.injector.instanceOf[PegaController]
   val pegaTokenRepo = app.injector.instanceOf[PegaTokenRepo]
-  val pegaCaseRepo = app.injector.instanceOf[PegaCaseRepo]
+  val pegaCaseRepo  = app.injector.instanceOf[PegaCaseRepo]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -46,7 +47,7 @@ class PegaControllerSpec extends ItSpec {
 
       "respond with a token" in {
         val result = controller.token(FakeRequest())
-        val json = contentAsJson(result).as[JsObject]
+        val json   = contentAsJson(result).as[JsObject]
 
         (json \ "token_type").as[String] shouldBe "bearer"
         (json \ "expires_in").as[Long] shouldBe 120
@@ -54,9 +55,12 @@ class PegaControllerSpec extends ItSpec {
       }
 
       "respond with a token with remainingTime" in {
-        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now.minusSeconds(40))), 2.seconds)
+        Await.result(
+          pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now.minusSeconds(40))),
+          2.seconds
+        )
         val result = controller.token(FakeRequest())
-        val json = contentAsJson(result).as[JsObject]
+        val json   = contentAsJson(result).as[JsObject]
 
         (json \ "token_type").as[String] shouldBe "bearer"
         (json \ "expires_in").as[Long] shouldBe 40
@@ -68,9 +72,12 @@ class PegaControllerSpec extends ItSpec {
     "when handling requests to start a case must" - {
 
       "respond successfully" in {
-        Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+        Await.result(
+          pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)),
+          2.seconds
+        )
         val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
-        val json = contentAsJson(result).as[JsObject]
+        val json   = contentAsJson(result).as[JsObject]
 
         (json \ "ID").validate[String] shouldBe a[JsSuccess[_]]
       }
@@ -79,7 +86,7 @@ class PegaControllerSpec extends ItSpec {
         val expiredDateTime = LocalDateTime.now.minusSeconds(61)
         Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
 
-        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result               = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token expired"
@@ -88,21 +95,21 @@ class PegaControllerSpec extends ItSpec {
       "return 401 with 'Token doesn't match'" in {
         Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
 
-        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result               = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token doesn't match"
       }
 
       "return 401 with 'Token not found in mongo'" in {
-        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result               = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token not found in mongo"
       }
 
       "return 401 with 'Authorization header missing or invalid format'" in {
-        val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
+        val result               = controller.startCase(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Authorization header missing or invalid format"
@@ -280,8 +287,13 @@ class PegaControllerSpec extends ItSpec {
                 |""".stripMargin
             )
 
-          Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
-          val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+          Await.result(
+            pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)),
+            2.seconds
+          )
+          val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(
+            FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345")
+          )
           contentAsJson(result) shouldBe expectedJson
         }
 
@@ -457,9 +469,14 @@ class PegaControllerSpec extends ItSpec {
           )
           insertResult.futureValue.wasAcknowledged() shouldBe true
 
-          Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)), 2.seconds)
+          Await.result(
+            pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", LocalDateTime.now)),
+            2.seconds
+          )
 
-          val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+          val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(
+            FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345")
+          )
           contentAsJson(result) shouldBe expectedJson
         }
       }
@@ -468,7 +485,9 @@ class PegaControllerSpec extends ItSpec {
         val expiredDateTime = LocalDateTime.now.minusSeconds(61)
         Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("123456SOMETOKEN12345", expiredDateTime)), 2.seconds)
 
-        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result               = controller.getCase("case", "", "", getBusinessDataOnly = true)(
+          FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345")
+        )
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token expired"
@@ -477,21 +496,27 @@ class PegaControllerSpec extends ItSpec {
       "return 401 with 'Token doesn't match'" in {
         Await.result(pegaTokenRepo.insertPegaToken(PegaOauthToken("NotTheSameToken", LocalDateTime.now)), 2.seconds)
 
-        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result               = controller.getCase("case", "", "", getBusinessDataOnly = true)(
+          FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345")
+        )
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token doesn't match"
       }
 
       "return 401 with 'Token not found in mongo'" in {
-        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
+        val result               = controller.getCase("case", "", "", getBusinessDataOnly = true)(
+          FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345")
+        )
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Token not found in mongo"
       }
 
       "return 401 with 'Authorization header missing or invalid format'" in {
-        val result = controller.getCase("case", "", "", getBusinessDataOnly = true)(FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345"))
+        val result               = controller.getCase("case", "", "", getBusinessDataOnly = true)(
+          FakeRequest().withHeaders("Authorization" -> "INVALID 123456SOMETOKEN12345")
+        )
         status(result) shouldBe UNAUTHORIZED
         val errorMessage: String = contentAsString(result)
         errorMessage shouldBe "Authorization header missing or invalid format"
@@ -501,7 +526,7 @@ class PegaControllerSpec extends ItSpec {
     "when handling requests to store a case must" - {
 
       "respond successfully and store the case in mongo" in {
-        val json = Json.parse("""{ "abc": 123  }""")
+        val json   = Json.parse("""{ "abc": 123  }""")
         val caseId = "case-id"
 
         val result = controller.putCase(caseId)(FakeRequest().withBody(json))
@@ -518,4 +543,3 @@ class PegaControllerSpec extends ItSpec {
   }
 
 }
-

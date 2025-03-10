@@ -22,26 +22,34 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 final case class EligibilityRequest(
-    channelIdentifier:         String,
-    identification:            List[Identification],
-    regimeType:                RegimeType,
-    returnFinancialAssessment: Boolean
+  channelIdentifier:         String,
+  identification:            List[Identification],
+  regimeType:                RegimeType,
+  returnFinancialAssessment: Boolean
 )
 
 object EligibilityRequest {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val reads: Reads[EligibilityRequest] =
-    Json.reads[EligibilityRequest] orElse
-      (
-        (__ \ "channelIdentifier").read[String] and
-        (__ \ "idType").read[String] and
-        (__ \ "idValue").read[String] and
-        (__ \ "regimeType").read[RegimeType] and
-        (__ \ "returnFinancialAssessment").read[Boolean]
-      )((channelIdentifier, idType, idValue, regimeType, returnFinancialAssessment) =>
-          EligibilityRequest(channelIdentifier, List(Identification(IdType(idType), IdValue(idValue))), regimeType, returnFinancialAssessment))
 
-  implicit val writes: Writes[EligibilityRequest] = Json.writes[EligibilityRequest]
+  given Format[EligibilityRequest] = {
+    val reads: Reads[EligibilityRequest] =
+      Json.reads[EligibilityRequest] orElse
+        (
+          (__ \ "channelIdentifier").read[String] and
+            (__ \ "idType").read[String] and
+            (__ \ "idValue").read[String] and
+            (__ \ "regimeType").read[RegimeType] and
+            (__ \ "returnFinancialAssessment").read[Boolean]
+        )((channelIdentifier, idType, idValue, regimeType, returnFinancialAssessment) =>
+          EligibilityRequest(
+            channelIdentifier,
+            List(Identification(IdType(idType), IdValue(idValue))),
+            regimeType,
+            returnFinancialAssessment
+          )
+        )
 
-  implicit val format: Format[EligibilityRequest] = Format(reads, writes)
+    val writes: OWrites[EligibilityRequest] = Json.writes[EligibilityRequest]
+
+    Format(reads, writes)
+  }
 }

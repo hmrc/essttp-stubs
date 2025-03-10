@@ -1,17 +1,16 @@
+
 val appName = "essttp-stubs"
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
-  "-Xlint:-missing-interpolator,_",
-  "-Xlint:adapted-args",
-  "-Ywarn-value-discard",
-  "-Ywarn-dead-code",
+  "-Wvalue-discard",
   "-deprecation",
   "-feature",
   "-unchecked",
   "-language:implicitConversions",
+  "-language:strictEquality",
   // required in place of silencer plugin
-  "-Wconf:cat=unused-imports&src=html/.*:s",
+  "-Wconf:msg=unused-imports&src=html/.*:s",
   "-Wconf:src=routes/.*:s"
 )
 
@@ -19,13 +18,13 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.13.13",
+    majorVersion                     := 1,
+    scalaVersion                     := "3.3.4",
     scalacOptions ++= scalaCompilerOptions,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    scalafmtOnCompile := true
   )
   .settings(WartRemoverSettings.wartRemoverSettings)
-  .settings(ScalariformSettings.scalariformSettings *)
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(PlayKeys.playDefaultPort := 9218)

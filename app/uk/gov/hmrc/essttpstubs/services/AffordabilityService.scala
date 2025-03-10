@@ -22,13 +22,12 @@ import essttp.rootmodel.ttp.affordability.{InstalmentAmountRequest, InstalmentAm
 import play.api.Configuration
 import uk.gov.hmrc.essttpstubs.services.AffordabilityService.{BadRequestError, CalculationError, Error}
 
-import java.time.Clock
 import javax.inject.{Inject, Singleton}
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Try
 
 @Singleton
-class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
+class AffordabilityService @Inject() (config: Configuration) {
 
   private val baseInterestRate: BigDecimal =
     BigDecimal(config.get[String]("affordability.instalment-amounts.base-interest-rate"))
@@ -39,7 +38,8 @@ class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
   private val totalInterestRate: BigDecimal = baseInterestRate + additionalInterestRate
 
   def calculateInstalmentAmounts(request: InstalmentAmountRequest): Either[Error, InstalmentAmounts] = {
-    val totalDebtAmount: Long = request.debtItemCharges.map(_.outstandingDebtAmount.value.value).sum + request.accruedDebtInterest.value.value
+    val totalDebtAmount: Long      =
+      request.debtItemCharges.map(_.outstandingDebtAmount.value.value).sum + request.accruedDebtInterest.value.value
     val initialPaymentAmount: Long = request.initialPaymentAmount.map(_.value).getOrElse(0L)
     if (totalDebtAmount <= initialPaymentAmount)
       Left(BadRequestError("Total debt amount was less than or equal to the initial payment amount"))
@@ -47,7 +47,7 @@ class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
       Left(BadRequestError("Min plan length was strictly greater than the max plan length"))
     else {
       val residualDebtAmount = BigDecimal(totalDebtAmount - initialPaymentAmount)
-      val interestPerMonth = totalInterestRate * residualDebtAmount / BigDecimal(1200)
+      val interestPerMonth   = totalInterestRate * residualDebtAmount / BigDecimal(1200)
 
       val minInterest = request.paymentPlanMinLength.value * interestPerMonth
       val maxInterest = request.paymentPlanMaxLength.value * interestPerMonth
@@ -65,8 +65,7 @@ class AffordabilityService @Inject() (config: Configuration, clock: Clock) {
   }
 
   private def toLong(n: BigDecimal): Either[CalculationError, Long] =
-    Try(n.setScale(0, RoundingMode.HALF_UP).toLongExact)
-      .toEither
+    Try(n.setScale(0, RoundingMode.HALF_UP).toLongExact).toEither
       .leftMap(e => CalculationError(s"Could not convert BigDecimal to Int: ${e.getMessage}"))
 
 }

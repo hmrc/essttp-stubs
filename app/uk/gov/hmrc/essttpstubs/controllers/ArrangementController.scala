@@ -28,16 +28,17 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ArrangementController @Inject() (cc: ControllerComponents, arrangementService: ArrangementService) extends BackendController(cc) {
+class ArrangementController @Inject() (cc: ControllerComponents, arrangementService: ArrangementService)
+    extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
-  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+  given CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   val enactArrangement: Action[ArrangementRequest] = Action(parse.json[ArrangementRequest]) { request =>
-    LoggingHelper.logRequestInfo(logger  = logger, request = request)
+    LoggingHelper.logRequestInfo(logger = logger, request = request)
     val response = arrangementService.enactArrangement(request.body)
-    LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(response))
+    LoggingHelper.logResponseInfo(uri = request.uri, logger = logger, responseBody = Json.toJson(response))
     Ok(Json.toJson(response))
   }
 

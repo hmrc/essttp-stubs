@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import cats.syntax.eq._
 import essttp.rootmodel.ttp.RegimeType
 import essttp.rootmodel.ttp.arrangement.{ArrangementRequest, ArrangementResponse, CustomerReference}
 import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
@@ -37,8 +36,8 @@ class ArrangementService @Inject() (clock: Clock) {
       case RegimeType.SA    => "UTR"
       case RegimeType.SIMP  => "NINO"
     }
-    request.identification.find(_.idType.value === identificationKey) match {
-      case None =>
+    request.identification.find(_.idType.value == identificationKey) match {
+      case None     =>
         throw UpstreamErrorResponse(s"Could not find ID with ID type '$identificationKey'", BAD_REQUEST)
       case Some(id) =>
         val now = DateTimeFormatter.ISO_INSTANT.format(Instant.now(clock))

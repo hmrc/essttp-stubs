@@ -24,8 +24,7 @@ import scala.concurrent.duration.Duration
 final case class EligibilityRepoConfig(expireEligibilityMongo: Duration) {
 
   @Inject
-  def this(servicesConfig: ServicesConfig) = {
+  def this(servicesConfig: ServicesConfig) =
     this(servicesConfig.getDuration("expire-eligibility-mongo "))
-  }
 
 }

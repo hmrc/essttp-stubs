@@ -27,11 +27,12 @@ final case class EligibilityEntry(eligibilityCheckResult: EligibilityCheckResult
 
 object EligibilityEntry {
 
-  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-
-  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
-
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EligibilityEntry] = Json.format[EligibilityEntry]
+  given format: OFormat[EligibilityEntry] = {
+    given Format[Instant] = MongoJavatimeFormats.instantFormat
+    given CryptoFormat    = CryptoFormat.NoOpCryptoFormat
+
+    Json.format[EligibilityEntry]
+  }
 
 }

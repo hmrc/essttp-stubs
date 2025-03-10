@@ -17,22 +17,27 @@
 package uk.gov.hmrc.essttpstubs.repos
 
 import essttp.crypto.CryptoFormat
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import org.mongodb.scala.result.UpdateResult
+import org.mongodb.scala.ObservableFuture
 import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.repo.EligibilityEntry
+import uk.gov.hmrc.essttpstubs.testutil.Givens.canEqualJsValue
 import uk.gov.hmrc.essttpstubs.testutil.{ItSpec, TestData}
 
 import java.time.Instant
 
 class EligibilityRepoSpec extends ItSpec {
 
-  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+  given CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
   "insert a record into mongodb" in {
     collectionSize shouldBe 0
 
     val updateResult1: UpdateResult = eligibilityRepo
-      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
+      .insertEligibilityData(
+        EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now())
+      )
       .futureValue
 
     updateResult1.wasAcknowledged() shouldBe true
@@ -40,7 +45,9 @@ class EligibilityRepoSpec extends ItSpec {
 
     // check multiple inserts for same tax id doesn't generate multiple records
     val updateResult2: UpdateResult = eligibilityRepo
-      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
+      .insertEligibilityData(
+        EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now())
+      )
       .futureValue
 
     updateResult2.wasAcknowledged() shouldBe true
@@ -52,14 +59,21 @@ class EligibilityRepoSpec extends ItSpec {
       .findEligibilityDataByTaxRef(identificationList)
       .futureValue
 
-    Json.toJson(findResult.value.eligibilityCheckResult) shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson withClue s"Json was in fact: ${findResult.toString}"
+    Json
+      .toJson(
+        findResult.value.eligibilityCheckResult
+      )
+      .as[EligibilityCheckResult] shouldBe TestData.EligibilityApi.JsonInstances.eligibilityResponseJson
+      .as[EligibilityCheckResult]
   }
 
   "drop the records from mongodb" in {
     collectionSize shouldBe 0
 
     val dbOperationInsert: UpdateResult = eligibilityRepo
-      .insertEligibilityData(EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now()))
+      .insertEligibilityData(
+        EligibilityEntry(TestData.EligibilityApi.ModelInstances.eligibilityResponse, Instant.now())
+      )
       .futureValue
 
     dbOperationInsert.wasAcknowledged() shouldBe true

@@ -20,6 +20,7 @@ import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
 import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsSuccess, Json}
+import uk.gov.hmrc.essttpstubs.testutil.Givens.canEqualJsResult
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestArrangementConnector
 
@@ -46,11 +47,10 @@ class ArrangementControllerSpec extends ItSpec {
       ("PAYE", "BROCS"),
       ("VATC", "VRN"),
       ("SA", "UTR")
-    ).foreach {
-        case (regimeType, identificationKey) =>
-          s".enactArrangement should return Ok when an ID with ID type $identificationKey can be found for the regimeType $regimeType in the request" in {
-            val request = Json.parse(
-              s"""
+    ).foreach { case (regimeType, identificationKey) =>
+      s".enactArrangement should return Ok when an ID with ID type $identificationKey can be found for the regimeType $regimeType in the request" in {
+        val request = Json.parse(
+          s"""
             |{
             |	"identification": [{
             |		"idType": "$identificationKey",
@@ -118,17 +118,17 @@ class ArrangementControllerSpec extends ItSpec {
             |	}
             |}
             |""".stripMargin
-            )
+        )
 
-            val response = testArrangementConnector.enactArrangement(request).futureValue
-            response.json.validate[ArrangementResponse] shouldBe JsSuccess(
-              ArrangementResponse(
-                ProcessingDateTime("2057-08-02T15:28:55.185Z"),
-                CustomerReference("id")
-              )
-            )
-          }
+        val response = testArrangementConnector.enactArrangement(request).futureValue
+        response.json.validate[ArrangementResponse] shouldBe JsSuccess(
+          ArrangementResponse(
+            ProcessingDateTime("2057-08-02T15:28:55.185Z"),
+            CustomerReference("id")
+          )
+        )
       }
+    }
 
   }
 

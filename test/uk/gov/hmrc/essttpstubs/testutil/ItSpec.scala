@@ -19,6 +19,7 @@ package uk.gov.hmrc.essttpstubs.testutil
 import com.google.inject.{AbstractModule, Provides}
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.util.Timeout
+import org.mongodb.scala.SingleObservableFuture
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
@@ -39,23 +40,17 @@ import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import javax.inject.Singleton
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-/**
- * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
- */
+/** This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
+  */
 
-trait ItSpec
-  extends AnyFreeSpec
-  with RichMatchers
-  with BeforeAndAfterEach
-  with GuiceOneServerPerSuite
-  with Matchers {
+trait ItSpec extends AnyFreeSpec, RichMatchers, BeforeAndAfterEach, GuiceOneServerPerSuite, Matchers {
   self =>
 
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  implicit val emptyHC: HeaderCarrier = HeaderCarrier()
+  given ExecutionContext       = scala.concurrent.ExecutionContext.Implicits.global
+  given emptyHC: HeaderCarrier = HeaderCarrier()
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
-    timeout  = scaled(Span(3, Seconds)),
+    timeout = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis))
   )
 
@@ -71,13 +66,12 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @annotation.nowarn // silence "method never used" warning
     def clock: Clock = self.clock
   }
 
-  lazy val injector: Injector = fakeApplication().injector
+  lazy val injector: Injector                                 = fakeApplication().injector
   lazy val testEligibilityConnector: TestEligibilityConnector = injector.instanceOf[TestEligibilityConnector]
-  lazy val eligibilityRepo: EligibilityRepo = injector.instanceOf[EligibilityRepo]
+  lazy val eligibilityRepo: EligibilityRepo                   = injector.instanceOf[EligibilityRepo]
 
   lazy val additionalConfig: Configuration = Configuration()
 
@@ -93,7 +87,8 @@ trait ItSpec
             |""".stripMargin
           )
         ).withFallback(additionalConfig)
-      ).build()
+      )
+      .build()
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -107,7 +102,7 @@ trait ItSpec
 
   def status(of: Result): Int = of.header.status
 
-  def status(of: Future[Result])(implicit timeout: Timeout): Int = Await.result(of, timeout.duration).header.status
+  def status(of: Future[Result])(using timeout: Timeout): Int = Await.result(of, timeout.duration).header.status
 
   def asUpstreamErrorResponse(t: Throwable): UpstreamErrorResponse = t match {
     case u: UpstreamErrorResponse => u
@@ -119,7 +114,7 @@ trait ItSpec
 
   object TestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
-      val sc = ServerConfig(port    = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
+      val sc = ServerConfig(port = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
   }

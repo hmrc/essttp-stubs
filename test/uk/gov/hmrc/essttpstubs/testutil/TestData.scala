@@ -33,147 +33,152 @@ object TestData {
     object ModelInstances {
 
       val testLock: Lock = Lock(
-        lockType                 = LockType("testLockType"),
-        lockReason               = LockReason("testLockReason"),
+        lockType = LockType("testLockType"),
+        lockReason = LockReason("testLockReason"),
         disallowedChargeLockType = DisallowedChargeLockType(value = false)
       )
 
       val eligibilityRequest: EligibilityRequest = EligibilityRequest(
-        channelIdentifier         = "eSSTTP",
-        identification            = List(Identification(IdType("EMPREF"), IdValue("test-idValue"))),
-        regimeType                = RegimeType.EPAYE,
+        channelIdentifier = "eSSTTP",
+        identification = List(Identification(IdType("EMPREF"), IdValue("test-idValue"))),
+        regimeType = RegimeType.EPAYE,
         returnFinancialAssessment = true
       )
 
       val eligibilityResponse: EligibilityCheckResult = EligibilityCheckResult(
-        processingDateTime              = ProcessingDateTime("test-processingDate"),
-        identification                  = List(
+        processingDateTime = ProcessingDateTime("test-processingDate"),
+        identification = List(
           Identification(
-            idType  = IdType("EMPREF"),
+            idType = IdType("EMPREF"),
             idValue = IdValue("test-idValue")
           )
         ),
-        customerPostcodes               = List(
-          CustomerPostcode(addressPostcode = Postcode(SensitiveString("test-postcode")), postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1)))
+        customerPostcodes = List(
+          CustomerPostcode(
+            addressPostcode = Postcode(SensitiveString("test-postcode")),
+            postcodeDate = PostcodeDate(LocalDate.of(2022, 1, 1))
+          )
         ),
-        regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
-        paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
-        paymentPlanMinLength            = PaymentPlanMinLength(1),
-        paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-        eligibilityStatus               = EligibilityStatus(EligibilityPass(value = false)),
-        eligibilityRules                = EligibilityRules(
+        regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
+        paymentPlanFrequency = PaymentPlanFrequencies.Monthly,
+        paymentPlanMinLength = PaymentPlanMinLength(1),
+        paymentPlanMaxLength = PaymentPlanMaxLength(6),
+        eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
+        eligibilityRules = EligibilityRules(
           EligibilityRulesPart1(
-            hasRlsOnAddress                       = true,
-            markedAsInsolvent                     = true,
-            isLessThanMinDebtAllowance            = false,
-            isMoreThanMaxDebtAllowance            = false,
-            disallowedChargeLockTypes             = false,
-            existingTTP                           = false,
-            chargesOverMaxDebtAge                 = None,
-            ineligibleChargeTypes                 = false,
-            missingFiledReturns                   = false,
-            hasInvalidInterestSignals             = None,
-            dmSpecialOfficeProcessingRequired     = None,
-            noDueDatesReached                     = false,
-            cannotFindLockReason                  = None,
-            creditsNotAllowed                     = None,
-            isMoreThanMaxPaymentReference         = None,
-            chargesBeforeMaxAccountingDate        = None,
-            hasInvalidInterestSignalsCESA         = None,
-            hasDisguisedRemuneration              = None,
-            hasCapacitor                          = None,
+            hasRlsOnAddress = true,
+            markedAsInsolvent = true,
+            isLessThanMinDebtAllowance = false,
+            isMoreThanMaxDebtAllowance = false,
+            disallowedChargeLockTypes = false,
+            existingTTP = false,
+            chargesOverMaxDebtAge = None,
+            ineligibleChargeTypes = false,
+            missingFiledReturns = false,
+            hasInvalidInterestSignals = None,
+            dmSpecialOfficeProcessingRequired = None,
+            noDueDatesReached = false,
+            cannotFindLockReason = None,
+            creditsNotAllowed = None,
+            isMoreThanMaxPaymentReference = None,
+            chargesBeforeMaxAccountingDate = None,
+            hasInvalidInterestSignalsCESA = None,
+            hasDisguisedRemuneration = None,
+            hasCapacitor = None,
             dmSpecialOfficeProcessingRequiredCDCS = None,
-            isAnMtdCustomer                       = None,
+            isAnMtdCustomer = None,
             dmSpecialOfficeProcessingRequiredCESA = None
           ),
           EligibilityRulesPart2(
             noMtditsaEnrollment = None
           )
         ),
-        chargeTypeAssessment            = List(
+        chargeTypeAssessment = List(
           ChargeTypeAssessment(
-            taxPeriodFrom   = TaxPeriodFrom("2022-04-27"),
-            taxPeriodTo     = TaxPeriodTo("2022-04-27"),
+            taxPeriodFrom = TaxPeriodFrom("2022-04-27"),
+            taxPeriodTo = TaxPeriodTo("2022-04-27"),
             debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
             chargeReference = ChargeReference("test-chargeReference"),
-            charges         = List(
+            charges = List(
               Charges(
                 Charges1(
-                  chargeType              = ChargeType("test-chargeId"),
-                  mainTrans               = MainTrans("test-mainTrans"),
-                  subTrans                = SubTrans("test-subTrans"),
-                  outstandingAmount       = OutstandingAmount(AmountInPence(10)),
-                  interestStartDate       = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
-                  accruedInterest         = AccruedInterest(AmountInPence(1)),
-                  mainType                = MainType("test-mainType"),
-                  dueDate                 = DueDate(LocalDate.parse("2022-04-27")),
-                  ineligibleChargeType    = IneligibleChargeType(value = false),
-                  chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
-                  locks                   = Some(List(testLock)),
-                  dueDateNotReached       = false,
+                  chargeType = ChargeType("test-chargeId"),
+                  mainTrans = MainTrans("test-mainTrans"),
+                  subTrans = SubTrans("test-subTrans"),
+                  outstandingAmount = OutstandingAmount(AmountInPence(10)),
+                  interestStartDate = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
+                  accruedInterest = AccruedInterest(AmountInPence(1)),
+                  mainType = MainType("test-mainType"),
+                  dueDate = DueDate(LocalDate.parse("2022-04-27")),
+                  ineligibleChargeType = IneligibleChargeType(value = false),
+                  chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+                  locks = Some(List(testLock)),
+                  dueDateNotReached = false,
                   isInterestBearingCharge = None
                 ),
                 Charges2(
-                  useChargeReference            = None,
+                  useChargeReference = None,
                   chargeBeforeMaxAccountingDate = None,
-                  ddInProgress                  = None,
-                  chargeSource                  = None,
-                  parentChargeReference         = None,
-                  parentMainTrans               = None,
-                  originalCreationDate          = None,
-                  tieBreaker                    = None,
-                  originalTieBreaker            = None,
-                  saTaxYearEnd                  = None,
-                  creationDate                  = None,
-                  originalChargeType            = None
+                  ddInProgress = None,
+                  chargeSource = None,
+                  parentChargeReference = None,
+                  parentMainTrans = None,
+                  originalCreationDate = None,
+                  tieBreaker = None,
+                  originalTieBreaker = None,
+                  saTaxYearEnd = None,
+                  creationDate = None,
+                  originalChargeType = None
                 )
               )
             )
           )
         ),
-        customerDetails                 = List(
+        customerDetails = List(
           CustomerDetail(
             emailAddress = None,
-            emailSource  = None
+            emailSource = None
           )
         ),
-        individualDetails               = None,
-        addresses                       = List(
+        individualDetails = None,
+        addresses = List(
           Address(
-            addressType     = AddressType("Residential"),
-            addressLine1    = None,
-            addressLine2    = None,
-            addressLine3    = None,
-            addressLine4    = None,
-            rls             = None,
-            contactDetails  = Some(ContactDetail(
-              telephoneNumber = None,
-              fax             = None,
-              mobile          = None,
-              emailAddress    = Some(Email(SensitiveString("some@email"))),
-              emailSource     = None,
-              altFormat       = None
-            )),
-            postCode        = None,
-            country         = None,
+            addressType = AddressType("Residential"),
+            addressLine1 = None,
+            addressLine2 = None,
+            addressLine3 = None,
+            addressLine4 = None,
+            rls = None,
+            contactDetails = Some(
+              ContactDetail(
+                telephoneNumber = None,
+                fax = None,
+                mobile = None,
+                emailAddress = Some(Email(SensitiveString("some@email"))),
+                emailSource = None,
+                altFormat = None
+              )
+            ),
+            postCode = None,
+            country = None,
             postcodeHistory = List(
               PostcodeHistory(
                 addressPostcode = Postcode(SensitiveString("POSTCODE")),
-                postcodeDate    = PostcodeDate(LocalDate.now())
+                postcodeDate = PostcodeDate(LocalDate.now())
               )
             )
           )
         ),
-        regimeDigitalCorrespondence     = RegimeDigitalCorrespondence(value = false),
+        regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = false),
         futureChargeLiabilitiesExcluded = false,
-        chargeTypesExcluded             = None,
-        invalidSignals                  = None
+        chargeTypesExcluded = None,
+        invalidSignals = None
       )
     }
 
     object JsonInstances {
-      val eligibilityRequestJson: JsValue = Json.parse(
-        //language=JSON
+      val eligibilityRequestJson: JsValue  = Json.parse(
+        // language=JSON
         """{
           |   "channelIdentifier":"eSSTTP",
           |   "idType": "test-idType",

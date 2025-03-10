@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.essttpstubs.controllers
 
-import cats.implicits.catsSyntaxEq
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
@@ -34,18 +33,18 @@ import scala.util.Random
 
 @Singleton
 class PegaController @Inject() (
-    cc:            ControllerComponents,
-    pegaTokenRepo: PegaTokenRepo,
-    pegaCaseRepo:  PegaCaseRepo,
-    appConfig:     AppConfig
-)(implicit ec: ExecutionContext) extends BackendController(cc) {
+  cc:            ControllerComponents,
+  pegaTokenRepo: PegaTokenRepo,
+  pegaCaseRepo:  PegaCaseRepo,
+  appConfig:     AppConfig
+)(implicit ec: ExecutionContext)
+    extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
   private val pegaTokenExpiryTime: FiniteDuration = appConfig.pegaTokenExpiryTime
 
   val token: Action[AnyContent] = Action.async { implicit request =>
-
     pegaTokenRepo.findPegaToken().flatMap {
       case None =>
         generateAndSaveToken()
@@ -55,8 +54,12 @@ class PegaController @Inject() (
         if (LocalDateTime.now().isAfter(expirationTime)) {
           generateAndSaveToken()
         } else {
-          val remainingTime = expirationTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
-          val response = generateTokenResponse(pegaToken.accessToken, remainingTime.toInt * 2) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
+          val remainingTime =
+            expirationTime.toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+          val response      = generateTokenResponse(
+            pegaToken.accessToken,
+            remainingTime.toInt * 2
+          ) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
           logRequest(request, response)
           Future.successful(Ok(response))
         }
@@ -66,13 +69,16 @@ class PegaController @Inject() (
   private def generateAndSaveToken()(implicit request: Request[AnyContent]): Future[Result] = {
     val newToken = PegaOauthToken(nextAlphanumericString(20), LocalDateTime.now())
     pegaTokenRepo.insertPegaToken(newToken).map { _ =>
-      val response = generateTokenResponse(newToken.accessToken, pegaTokenExpiryTime.toSeconds * 2) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
+      val response = generateTokenResponse(
+        newToken.accessToken,
+        pegaTokenExpiryTime.toSeconds * 2
+      ) // we are multiplying by 2 so we can simulate the backend receiving a 401 for expired token
       logRequest(request, response)
       Ok(response)
     }
   }
 
-  private def generateTokenResponse(accessToken: String, expiresIn: Long): JsValue = {
+  private def generateTokenResponse(accessToken: String, expiresIn: Long): JsValue =
     Json.parse(
       s"""{
          |  "access_token": "$accessToken",
@@ -81,43 +87,41 @@ class PegaController @Inject() (
          |}
          |""".stripMargin
     )
-  }
 
-  private def logRequest(request: Request[AnyContent], response: JsValue): Unit = {
+  private def logRequest(request: Request[AnyContent], response: JsValue): Unit =
     logger.info(
       s"Got request for PEGA token with headers ${request.headers.headers.toString} and " +
         s"body ${request.body.toString}. Responding with ${response.toString}"
     )
-  }
 
   val startCase: Action[AnyContent] = Action.async { implicit request =>
     validateToken().map {
       case Left(errorResult) => errorResult
-      case Right(_) =>
+      case Right(_)          =>
         val response = generateStartCaseResponse
         logRequest(request, response)
         Created(Json.toJson(response))
     }
   }
 
-  private val generateStartCaseResponse: JsValue = {
+  private val generateStartCaseResponse: JsValue =
     Json.parse(
       s"""{
          |  "ID": "${nextAlphanumericString(20)}"
          |}
          |""".stripMargin
     )
-  }
 
-  private def parseBearerToken(header: String): Option[String] = {
+  private def parseBearerToken(header: String): Option[String] =
     if (header.startsWith("Bearer ")) Some(header.substring(7))
     else None
-  }
 
-  def putCase(caseId: String): Action[JsValue] = Action.async(parse.json){ request =>
-    pegaCaseRepo.insert(
-      PegaCaseEntry(caseId, request.body, Instant.now())
-    ).map{ updateResult =>
+  def putCase(caseId: String): Action[JsValue] = Action.async(parse.json) { request =>
+    pegaCaseRepo
+      .insert(
+        PegaCaseEntry(caseId, request.body, Instant.now())
+      )
+      .map { updateResult =>
         if (updateResult.wasAcknowledged()) Created
         else InternalServerError
       }
@@ -141,7 +145,7 @@ class PegaController @Inject() (
       }
     }
 
-  private def validateToken()(implicit request: Request[AnyContent]): Future[Either[Result, Unit]] = {
+  private def validateToken()(using request: Request[AnyContent]): Future[Either[Result, Unit]] = {
     val maybeAuthToken = request.headers.get("Authorization").flatMap(parseBearerToken)
     maybeAuthToken match {
       case Some(authToken) =>
@@ -150,15 +154,15 @@ class PegaController @Inject() (
             val expirationTime = pegaToken.validFrom.plusSeconds(pegaTokenExpiryTime.toSeconds)
             if (LocalDateTime.now().isAfter(expirationTime)) {
               Future.successful(Left(Unauthorized("Token expired")))
-            } else if (pegaToken.accessToken =!= authToken) {
+            } else if (pegaToken.accessToken != authToken) {
               Future.successful(Left(Unauthorized("Token doesn't match")))
             } else {
               Future.successful(Right(()))
             }
-          case None =>
+          case None            =>
             generateAndSaveToken().map(_ => Left(Unauthorized("Token not found in mongo")))
         }
-      case None =>
+      case None            =>
         Future.successful(Left(Unauthorized("Authorization header missing or invalid format")))
     }
   }

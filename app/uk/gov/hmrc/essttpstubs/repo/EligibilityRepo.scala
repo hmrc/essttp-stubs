@@ -22,6 +22,7 @@ import essttp.rootmodel.ttp.eligibility.Identification
 import org.bson.conversions.Bson
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.UpdateResult
+import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -32,38 +33,41 @@ import scala.concurrent.{ExecutionContext, Future}
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 final class EligibilityRepo @Inject() (
-    mongoComponent: MongoComponent
-)(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[EligibilityEntry](
-    mongoComponent = mongoComponent,
-    collectionName = "essttp-stubs-eligibility",
-    domainFormat   = EligibilityEntry.format,
-    indexes        = EligibilityRepo.indexes(30.minutes.toSeconds),
-    replaceIndexes = true
-  ) {
+  mongoComponent: MongoComponent
+)(using ExecutionContext)
+    extends PlayMongoRepository[EligibilityEntry](
+      mongoComponent = mongoComponent,
+      collectionName = "essttp-stubs-eligibility",
+      domainFormat = EligibilityEntry.format,
+      indexes = EligibilityRepo.indexes(30.minutes.toSeconds),
+      replaceIndexes = true
+    ) {
 
   def insertEligibilityData(eligibilityEntry: EligibilityEntry): Future[UpdateResult] =
-    collection.replaceOne(
-      taxIdFilter(eligibilityEntry.eligibilityCheckResult.identification),
-      eligibilityEntry,
-      new ReplaceOptions().upsert(true)
-    ).toFuture()
+    collection
+      .replaceOne(
+        taxIdFilter(eligibilityEntry.eligibilityCheckResult.identification),
+        eligibilityEntry,
+        new ReplaceOptions().upsert(true)
+      )
+      .toFuture()
 
   def findEligibilityDataByTaxRef(identificationList: List[Identification]): Future[Option[EligibilityEntry]] =
     collection.find(taxIdFilter(identificationList)).headOption()
 
   def removeAllRecords(): Future[Unit] = collection.drop().toFuture().map(_ => ())
 
-  private def taxIdFilter(identifications: List[Identification]): Bson = {
-    Filters.and(identifications.map(id => Filters.eq("eligibilityCheckResult.identification.idValue", id.idValue.value)): _*)
-  }
+  private def taxIdFilter(identifications: List[Identification]): Bson =
+    Filters.and(
+      identifications.map(id => Filters.eq("eligibilityCheckResult.identification.idValue", id.idValue.value)): _*
+    )
 }
 
 object EligibilityRepo {
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("createdAt"),
+      keys = Indexes.ascending("createdAt"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("createdAtIdx")
     )
   )
