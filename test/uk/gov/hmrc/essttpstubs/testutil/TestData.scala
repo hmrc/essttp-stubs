@@ -185,7 +185,7 @@ object TestData {
       )
       val eligibilityResponseJson: JsValue = Json.parse(
         //language=JSON
-        """{
+        s"""{
           |	"processingDateTime": "test-processingDate",
           |	"identification": [{
           |		"idType": "EMPREF",
@@ -199,7 +199,7 @@ object TestData {
           | "addresses": [{
           |		"addressType": "Residential",
           |		"contactDetails": {"emailAddress":"some@email"},
-          |   "postcodeHistory":[{"addressPostcode":"POSTCODE","postcodeDate":"2025-03-07"}]
+          |   "postcodeHistory":[{"addressPostcode":"POSTCODE","postcodeDate":"${LocalDate.now().toString}"}]
           }],
           |	"regimePaymentFrequency": "Monthly",
           |	"paymentPlanFrequency": "Monthly",
