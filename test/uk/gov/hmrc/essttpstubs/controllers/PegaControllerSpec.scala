@@ -51,7 +51,7 @@ class PegaControllerSpec extends ItSpec {
 
         (json \ "token_type").as[String] shouldBe "bearer"
         (json \ "expires_in").as[Long] shouldBe 120
-        (json \ "access_token").validate[String] shouldBe a[JsSuccess[_]]
+        (json \ "access_token").validate[String] shouldBe a[JsSuccess[?]]
       }
 
       "respond with a token with remainingTime" in {
@@ -64,7 +64,7 @@ class PegaControllerSpec extends ItSpec {
 
         (json \ "token_type").as[String] shouldBe "bearer"
         (json \ "expires_in").as[Long] shouldBe 40
-        (json \ "access_token").validate[String] shouldBe a[JsSuccess[_]]
+        (json \ "access_token").validate[String] shouldBe a[JsSuccess[?]]
       }
 
     }
@@ -79,7 +79,7 @@ class PegaControllerSpec extends ItSpec {
         val result = controller.startCase(FakeRequest().withHeaders("Authorization" -> "Bearer 123456SOMETOKEN12345"))
         val json   = contentAsJson(result).as[JsObject]
 
-        (json \ "ID").validate[String] shouldBe a[JsSuccess[_]]
+        (json \ "ID").validate[String] shouldBe a[JsSuccess[?]]
       }
 
       "return 401 with 'Token expired'" in {

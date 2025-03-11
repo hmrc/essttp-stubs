@@ -19,7 +19,7 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
     majorVersion                     := 1,
-    scalaVersion                     := "3.3.4",
+    scalaVersion                     := "3.5.1",
     scalacOptions ++= scalaCompilerOptions,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     scalafmtOnCompile := true

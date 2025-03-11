@@ -24,6 +24,6 @@ trait TestConnector {
   val port: String = ItSpec.testServerPort.toString
 
   given HttpReads[HttpResponse] =
-    HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
+    HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(using HttpReadsInstances.readRaw))
 
 }

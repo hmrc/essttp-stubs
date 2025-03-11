@@ -59,7 +59,7 @@ final class EligibilityRepo @Inject() (
 
   private def taxIdFilter(identifications: List[Identification]): Bson =
     Filters.and(
-      identifications.map(id => Filters.eq("eligibilityCheckResult.identification.idValue", id.idValue.value)): _*
+      identifications.map(id => Filters.eq("eligibilityCheckResult.identification.idValue", id.idValue.value))*
     )
 }
 
