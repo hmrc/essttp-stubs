@@ -23,6 +23,7 @@ import play.api.Configuration
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import uk.gov.hmrc.essttpstubs.controllers.AffordabilityControllerSpec.InstalmentAmountsTestCase
+import uk.gov.hmrc.essttpstubs.testutil.Givens.canEqualJsValue
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.connector.TestAffordabilityConnector
 
@@ -48,20 +49,20 @@ class AffordabilityControllerSpec extends ItSpec {
   "AffordabilityController" - {
 
     ".calculateInstalmentAmounts should return BadRequest when total debt is equal to initial payment amount" in {
-      val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(500, 500), 0))
+      val request  = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(500, 500), 0))
       val response = testAffordabilityConnector.calculateInstalmentAmounts(request).failed.futureValue
       asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
 
     ".calculateInstalmentAmounts should return BadRequest when total debt is strictly less than the initial payment amount" in {
-      val request = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(900), 0))
+      val request  = instalmentAmountsRequest(InstalmentAmountsTestCase(1, 6, Some(1000), List(900), 0))
       val response = testAffordabilityConnector.calculateInstalmentAmounts(request).failed.futureValue
       asUpstreamErrorResponse(response).statusCode shouldBe BAD_REQUEST
     }
 
     ".calculateInstalmentAmounts should return an Ok with the correct instalment amounts when passed a valid request" in {
-        def instalmentAmounts(min: Long, max: Long): InstalmentAmounts =
-          InstalmentAmounts(AmountInPence(min), AmountInPence(max))
+      def instalmentAmounts(min: Long, max: Long): InstalmentAmounts =
+        InstalmentAmounts(AmountInPence(min), AmountInPence(max))
 
       val testCases: List[(String, InstalmentAmountsTestCase, InstalmentAmounts)] =
         List(
@@ -72,13 +73,12 @@ class AffordabilityControllerSpec extends ItSpec {
           ("5", InstalmentAmountsTestCase(1, 6, Some(1900), List(1700, 100), 200), instalmentAmounts(17, 102))
         )
 
-      testCases.foreach {
-        case (id, testCase, expectedResult) =>
-          withClue(s"For test case $id: ") {
-            val request = instalmentAmountsRequest(testCase)
-            val response = testAffordabilityConnector.calculateInstalmentAmounts(request).futureValue
-            response.json shouldBe Json.toJson(expectedResult)
-          }
+      testCases.foreach { case (id, testCase, expectedResult) =>
+        withClue(s"For test case $id: ") {
+          val request  = instalmentAmountsRequest(testCase)
+          val response = testAffordabilityConnector.calculateInstalmentAmounts(request).futureValue
+          response.json shouldBe Json.toJson(expectedResult)
+        }
       }
     }
 
@@ -86,20 +86,24 @@ class AffordabilityControllerSpec extends ItSpec {
 
   def instalmentAmountsRequest(testCase: InstalmentAmountsTestCase): JsValue = {
     val initialPaymentDetails = testCase.initialPaymentAmount.map((amount: Int) =>
-      Json.parse(
-        s"""
+      Json
+        .parse(
+          s"""
            |{
            |  "initialPaymentDate": "2022-03-02",
            |  "initialPaymentAmount": ${amount.toString}
            |}
            |""".stripMargin
-      ).as[JsObject])
+        )
+        .as[JsObject]
+    )
 
     val debtItemCharges = {
       val array = JsArray(
         testCase.outstandingDebtAmounts.map { amount =>
-          Json.parse(
-            s"""
+          Json
+            .parse(
+              s"""
                |{
                |  "outstandingDebtAmount": ${amount.toString},
                |  "mainTrans":"1525",
@@ -109,14 +113,16 @@ class AffordabilityControllerSpec extends ItSpec {
                |  "debtItemOriginalDueDate":"2021-09-03"
                |}
                |""".stripMargin
-          ).as[JsObject]
+            )
+            .as[JsObject]
         }
       )
       JsObject(Map("debtItemCharges" -> array))
     }
 
-    val json = Json.parse(
-      s"""
+    val json = Json
+      .parse(
+        s"""
          |{
          |    "channelIdentifier": "eSSTTP",
          |    "regimeType": "PAYE",
@@ -139,7 +145,8 @@ class AffordabilityControllerSpec extends ItSpec {
          |    ]
          |}
          |""".stripMargin
-    ).as[JsObject]
+      )
+      .as[JsObject]
 
     json ++ initialPaymentDetails.getOrElse(JsObject.empty) ++ debtItemCharges
   }
@@ -149,7 +156,11 @@ class AffordabilityControllerSpec extends ItSpec {
 object AffordabilityControllerSpec {
 
   final case class InstalmentAmountsTestCase(
-      minPlanLength: Int, maxPlanLength: Int, initialPaymentAmount: Option[Int], outstandingDebtAmounts: List[Int], interestAmount: Int
+    minPlanLength:          Int,
+    maxPlanLength:          Int,
+    initialPaymentAmount:   Option[Int],
+    outstandingDebtAmounts: List[Int],
+    interestAmount:         Int
   )
 
 }

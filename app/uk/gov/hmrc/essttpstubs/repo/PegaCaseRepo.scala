@@ -20,6 +20,7 @@ import com.google.inject.{Inject, Singleton}
 import com.mongodb.client.model.ReplaceOptions
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.UpdateResult
+import org.mongodb.scala.SingleObservableFuture
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.essttpstubs.repo.PegaCaseRepo.PegaCaseEntry
 import uk.gov.hmrc.mongo.MongoComponent
@@ -34,22 +35,24 @@ import scala.concurrent.{ExecutionContext, Future}
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 class PegaCaseRepo @Inject() (
-    mongoComponent: MongoComponent
-)(implicit ec: ExecutionContext)
-  extends PlayMongoRepository[PegaCaseEntry](
-    mongoComponent = mongoComponent,
-    collectionName = "essttp-stubs-pega-get-case",
-    domainFormat   = PegaCaseEntry.format,
-    indexes        = PegaCaseRepo.indexes(30.minutes.toSeconds),
-    replaceIndexes = true
-  ) {
+  mongoComponent: MongoComponent
+)(using ExecutionContext)
+    extends PlayMongoRepository[PegaCaseEntry](
+      mongoComponent = mongoComponent,
+      collectionName = "essttp-stubs-pega-get-case",
+      domainFormat = PegaCaseEntry.format,
+      indexes = PegaCaseRepo.indexes(30.minutes.toSeconds),
+      replaceIndexes = true
+    ) {
 
   def insert(pegaCaseEntry: PegaCaseEntry): Future[UpdateResult] =
-    collection.replaceOne(
-      Filters.equal("caseId", pegaCaseEntry.caseId),
-      pegaCaseEntry,
-      new ReplaceOptions().upsert(true)
-    ).toFuture()
+    collection
+      .replaceOne(
+        Filters.equal("caseId", pegaCaseEntry.caseId),
+        pegaCaseEntry,
+        new ReplaceOptions().upsert(true)
+      )
+      .toFuture()
 
   def find(caseId: String): Future[Option[PegaCaseEntry]] =
     collection.find(Filters.equal("caseId", caseId)).headOption()
@@ -66,8 +69,8 @@ object PegaCaseRepo {
   object PegaCaseEntry {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[PegaCaseEntry] = {
-      implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+    given format: OFormat[PegaCaseEntry] = {
+      given Format[Instant] = MongoJavatimeFormats.instantFormat
       Json.format
     }
   }
@@ -77,7 +80,7 @@ object PegaCaseRepo {
       keys = Indexes.ascending("caseId")
     ),
     IndexModel(
-      keys         = Indexes.ascending("createdAt"),
+      keys = Indexes.ascending("createdAt"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("createdAtIdx")
     )
   )

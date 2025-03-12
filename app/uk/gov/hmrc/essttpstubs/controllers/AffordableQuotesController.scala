@@ -29,18 +29,19 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton()
 class AffordableQuotesController @Inject() (
-    affordableQuotesService: AffordableQuotesService,
-    cc:                      ControllerComponents
+  affordableQuotesService: AffordableQuotesService,
+  cc:                      ControllerComponents
 ) extends BackendController(cc) {
 
   val logger: Logger = Logger(this.getClass)
 
-  implicit val noOpCryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+  given CryptoFormat = CryptoFormat.NoOpCryptoFormat
 
-  val affordableQuotes: Action[AffordableQuotesRequest] = Action(parse.json[AffordableQuotesRequest]) { implicit request =>
-    LoggingHelper.logRequestInfo(logger  = logger, request = request)
-    val response = affordableQuotesService.calculateAffordableQuotes(request.body)
-    LoggingHelper.logResponseInfo(uri          = request.uri, logger = logger, responseBody = Json.toJson(response))
-    Ok(Json.toJson(response))
+  val affordableQuotes: Action[AffordableQuotesRequest] = Action(parse.json[AffordableQuotesRequest]) {
+    implicit request =>
+      LoggingHelper.logRequestInfo(logger = logger, request = request)
+      val response = affordableQuotesService.calculateAffordableQuotes(request.body)
+      LoggingHelper.logResponseInfo(uri = request.uri, logger = logger, responseBody = Json.toJson(response))
+      Ok(Json.toJson(response))
   }
 }

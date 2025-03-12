@@ -21,8 +21,9 @@ import play.api.libs.json.{JsObject, Json}
 object TdAll {
   object AffordabilityJsonBodies {
     def `1-2-3`: JsObject =
-      Json.parse(
-        """
+      Json
+        .parse(
+          """
           |{
           |	"paymentPlans": [{
           |		"numberOfInstalments": 1,
@@ -123,11 +124,13 @@ object TdAll {
           |	}]
           |}
           |""".stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
     def `2-3-4`: JsObject =
-      Json.parse(
-        """
+      Json
+        .parse(
+          """
           |{
           |	"paymentPlans": [{
           |		"numberOfInstalments": 2,
@@ -261,11 +264,13 @@ object TdAll {
           |	}]
           |}
           |""".stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
     def `3-4-5`: JsObject =
-      Json.parse(
-        """
+      Json
+        .parse(
+          """
           |{
           |	"paymentPlans": [{
           |		"numberOfInstalments": 3,
@@ -432,11 +437,13 @@ object TdAll {
           |	}]
           |}
           |""".stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
     def `4-5-6`: JsObject =
-      Json.parse(
-        """
+      Json
+        .parse(
+          """
           |{
           |	"paymentPlans": [{
           |		"numberOfInstalments": 4,
@@ -636,11 +643,13 @@ object TdAll {
           |	}]
           |}
           |""".stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
 
     def `4-5-6-withUpfrontPayment`: JsObject =
-      Json.parse(
-        """
+      Json
+        .parse(
+          """
           |{
           |	"paymentPlans": [{
           |		"numberOfInstalments": 4,
@@ -852,6 +861,7 @@ object TdAll {
           |	}]
           |}
           |""".stripMargin
-      ).as[JsObject]
+        )
+        .as[JsObject]
   }
 }

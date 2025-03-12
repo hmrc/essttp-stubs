@@ -17,18 +17,20 @@
 package uk.gov.hmrc.essttpstubs.testutil.connector
 
 import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TestArrangementConnector @Inject() (httpClient: HttpClientV2)(implicit executionContext: ExecutionContext) extends TestConnector {
+class TestArrangementConnector @Inject() (httpClient: HttpClientV2)(using ExecutionContext) extends TestConnector {
 
   private val arrangementApiUrl = s"http://localhost:$port/debts/time-to-pay/self-serve/arrangement"
 
   def enactArrangement(request: JsValue)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.post(url"$arrangementApiUrl")
+    httpClient
+      .post(url"$arrangementApiUrl")
       .withBody(Json.toJson(request))
       .execute[HttpResponse]
 

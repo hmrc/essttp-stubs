@@ -21,12 +21,12 @@ import play.api.libs.json.{Json, OFormat}
 import java.time.LocalDateTime
 
 final case class PegaOauthToken(
-    accessToken: String,
-    validFrom:   LocalDateTime
+  accessToken: String,
+  validFrom:   LocalDateTime
 )
 
 object PegaOauthToken {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val pegaFormat: OFormat[PegaOauthToken] = Json.format[PegaOauthToken]
+  given pegaFormat: OFormat[PegaOauthToken] = Json.format[PegaOauthToken]
 }
