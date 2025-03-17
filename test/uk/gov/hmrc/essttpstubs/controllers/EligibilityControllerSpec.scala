@@ -18,7 +18,6 @@ package uk.gov.hmrc.essttpstubs.controllers
 
 import essttp.crypto.CryptoFormat.NoOpCryptoFormat
 import essttp.rootmodel.ttp.eligibility.{EligibilityCheckResult, IdType, IdValue, Identification}
-import play.api.libs.json.Json
 import uk.gov.hmrc.essttpstubs.testutil.Givens.canEqualJsValue
 import uk.gov.hmrc.essttpstubs.testutil.ItSpec
 import uk.gov.hmrc.essttpstubs.testutil.TestData.EligibilityApi.JsonInstances._
