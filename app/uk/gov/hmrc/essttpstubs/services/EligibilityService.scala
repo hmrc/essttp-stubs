@@ -180,7 +180,7 @@ object EligibilityService {
       regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
       futureChargeLiabilitiesExcluded = false,
       invalidSignals =
-        Some(List(InvalidSignals(signalType = "xyz", signalValue = "123", signalDescription = "Description"))),
+        Some(List(InvalidSignals(signalType = "xyz", signalValue = "123", signalDescription = Some("Description")))),
       chargeTypesExcluded = None
     )
   }
