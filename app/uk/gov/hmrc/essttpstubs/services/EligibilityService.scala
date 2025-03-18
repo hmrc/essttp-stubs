@@ -77,33 +77,29 @@ object EligibilityService {
       paymentPlanMaxLength = PaymentPlanMaxLength(6),
       eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
       eligibilityRules = EligibilityRules(
-        EligibilityRulesPart1(
-          hasRlsOnAddress = false,
-          markedAsInsolvent = false,
-          isLessThanMinDebtAllowance = false,
-          isMoreThanMaxDebtAllowance = false,
-          disallowedChargeLockTypes = false,
-          existingTTP = false,
-          chargesOverMaxDebtAge = Some(false),
-          ineligibleChargeTypes = false,
-          missingFiledReturns = false,
-          hasInvalidInterestSignals = Some(false),
-          dmSpecialOfficeProcessingRequired = Some(false),
-          noDueDatesReached = false,
-          cannotFindLockReason = Some(false),
-          creditsNotAllowed = Some(false),
-          isMoreThanMaxPaymentReference = Some(false),
-          chargesBeforeMaxAccountingDate = Some(false),
-          hasInvalidInterestSignalsCESA = Some(false),
-          hasDisguisedRemuneration = Some(false),
-          hasCapacitor = Some(false),
-          dmSpecialOfficeProcessingRequiredCDCS = Some(false),
-          isAnMtdCustomer = Some(false),
-          dmSpecialOfficeProcessingRequiredCESA = Some(false)
-        ),
-        EligibilityRulesPart2(
-          noMtditsaEnrollment = Some(false)
-        )
+        hasRlsOnAddress = false,
+        markedAsInsolvent = false,
+        isLessThanMinDebtAllowance = false,
+        isMoreThanMaxDebtAllowance = false,
+        disallowedChargeLockTypes = false,
+        existingTTP = false,
+        chargesOverMaxDebtAge = Some(false),
+        ineligibleChargeTypes = false,
+        missingFiledReturns = false,
+        hasInvalidInterestSignals = Some(false),
+        dmSpecialOfficeProcessingRequired = Some(false),
+        noDueDatesReached = false,
+        cannotFindLockReason = Some(false),
+        creditsNotAllowed = Some(false),
+        isMoreThanMaxPaymentReference = Some(false),
+        chargesBeforeMaxAccountingDate = Some(false),
+        hasInvalidInterestSignalsCESA = Some(false),
+        hasDisguisedRemuneration = Some(false),
+        hasCapacitor = Some(false),
+        dmSpecialOfficeProcessingRequiredCDCS = Some(false),
+        isAnMtdCustomer = Some(false),
+        dmSpecialOfficeProcessingRequiredCESA = Some(false),
+        noMtditsaEnrollment = Some(false)
       ),
       chargeTypeAssessment = List(
         ChargeTypeAssessment(
@@ -113,43 +109,39 @@ object EligibilityService {
           chargeReference = ChargeReference("someValue"),
           List(
             Charges(
-              Charges1(
-                chargeType = ChargeType("InYearRTICharge-Tax"),
-                mainType = MainType("InYearRTICharge(FPS)"),
-                mainTrans = MainTrans("mainTrans"),
-                subTrans = SubTrans("subTrans"),
-                outstandingAmount = OutstandingAmount(AmountInPence(123456)),
-                interestStartDate = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
-                dueDate = DueDate(LocalDate.parse("2017-03-07")),
-                accruedInterest = AccruedInterest(AmountInPence(123)),
-                ineligibleChargeType = IneligibleChargeType(value = false),
-                chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
-                locks = Some(
-                  List(
-                    Lock(
-                      lockType = LockType("Payment"),
-                      lockReason = LockReason("Risk/Fraud"),
-                      disallowedChargeLockType = DisallowedChargeLockType(value = false)
-                    )
+              chargeType = ChargeType("InYearRTICharge-Tax"),
+              mainType = MainType("InYearRTICharge(FPS)"),
+              mainTrans = MainTrans("mainTrans"),
+              subTrans = SubTrans("subTrans"),
+              outstandingAmount = OutstandingAmount(AmountInPence(123456)),
+              interestStartDate = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
+              dueDate = DueDate(LocalDate.parse("2017-03-07")),
+              accruedInterest = AccruedInterest(AmountInPence(123)),
+              ineligibleChargeType = IneligibleChargeType(value = false),
+              chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+              locks = Some(
+                List(
+                  Lock(
+                    lockType = LockType("Payment"),
+                    lockReason = LockReason("Risk/Fraud"),
+                    disallowedChargeLockType = DisallowedChargeLockType(value = false)
                   )
-                ),
-                dueDateNotReached = false,
-                isInterestBearingCharge = None
+                )
               ),
-              Charges2(
-                useChargeReference = None,
-                chargeBeforeMaxAccountingDate = None,
-                ddInProgress = None,
-                chargeSource = None,
-                parentChargeReference = None,
-                parentMainTrans = None,
-                originalCreationDate = None,
-                tieBreaker = None,
-                originalTieBreaker = None,
-                saTaxYearEnd = None,
-                creationDate = None,
-                originalChargeType = None
-              )
+              dueDateNotReached = false,
+              isInterestBearingCharge = None,
+              useChargeReference = None,
+              chargeBeforeMaxAccountingDate = None,
+              ddInProgress = None,
+              chargeSource = None,
+              parentChargeReference = None,
+              parentMainTrans = None,
+              originalCreationDate = None,
+              tieBreaker = None,
+              originalTieBreaker = None,
+              saTaxYearEnd = None,
+              creationDate = None,
+              originalChargeType = None
             )
           )
         )

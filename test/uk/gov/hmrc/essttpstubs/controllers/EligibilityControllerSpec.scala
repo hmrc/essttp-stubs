@@ -35,7 +35,7 @@ class EligibilityControllerSpec extends ItSpec {
     ".retrieveEligibilityData should return correct EligibilityResponse" in {
       testEligibilityConnector.insertEligibilityData(eligibilityResponse).futureValue.status shouldBe 201
       val response: HttpResponse = testEligibilityConnector.retrieveEligibilityData(eligibilityRequest).futureValue
-      response.json shouldBe eligibilityResponseJson withClue s"Json was infact: ${response.json.toString}"
+      response.json shouldBe eligibilityResponseJson withClue s"Json was in fact: ${response.json.toString}"
     }
 
     ".retrieveEligibilityData should return a default random EligibilityResponse if none were found in  mongo" in {
