@@ -28,7 +28,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.Injector
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.Result
-import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.test.{DefaultTestServerFactory, RunningServer, TestServerFactory}
 import play.api.{Application, Configuration, Mode}
 import play.core.server.ServerConfig
 import uk.gov.hmrc.essttpstubs.repo.EligibilityRepo
@@ -69,7 +69,7 @@ trait ItSpec extends AnyFreeSpec, RichMatchers, BeforeAndAfterEach, GuiceOneServ
     def clock: Clock = self.clock
   }
 
-  lazy val injector: Injector                                 = fakeApplication().injector
+  lazy val injector: Injector                                 = app.injector
   lazy val testEligibilityConnector: TestEligibilityConnector = injector.instanceOf[TestEligibilityConnector]
   lazy val eligibilityRepo: EligibilityRepo                   = injector.instanceOf[EligibilityRepo]
 
@@ -109,10 +109,9 @@ trait ItSpec extends AnyFreeSpec, RichMatchers, BeforeAndAfterEach, GuiceOneServ
     case other                    => fail(s"Expected an UpstreamErrorResponse but got ${other.getClass.getSimpleName}")
   }
 
-  override implicit protected lazy val runningServer: RunningServer =
-    TestServerFactory.start(app)
+  override protected def testServerFactory: TestServerFactory = CustomTestServerFactory // Override the factory
 
-  object TestServerFactory extends DefaultTestServerFactory {
+  object CustomTestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
       val sc = ServerConfig(port = Some(ItSpec.testServerPort), sslPort = None, mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
