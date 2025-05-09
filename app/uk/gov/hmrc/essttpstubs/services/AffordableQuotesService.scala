@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.essttpstubs.services
 
-import cats.syntax.either._
+import cats.syntax.either.*
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
-import essttp.rootmodel.ttp.affordablequotes._
+import essttp.rootmodel.ttp.RegimeType.SA
+import essttp.rootmodel.ttp.affordablequotes.*
 import essttp.rootmodel.ttp.{PaymentPlanMaxLength, PaymentPlanMinLength}
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import play.api.Configuration
@@ -240,7 +241,8 @@ class AffordableQuotesService @Inject() (config: Configuration) {
           amountDue = AmountDue(monthlyAmount),
           debtItemOriginalDueDate =
             DebtItemOriginalDueDate(affordableQuotesRequest.paymentPlanStartDate.value.minusYears(1)), // just made up
-          expectedPayment = None
+          expectedPayment =
+            if affordableQuotesRequest.regimeType == SA then Some(ExpectedPayment(AmountInPence(10))) else None
         )
         createInstalments(newInstalment :: list, acc + 1)
       }
