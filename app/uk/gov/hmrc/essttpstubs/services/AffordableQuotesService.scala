@@ -239,7 +239,8 @@ class AffordableQuotesService @Inject() (config: Configuration) {
             .getOrElse(throw new RuntimeException("There was no charge id in request...")),
           amountDue = AmountDue(monthlyAmount),
           debtItemOriginalDueDate =
-            DebtItemOriginalDueDate(affordableQuotesRequest.paymentPlanStartDate.value.minusYears(1)) // just made up
+            DebtItemOriginalDueDate(affordableQuotesRequest.paymentPlanStartDate.value.minusYears(1)), // just made up
+          expectedPayment = None
         )
         createInstalments(newInstalment :: list, acc + 1)
       }
