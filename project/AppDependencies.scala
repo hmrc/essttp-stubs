@@ -9,7 +9,7 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-backend-play-30"   % boostrapVersion,
     "org.typelevel"     %% "cats-core"                   % "2.13.0",
     "com.beachape"      %% "enumeratum"                  % "1.9.0",
-    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "2.9.0",
+    "uk.gov.hmrc"       %% "essttp-backend-cor-journey"  % "2.10.0",
   // format: ON
   )
 
