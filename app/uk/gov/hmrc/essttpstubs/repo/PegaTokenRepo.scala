@@ -19,7 +19,6 @@ package uk.gov.hmrc.essttpstubs.repo
 import com.google.inject.{Inject, Singleton}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.InsertOneResult
-import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.essttpstubs.config.AppConfig
 import uk.gov.hmrc.essttpstubs.model.PegaOauthToken
 import uk.gov.hmrc.mongo.MongoComponent

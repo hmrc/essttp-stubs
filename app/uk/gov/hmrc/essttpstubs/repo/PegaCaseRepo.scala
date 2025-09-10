@@ -20,7 +20,6 @@ import com.google.inject.{Inject, Singleton}
 import com.mongodb.client.model.ReplaceOptions
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.UpdateResult
-import org.mongodb.scala.SingleObservableFuture
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.essttpstubs.repo.PegaCaseRepo.PegaCaseEntry
 import uk.gov.hmrc.mongo.MongoComponent
@@ -28,8 +27,8 @@ import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
-import scala.concurrent.duration.DurationInt
 import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
