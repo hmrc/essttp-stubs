@@ -22,7 +22,6 @@ import essttp.rootmodel.ttp.eligibility.Identification
 import org.bson.conversions.Bson
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result.UpdateResult
-import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
