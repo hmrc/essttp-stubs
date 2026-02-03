@@ -126,10 +126,12 @@ object TestData {
             )
           )
         ),
-        customerDetails = List(
-          CustomerDetail(
-            emailAddress = None,
-            emailSource = None
+        customerDetails = Some(
+          List(
+            CustomerDetail(
+              emailAddress = None,
+              emailSource = None
+            )
           )
         ),
         individualDetails = None,
