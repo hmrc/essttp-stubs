@@ -147,7 +147,7 @@ object EligibilityService {
         )
       ),
       customerDetails =
-        List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP))),
+        Some(List(CustomerDetail(Some(Email(SensitiveString("bobross@joyofpainting.com"))), Some(EmailSource.ETMP)))),
       individualDetails = None,
       addresses = List(
         Address(
