@@ -87,7 +87,9 @@ object TestData {
           dmSpecialOfficeProcessingRequiredCDCS = None,
           isAnMtdCustomer = None,
           dmSpecialOfficeProcessingRequiredCESA = None,
-          noMtditsaEnrollment = None
+          noMtditsaEnrollment = None,
+          allChargeTypeAssessmentsFailed = None,
+          noValidPlanAfterAssessments = None
         ),
         chargeTypeAssessment = List(
           ChargeTypeAssessment(
@@ -166,7 +168,59 @@ object TestData {
         regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = false),
         futureChargeLiabilitiesExcluded = false,
         chargeTypesExcluded = None,
-        invalidSignals = None
+        invalidSignals = None,
+        chargeTypeAssessments = Some(
+          ChargeTypeAssessments(
+            List(
+              ChargeTypeAssessment(
+                taxPeriodFrom = TaxPeriodFrom("2022-04-27"),
+                taxPeriodTo = TaxPeriodTo("2022-04-27"),
+                debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
+                chargeReference = ChargeReference("test-chargeReference"),
+                charges = List(
+                  Charges(
+                    chargeType = ChargeType("test-chargeId"),
+                    mainTrans = MainTrans("test-mainTrans"),
+                    subTrans = SubTrans("test-subTrans"),
+                    outstandingAmount = OutstandingAmount(AmountInPence(10)),
+                    interestStartDate = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
+                    accruedInterest = AccruedInterest(AmountInPence(1)),
+                    mainType = MainType("test-mainType"),
+                    dueDate = DueDate(LocalDate.parse("2022-04-27")),
+                    ineligibleChargeType = IneligibleChargeType(value = false),
+                    chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+                    locks = Some(List(testLock)),
+                    dueDateNotReached = false,
+                    isInterestBearingCharge = None,
+                    useChargeReference = None,
+                    chargeBeforeMaxAccountingDate = None,
+                    ddInProgress = None,
+                    chargeSource = None,
+                    parentChargeReference = None,
+                    parentMainTrans = None,
+                    originalCreationDate = None,
+                    tieBreaker = None,
+                    originalTieBreaker = None,
+                    saTaxYearEnd = None,
+                    creationDate = None,
+                    originalChargeType = None
+                  )
+                )
+              )
+            ),
+            AssessmentEligibilityRules(
+              isLessThanMinDebtAllowance = false,
+              isMoreThanMaxDebtAllowance = false,
+              disallowedChargeLockTypes = false,
+              chargesOverMaxDebtAge = Some(false),
+              ineligibleChargeTypes = false,
+              noDueDatesReached = false,
+              chargesBeforeMaxAccountingDate = Some(false)
+            ),
+            assessmentEligibilityStatus = false,
+            assessmentCategory = AssessmentCategory.Standard
+          )
+        )
       )
     }
 
@@ -185,66 +239,103 @@ object TestData {
       val eligibilityResponseJson: JsValue = Json.parse(
         // language=JSON
         s"""{
-          |	"processingDateTime": "test-processingDate",
-          |	"identification": [{
-          |		"idType": "EMPREF",
-          |		"idValue": "test-idValue"
-          |	}],
-          |	"customerPostcodes": [{
-          |		"addressPostcode": "test-postcode",
-          |		"postcodeDate": "2022-01-01"
-          |	}],
-          | "customerDetails":[{}],
-          | "addresses": [{
-          |		"addressType": "Residential",
-          |		"contactDetails": {"emailAddress":"some@email"},
-          |   "postcodeHistory":[{"addressPostcode":"POSTCODE","postcodeDate":"${LocalDate.now().toString}"}]
+           |	"processingDateTime": "test-processingDate",
+           |	"identification": [{
+           |		"idType": "EMPREF",
+           |		"idValue": "test-idValue"
+           |	}],
+           |	"customerPostcodes": [{
+           |		"addressPostcode": "test-postcode",
+           |		"postcodeDate": "2022-01-01"
+           |	}],
+           | "customerDetails":[{}],
+           | "addresses": [{
+           |		"addressType": "Residential",
+           |		"contactDetails": {"emailAddress":"some@email"},
+           |   "postcodeHistory":[{"addressPostcode":"POSTCODE","postcodeDate":"${LocalDate.now().toString}"}]
           }],
-          |	"regimePaymentFrequency": "Monthly",
-          |	"paymentPlanFrequency": "Monthly",
-          |	"paymentPlanMinLength": 1,
-          |	"paymentPlanMaxLength": 6,
-          |	"eligibilityStatus": {
-          |		"eligibilityPass": false
-          |	},
-          |	"eligibilityRules": {
-          |		"hasRlsOnAddress": true,
-          |		"markedAsInsolvent": true,
-          |		"isLessThanMinDebtAllowance": false,
-          |		"isMoreThanMaxDebtAllowance": false,
-          |		"disallowedChargeLockTypes": false,
-          |		"existingTTP": false,
-          |		"ineligibleChargeTypes": false,
-          |		"missingFiledReturns": false,
-          |   "noDueDatesReached": false
-          |	},
-          |	"chargeTypeAssessment": [{
-          |		"taxPeriodFrom": "2022-04-27",
-          |		"taxPeriodTo": "2022-04-27",
-          |		"debtTotalAmount": 100,
-          |   "chargeReference": "test-chargeReference",
-          |		"charges": [{
-          |			"chargeType": "test-chargeId",
-          |			"mainType": "test-mainType",
-          |			"mainTrans": "test-mainTrans",
-          |			"subTrans": "test-subTrans",
-          |			"outstandingAmount": 10,
-          |			"interestStartDate": "2022-04-27",
-          |			"dueDate": "2022-04-27",
-          |			"accruedInterest": 1,
-          |			"ineligibleChargeType": false,
-          |			"chargeOverMaxDebtAge": false,
-          |			"locks": [{
-          |				"lockType": "testLockType",
-          |				"lockReason": "testLockReason",
-          |				"disallowedChargeLockType": false
-          |		  	}],
-          |     "dueDateNotReached": false
-          |	  	}]
-          |	  }],
-          |  "futureChargeLiabilitiesExcluded": false,
-          |  "regimeDigitalCorrespondence":false
-          |}""".stripMargin
+           |	"regimePaymentFrequency": "Monthly",
+           |	"paymentPlanFrequency": "Monthly",
+           |	"paymentPlanMinLength": 1,
+           |	"paymentPlanMaxLength": 6,
+           |	"eligibilityStatus": {
+           |		"eligibilityPass": false
+           |	},
+           |	"eligibilityRules": {
+           |		"hasRlsOnAddress": true,
+           |		"markedAsInsolvent": true,
+           |		"isLessThanMinDebtAllowance": false,
+           |		"isMoreThanMaxDebtAllowance": false,
+           |		"disallowedChargeLockTypes": false,
+           |		"existingTTP": false,
+           |		"ineligibleChargeTypes": false,
+           |		"missingFiledReturns": false,
+           |   "noDueDatesReached": false
+           |	},
+           |	"chargeTypeAssessment": [{
+           |		"taxPeriodFrom": "2022-04-27",
+           |		"taxPeriodTo": "2022-04-27",
+           |		"debtTotalAmount": 100,
+           |   "chargeReference": "test-chargeReference",
+           |		"charges": [{
+           |			"chargeType": "test-chargeId",
+           |			"mainType": "test-mainType",
+           |			"mainTrans": "test-mainTrans",
+           |			"subTrans": "test-subTrans",
+           |			"outstandingAmount": 10,
+           |			"interestStartDate": "2022-04-27",
+           |			"dueDate": "2022-04-27",
+           |			"accruedInterest": 1,
+           |			"ineligibleChargeType": false,
+           |			"chargeOverMaxDebtAge": false,
+           |			"locks": [{
+           |				"lockType": "testLockType",
+           |				"lockReason": "testLockReason",
+           |				"disallowedChargeLockType": false
+           |		  	}],
+           |     "dueDateNotReached": false
+           |	  	}]
+           |	  }],
+           |   "chargeTypeAssessments": {
+           |   	"chargeTypeAssessment": [{
+           |		"taxPeriodFrom": "2022-04-27",
+           |		"taxPeriodTo": "2022-04-27",
+           |		"debtTotalAmount": 100,
+           |   "chargeReference": "test-chargeReference",
+           |		"charges": [{
+           |			"chargeType": "test-chargeId",
+           |			"mainType": "test-mainType",
+           |			"mainTrans": "test-mainTrans",
+           |			"subTrans": "test-subTrans",
+           |			"outstandingAmount": 10,
+           |			"interestStartDate": "2022-04-27",
+           |			"dueDate": "2022-04-27",
+           |			"accruedInterest": 1,
+           |			"ineligibleChargeType": false,
+           |			"chargeOverMaxDebtAge": false,
+           |			"locks": [{
+           |				"lockType": "testLockType",
+           |				"lockReason": "testLockReason",
+           |				"disallowedChargeLockType": false
+           |		  	}],
+           |     "dueDateNotReached": false
+           |	  	}]
+           |	  }],
+           |   "assessmentEligibilityRules": {
+           |     "isLessThanMinDebtAllowance": false,
+           |     "isMoreThanMaxDebtAllowance": false,
+           |     "disallowedChargeLockTypes": false,
+           |     "chargesOverMaxDebtAge": false,
+           |     "ineligibleChargeTypes": false,
+           |     "noDueDatesReached": false,
+           |     "chargesBeforeMaxAccountingDate": false
+           |   },
+           |   "assessmentEligibilityStatus": false,
+           |   "assessmentCategory": "Standard"
+           |   },
+           |  "futureChargeLiabilitiesExcluded": false,
+           |  "regimeDigitalCorrespondence":false
+           |}""".stripMargin
       )
     }
   }
