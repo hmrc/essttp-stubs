@@ -254,6 +254,7 @@ object TestData {
            |		"contactDetails": {"emailAddress":"some@email"},
            |   "postcodeHistory":[{"addressPostcode":"POSTCODE","postcodeDate":"${LocalDate.now().toString}"}]
           }],
+           |  "regimeDigitalCorrespondence":false,
            |	"regimePaymentFrequency": "Monthly",
            |	"paymentPlanFrequency": "Monthly",
            |	"paymentPlanMinLength": 1,
@@ -272,6 +273,7 @@ object TestData {
            |		"missingFiledReturns": false,
            |   "noDueDatesReached": false
            |	},
+           |  "futureChargeLiabilitiesExcluded": false,
            |	"chargeTypeAssessment": [{
            |		"taxPeriodFrom": "2022-04-27",
            |		"taxPeriodTo": "2022-04-27",
@@ -331,10 +333,8 @@ object TestData {
            |     "chargesBeforeMaxAccountingDate": false
            |   },
            |   "assessmentEligibilityStatus": false,
-           |   "assessmentCategory": "Standard"
-           |   },
-           |  "futureChargeLiabilitiesExcluded": false,
-           |  "regimeDigitalCorrespondence":false
+           |   "assessmentCategory": "standard"
+           |   }
            |}""".stripMargin
       )
     }
