@@ -185,63 +185,65 @@ object EligibilityService {
         Some(List(InvalidSignals(signalType = "xyz", signalValue = "123", signalDescription = Some("Description")))),
       chargeTypesExcluded = None,
       chargeTypeAssessments = Some(
-        ChargeTypeAssessments(
-          List(
-            ChargeTypeAssessment(
-              TaxPeriodFrom("2020-08-13"),
-              TaxPeriodTo("2020-08-14"),
-              DebtTotalAmount(AmountInPence(123456)),
-              chargeReference = ChargeReference("someValue"),
-              List(
-                Charges(
-                  chargeType = ChargeType("InYearRTICharge-Tax"),
-                  mainType = MainType("InYearRTICharge(FPS)"),
-                  mainTrans = MainTrans("mainTrans"),
-                  subTrans = SubTrans("subTrans"),
-                  outstandingAmount = OutstandingAmount(AmountInPence(123456)),
-                  interestStartDate = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
-                  dueDate = DueDate(LocalDate.parse("2017-03-07")),
-                  accruedInterest = AccruedInterest(AmountInPence(123)),
-                  ineligibleChargeType = IneligibleChargeType(value = false),
-                  chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
-                  locks = Some(
-                    List(
-                      Lock(
-                        lockType = LockType("Payment"),
-                        lockReason = LockReason("Risk/Fraud"),
-                        disallowedChargeLockType = DisallowedChargeLockType(value = false)
+        List(
+          ChargeTypeAssessments(
+            List(
+              ChargeTypeAssessment(
+                TaxPeriodFrom("2020-08-13"),
+                TaxPeriodTo("2020-08-14"),
+                DebtTotalAmount(AmountInPence(123456)),
+                chargeReference = ChargeReference("someValue"),
+                List(
+                  Charges(
+                    chargeType = ChargeType("InYearRTICharge-Tax"),
+                    mainType = MainType("InYearRTICharge(FPS)"),
+                    mainTrans = MainTrans("mainTrans"),
+                    subTrans = SubTrans("subTrans"),
+                    outstandingAmount = OutstandingAmount(AmountInPence(123456)),
+                    interestStartDate = Some(InterestStartDate(LocalDate.parse("2017-03-07"))),
+                    dueDate = DueDate(LocalDate.parse("2017-03-07")),
+                    accruedInterest = AccruedInterest(AmountInPence(123)),
+                    ineligibleChargeType = IneligibleChargeType(value = false),
+                    chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+                    locks = Some(
+                      List(
+                        Lock(
+                          lockType = LockType("Payment"),
+                          lockReason = LockReason("Risk/Fraud"),
+                          disallowedChargeLockType = DisallowedChargeLockType(value = false)
+                        )
                       )
-                    )
-                  ),
-                  dueDateNotReached = false,
-                  isInterestBearingCharge = None,
-                  useChargeReference = None,
-                  chargeBeforeMaxAccountingDate = None,
-                  ddInProgress = None,
-                  chargeSource = None,
-                  parentChargeReference = None,
-                  parentMainTrans = None,
-                  originalCreationDate = None,
-                  tieBreaker = None,
-                  originalTieBreaker = None,
-                  saTaxYearEnd = None,
-                  creationDate = None,
-                  originalChargeType = None
+                    ),
+                    dueDateNotReached = false,
+                    isInterestBearingCharge = None,
+                    useChargeReference = None,
+                    chargeBeforeMaxAccountingDate = None,
+                    ddInProgress = None,
+                    chargeSource = None,
+                    parentChargeReference = None,
+                    parentMainTrans = None,
+                    originalCreationDate = None,
+                    tieBreaker = None,
+                    originalTieBreaker = None,
+                    saTaxYearEnd = None,
+                    creationDate = None,
+                    originalChargeType = None
+                  )
                 )
               )
-            )
-          ),
-          AssessmentEligibilityRules(
-            isLessThanMinDebtAllowance = false,
-            isMoreThanMaxDebtAllowance = false,
-            disallowedChargeLockTypes = false,
-            chargesOverMaxDebtAge = Some(false),
-            ineligibleChargeTypes = false,
-            noDueDatesReached = false,
-            chargesBeforeMaxAccountingDate = Some(false)
-          ),
-          assessmentEligibilityStatus = true,
-          assessmentCategory = AssessmentCategory.Standard
+            ),
+            AssessmentEligibilityRules(
+              isLessThanMinDebtAllowance = false,
+              isMoreThanMaxDebtAllowance = false,
+              disallowedChargeLockTypes = false,
+              chargesOverMaxDebtAge = Some(false),
+              ineligibleChargeTypes = false,
+              noDueDatesReached = false,
+              chargesBeforeMaxAccountingDate = Some(false)
+            ),
+            assessmentEligibilityStatus = true,
+            assessmentCategory = AssessmentCategory.Standard
+          )
         )
       )
     )

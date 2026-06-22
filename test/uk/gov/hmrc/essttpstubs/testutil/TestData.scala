@@ -170,55 +170,57 @@ object TestData {
         chargeTypesExcluded = None,
         invalidSignals = None,
         chargeTypeAssessments = Some(
-          ChargeTypeAssessments(
-            List(
-              ChargeTypeAssessment(
-                taxPeriodFrom = TaxPeriodFrom("2022-04-27"),
-                taxPeriodTo = TaxPeriodTo("2022-04-27"),
-                debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
-                chargeReference = ChargeReference("test-chargeReference"),
-                charges = List(
-                  Charges(
-                    chargeType = ChargeType("test-chargeId"),
-                    mainTrans = MainTrans("test-mainTrans"),
-                    subTrans = SubTrans("test-subTrans"),
-                    outstandingAmount = OutstandingAmount(AmountInPence(10)),
-                    interestStartDate = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
-                    accruedInterest = AccruedInterest(AmountInPence(1)),
-                    mainType = MainType("test-mainType"),
-                    dueDate = DueDate(LocalDate.parse("2022-04-27")),
-                    ineligibleChargeType = IneligibleChargeType(value = false),
-                    chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
-                    locks = Some(List(testLock)),
-                    dueDateNotReached = false,
-                    isInterestBearingCharge = None,
-                    useChargeReference = None,
-                    chargeBeforeMaxAccountingDate = None,
-                    ddInProgress = None,
-                    chargeSource = None,
-                    parentChargeReference = None,
-                    parentMainTrans = None,
-                    originalCreationDate = None,
-                    tieBreaker = None,
-                    originalTieBreaker = None,
-                    saTaxYearEnd = None,
-                    creationDate = None,
-                    originalChargeType = None
+          List(
+            ChargeTypeAssessments(
+              List(
+                ChargeTypeAssessment(
+                  taxPeriodFrom = TaxPeriodFrom("2022-04-27"),
+                  taxPeriodTo = TaxPeriodTo("2022-04-27"),
+                  debtTotalAmount = DebtTotalAmount(AmountInPence(100)),
+                  chargeReference = ChargeReference("test-chargeReference"),
+                  charges = List(
+                    Charges(
+                      chargeType = ChargeType("test-chargeId"),
+                      mainTrans = MainTrans("test-mainTrans"),
+                      subTrans = SubTrans("test-subTrans"),
+                      outstandingAmount = OutstandingAmount(AmountInPence(10)),
+                      interestStartDate = Some(InterestStartDate(LocalDate.parse("2022-04-27"))),
+                      accruedInterest = AccruedInterest(AmountInPence(1)),
+                      mainType = MainType("test-mainType"),
+                      dueDate = DueDate(LocalDate.parse("2022-04-27")),
+                      ineligibleChargeType = IneligibleChargeType(value = false),
+                      chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+                      locks = Some(List(testLock)),
+                      dueDateNotReached = false,
+                      isInterestBearingCharge = None,
+                      useChargeReference = None,
+                      chargeBeforeMaxAccountingDate = None,
+                      ddInProgress = None,
+                      chargeSource = None,
+                      parentChargeReference = None,
+                      parentMainTrans = None,
+                      originalCreationDate = None,
+                      tieBreaker = None,
+                      originalTieBreaker = None,
+                      saTaxYearEnd = None,
+                      creationDate = None,
+                      originalChargeType = None
+                    )
                   )
                 )
-              )
-            ),
-            AssessmentEligibilityRules(
-              isLessThanMinDebtAllowance = false,
-              isMoreThanMaxDebtAllowance = false,
-              disallowedChargeLockTypes = false,
-              chargesOverMaxDebtAge = Some(false),
-              ineligibleChargeTypes = false,
-              noDueDatesReached = false,
-              chargesBeforeMaxAccountingDate = Some(false)
-            ),
-            assessmentEligibilityStatus = false,
-            assessmentCategory = AssessmentCategory.Standard
+              ),
+              AssessmentEligibilityRules(
+                isLessThanMinDebtAllowance = false,
+                isMoreThanMaxDebtAllowance = false,
+                disallowedChargeLockTypes = false,
+                chargesOverMaxDebtAge = Some(false),
+                ineligibleChargeTypes = false,
+                noDueDatesReached = false,
+                chargesBeforeMaxAccountingDate = Some(false)
+              ),
+              assessmentEligibilityStatus = false,
+              assessmentCategory = AssessmentCategory.Standard
+            )
           )
         )
       )
@@ -298,7 +300,7 @@ object TestData {
            |     "dueDateNotReached": false
            |	  	}]
            |	  }],
-           |   "chargeTypeAssessments": {
+           |   "chargeTypeAssessments": [{
            |   	"chargeTypeAssessment": [{
            |		"taxPeriodFrom": "2022-04-27",
            |		"taxPeriodTo": "2022-04-27",
@@ -334,7 +336,7 @@ object TestData {
            |   },
            |   "assessmentEligibilityStatus": false,
            |   "assessmentCategory": "standard"
-           |   }
+           |   }]
            |}""".stripMargin
       )
     }
